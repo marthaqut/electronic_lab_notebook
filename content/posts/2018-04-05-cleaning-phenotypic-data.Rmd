@@ -1,0 +1,54 @@
+---
+title: Cleaning phenotypic data
+author: Martha Aquino
+date: '2018-04-05'
+slug: cleaning-phenotypic-data
+categories:
+  - Coding
+tags:
+  - R
+---
+
+##Introduction
+The phenotypic data collected from the eye examinations in 2008 were collated in a single excel file. The file contains data from all 801 study participants, including their demographic, environmental, and quantitative phenotypic data. There are also comments on clinical observations. Prior to analysing the phenotypic data, it is important to identify any missing or non-sense data so as not to interfere with the analyses or its results. 
+
+##Aim
+To identify missing and non-sense data from the phenotypic dataset. 
+
+##Methods and Results
+1.	Create new R Project and set the working directory to a local folder 
+2.	Create new R script
+3.	Load phenotypic data (NIES_master_database) into R
+```{r}
+phen.data <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database.csv')
+```
+4.	Data cleaning step 
+  a.	Exploration of how much missing data – run summary(); will give box plot values 
+```{r}
+#summary() will give number of missing data for each variable
+summary <- summary(phen.data)
+
+#produce the table of results as a .csv file
+write.table(summary, file="C:/Users/Martha/Documents/Honours/Project/honours.project/summary.table.3.csv")
+
+#results 
+summary
+```
+  b.	Presence of outliers and non-sense data and plotting histograms
+```{r}
+#plot histogram of a variable 
+hist(phen.data$Current.height)
+#produce boxplot statistics which will identify outliers
+outliers.height <- boxplot.stats(phen.data$Current.height)
+```
+```{r}
+#show boxplot stats 
+outliers.height
+```
+ d.	Check that there are no individuals that only have one or two phenotypes (systematic missing data)
+ 
+##Discussion
+This exercise shows basic summaries of the phenotypic data collected from the eye examinations. The results of the 'summary' function includes the means and medians of quantitative data and freqencies of qualitative data. In addition, it also shows the number of cells that are empty ('NA') for each variable. This is important for the data imputation step that will follow. 
+
+The histogram plots and the box plot statistics were aimed to determine whether there were any non-sense data, which will also need to be removed. The histograms and boxplot stats are yet to be completed for all quantitative variables. Step (d) will be performed to identify any individuals that have systematic missing data, which will be removed for subsequent analysis. 
+ 
