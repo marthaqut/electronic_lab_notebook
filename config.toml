@@ -1,4 +1,4 @@
-baseURL = "https://martha-labbook.netlify.com/"
+baseURL = "/"
 languageCode = "en-us"
 title = "Electronic Lab Notebook"
 theme = "temple"
@@ -43,8 +43,8 @@ enableEmoji = true
   category = "categories"
 
 [author]
-  name = "Your Name"
-  github = "github"
-  email = "your@email.com"
+  name = "Martha Aquino"
+  github = "marthaqut"
+  email = "eunise.aquino@connect.qut.edu.au"
   gaid = "Your Google Analytics ID"
   twitter = "twitterID"
