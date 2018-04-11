@@ -1,4 +1,4 @@
-baseURL = "/"
+baseURL = "https://martha-labbook.netlify.com/"
 languageCode = "en-us"
 title = "Electronic Lab Notebook"
 theme = "temple"

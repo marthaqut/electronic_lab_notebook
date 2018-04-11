@@ -13,3 +13,4 @@ blogdown::new_post(title = 'Test lab book entry',
                    subdir = 'posts', 
                    author = 'Martha')
 
+
