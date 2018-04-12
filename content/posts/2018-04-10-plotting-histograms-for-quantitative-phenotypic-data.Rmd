@@ -40,7 +40,6 @@ quant.data <- c("Current.height", "Current.weight", "Logmar.VA.Right", "RVA.with
 quant.data.subset <- phen.data[quant.data]
 
 #check the output
-quant.data.subset
 head(quant.data.subset)
 ```
   - Only the results from the first 6 individuals are shown above to provide an example of the output. 31 quantitative variables were selected from the phenotypic dataset. Although there are more, any quantitative variable with more than 400 missing cells were excluded. That said, most of the excluded variables had very few (<5) data points present and will most likely not be usable for subsequent analysis, and cannot be imputed correctly. 
