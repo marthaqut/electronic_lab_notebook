@@ -21,6 +21,7 @@ To plot histograms for all continuous phenotypic variables.
 2. Plot histograms
   a. The simplest method to plot histograms is as follows: 
 ```{r}
+phen.data <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database.csv')
 hist.height <- hist(phen.data$Current.height)
 ```
     - In the case above, the histogram was attributed to the object 'hist.height' so that it can be viewed later without having to run the line of code. 
@@ -47,9 +48,9 @@ head(quant.data.subset)
   c. The following script was used to plot all histograms in a panel: 
 ```{r}
 #install the necessary packages 
-install.packages('tidyverse') #has the packages 'purrr' and 'tidyr' so will not have to install and load separately
+install.packages('tidyverse', dependencies = TRUE, repos = "http://cran.us.r-project.org" )
 require(tidyverse)
-install.packages('ggplot2')
+install.packages('ggplot2', dependencies = TRUE, repos = "http://cran.us.r-project.org")
 require(ggplot2)
 
 #plot histograms

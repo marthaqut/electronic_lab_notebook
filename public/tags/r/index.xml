@@ -9,10 +9,19 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Thu, 05 Apr 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 10 Apr 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/r/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Plotting histograms for quantitative phenotypic data</title>
+      <link>/posts/plotting-histograms-for-quantitative-phenotypic-data/</link>
+      <pubDate>Tue, 10 Apr 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/plotting-histograms-for-quantitative-phenotypic-data/</guid>
+      <description>IntroductionHistograms show the frequency distribution of continuous data. It can also be used to inspect whether the data is normally distributed, skewed, and indicate the presence of outliers or non-sense data. The continuous data is split into intervals called bins, and the frequency of scores that fit within each bin is recorded and plotted. Since the data is continuous, histograms are plotted with no spaces in between each bar. (https://statistics.</description>
+    </item>
     
     <item>
       <title>Cleaning phenotypic data</title>
