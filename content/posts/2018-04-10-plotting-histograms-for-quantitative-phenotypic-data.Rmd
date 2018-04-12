@@ -1,0 +1,67 @@
+---
+title: Plotting histograms for quantitative phenotypic data
+author: Martha Aquino
+date: '2018-04-10'
+slug: plotting-histograms-for-quantitative-phenotypic-data
+categories:
+  - Coding
+tags:
+  - R
+  - Data Cleaning
+---
+
+##Introduction
+Histograms show the frequency distribution of continuous data. It can also be used to inspect whether the data is normally distributed, skewed, and indicate the presence of outliers or non-sense data. The continuous data is split into intervals called bins, and the frequency of scores that fit within each bin is recorded and plotted. Since the data is continuous, histograms are plotted with no spaces in between each bar. (https://statistics.laerd.com/statistical-guides/understanding-histograms.php) 
+
+##Aim
+To plot histograms for all continuous phenotypic variables. 
+
+##Methods and results 
+1. Identify all continuous variables in the phenotypic dataset by inspection. 
+2. Plot histograms
+  a. The simplest method to plot histograms is as follows: 
+```{r}
+hist.height <- hist(phen.data$Current.height)
+```
+    - In the case above, the histogram was attributed to the object 'hist.height' so that it can be viewed later without having to run the line of code. 
+    - Using the hist() function for each variable would mean extensive repetition of the same code and would be time consuming. Therefore, I attempted to build an appropriate script that would plot all of the histograms without repeating the code. 
+    
+    b. Before creating the script that would plot the histograms, I created a subset of data that contained only continuous variables. 
+```{r}
+#select the column headings that contain continous data
+quant.data <- c("Current.height", "Current.weight", "Logmar.VA.Right", "RVA.with.PH", "Logmar.VA.Left", "LVA.with.PH", 
+                "R.Sph..pre.dilate.", "R.Cyl..pre.dilate.", "R.Axis..pre.dilate.", "L.Sph..pre.dilate.", "L.Cyl..pre.dilate.",
+                "L.Axis..pre.dilate.", "R.K.value.H", "R.K.Value.H.Axis", "R.K.value.V", "R.K.value.V.Axis", "L.K.value.H",
+                "L.K.value.H.Axis", "L.K.value.V", "L.K.value.V.Axis", "Lang.score", "R.Pachimetry", "L.Pachimetry", "R.Axial.Length",
+                "L.Axial.Length", "AC.Depth.R", "AC.Depth.L", "R.IOP.mmHg", "L.IOP.mmHg", "CDR.RE", "CDR.LE")
+
+#subset the continuous data 
+quant.data.subset <- phen.data[quant.data]
+
+#check the output
+quant.data.subset
+head(quant.data.subset)
+```
+  - Only the results from the first 6 individuals are shown above to provide an example of the output. 31 quantitative variables were selected from the phenotypic dataset. Although there are more, any quantitative variable with more than 400 missing cells were excluded. That said, most of the excluded variables had very few (<5) data points present and will most likely not be usable for subsequent analysis, and cannot be imputed correctly. 
+  
+  c. The following script was used to plot all histograms in a panel: 
+```{r}
+#install the necessary packages 
+install.packages('tidyverse') #has the packages 'purrr' and 'tidyr' so will not have to install and load separately
+require(tidyverse)
+install.packages('ggplot2')
+require(ggplot2)
+
+#plot histograms
+quant.data.subset %>%
+  keep(is.numeric) %>%
+  gather() %>%
+  ggplot(aes(value)) + facet_wrap(~ key, scales = "free") + geom_histogram(fill = 'grey', colour = "black")
+```
+
+##Discussion
+The script I used to plot the histograms was sourced from (https://drsimonj.svbtle.com/quick-plot-of-all-variables). Prior to this, I considered using a 'for' loop, an 'apply' function, or the 'repeat' function to iterate the histogram command. These proved to be more complex than necessary, or were not applicable to this dataset.
+
+The results of the histograms show the frequency distributions of the scores of each quantitative variable. From inspection, there does not seem to be non-sense data present, except for 'Lang.score' which shows a large peak at 550, and smaller peaks at -99, 600, and 1200. The peaks at 550", 600", and 1200" were expected, as these are the set disparities from the stereoscropic test (https://www.lang-stereotest.com/pages/video, https://cdn.shopify.com/s/files/1/0984/9292/files/Brief_Instructions_English_4_Pages_PDF.pdf?1321875810004346330, [paper describing NIES methods]). However, there were a few datapoints at -99, and upon inspection of the dataset, there was one point at 0, and a couple at 1300. These seem to be non-sense data, because it does not fit the categories. They may have been typographical errors during data entry. Although the -99 may be legitimate entries as they appear several times. 
+
+Evidently, it is difficult to determine with certainty, which, if there are any, are the outliers in each variable. It may be worthwhile following this with the identification of outliers using the boxplot.stats() function. Additionally, from an initial inspection of the dataset, there are a few individuals with systematically missing data. Some of these individuals appear to have most of the quantitative data, but lack environmental or demographic data, some are vice versa, and two appear to have almost all of the data missing (all of these individuals are highlighted in the excel file). 
