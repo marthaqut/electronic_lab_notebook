@@ -1,0 +1,610 @@
+---
+title: Finding outliers in quantitative data
+author: Martha Aquino
+date: '2018-04-16'
+slug: finding-outliers-in-quantitative-data
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Data Cleaning
+  - R
+---
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Finding outliers in a dataset help identify any non-sense data that may not be obvious from the histograms. If they are not non-sense, they may be present due to measurement variability or it may indicate an error. Regardless, it is important to identify outliers as they can significantly affect the results of subsequent statistical analyses and it may be necessary to exclude them from the dataset prior to data imputation.</p>
+</div>
+<div id="aim" class="section level2">
+<h2>Aim</h2>
+<p>To identify outliers and non-sense data in the quantitative dataset.</p>
+</div>
+<div id="methods-and-results" class="section level2">
+<h2>Methods and Results</h2>
+<ol style="list-style-type: decimal">
+<li>Copy the quantitative dataset so that the original dataset will not be altered</li>
+</ol>
+<pre class="r"><code>phen.data &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database.csv&#39;)
+quant.data &lt;- c(&quot;Current.height&quot;, &quot;Current.weight&quot;, &quot;Logmar.VA.Right&quot;, &quot;RVA.with.PH&quot;, &quot;Logmar.VA.Left&quot;, &quot;LVA.with.PH&quot;, 
+&quot;R.Sph..pre.dilate.&quot;, &quot;R.Cyl..pre.dilate.&quot;, &quot;R.Axis..pre.dilate.&quot;, &quot;L.Sph..pre.dilate.&quot;,&quot;L.Cyl..pre.dilate.&quot;,
+&quot;L.Axis..pre.dilate.&quot;, &quot;R.K.value.H&quot;, &quot;R.K.Value.H.Axis&quot;, &quot;R.K.value.V&quot;, &quot;R.K.value.V.Axis&quot;, &quot;L.K.value.H&quot;,
+&quot;L.K.value.H.Axis&quot;, &quot;L.K.value.V&quot;, &quot;L.K.value.V.Axis&quot;, &quot;Lang.score&quot;, &quot;R.Pachimetry&quot;, &quot;L.Pachimetry&quot;, &quot;R.Axial.Length&quot;, &quot;L.Axial.Length&quot;, &quot;AC.Depth.R&quot;, &quot;AC.Depth.L&quot;, &quot;R.IOP.mmHg&quot;, &quot;L.IOP.mmHg&quot;, &quot;CDR.RE&quot;, &quot;CDR.LE&quot;)
+quant.data.subset &lt;- phen.data[quant.data]
+
+quant.data.sub2 &lt;- quant.data.subset</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Try ‘extremevalues’ package to identify outliers</li>
+</ol>
+<pre class="r"><code>install.packages(&#39;extremevalues&#39;, dependencies = TRUE, repos = &quot;http://cran.us.r-project.org&quot; )</code></pre>
+<pre><code>## Installing package into &#39;C:/Users/Martha/Documents/R/win-library/3.4&#39;
+## (as &#39;lib&#39; is unspecified)</code></pre>
+<pre><code>## package &#39;extremevalues&#39; successfully unpacked and MD5 sums checked
+## 
+## The downloaded binary packages are in
+##  C:\Users\Martha\AppData\Local\Temp\RtmpgXA1Pk\downloaded_packages</code></pre>
+<pre class="r"><code>require(extremevalues)</code></pre>
+<pre><code>## Loading required package: extremevalues</code></pre>
+<pre class="r"><code>outRight&lt;-list()
+outLeft&lt;-outRight
+for(i in 1:ncol(quant.data.sub2)){
+  outRight[[i]]&lt;-getOutliers(quant.data.sub2[,i])$iRight
+  outLeft[[i]]&lt;-getOutliers(quant.data.sub2[,i])$iLeft
+  quant.data.sub2[outRight[[i]],i]&lt;- NA
+  quant.data.sub2[outLeft[[i]],i]&lt;-NA
+}
+
+#check output
+outLeft</code></pre>
+<pre><code>## [[1]]
+## [1] 732 801
+## 
+## [[2]]
+## integer(0)
+## 
+## [[3]]
+## integer(0)
+## 
+## [[4]]
+## integer(0)
+## 
+## [[5]]
+## integer(0)
+## 
+## [[6]]
+## integer(0)
+## 
+## [[7]]
+##  [1]   8  26  59  64  87 133 179 194 215 254 271 283 304 306 329 338 429
+## [18] 434 456 463 550 619 621 648 715 735 741 759
+## 
+## [[8]]
+##  [1]  17  29  46  50  51  88 129 134 152 155 171 179 183 184 192 217 247
+## [18] 256 263 267 304 308 326 349 388 402 418 429 455 530 555 562 592 594
+## [35] 648 678 691 692 697 706 747 765 783
+## 
+## [[9]]
+## integer(0)
+## 
+## [[10]]
+##  [1]   8  34  59  64 175 179 194 203 254 283 299 306 329 338 456 463 550
+## [18] 648 715 735 759
+## 
+## [[11]]
+##  [1]  17  46  54  59  63  76  88 101 134 151 176 179 184 192 247 263 267
+## [18] 271 276 298 304 307 308 329 388 407 413 415 418 429 453 480 501 555
+## [35] 562 564 588 592 594 648 692 706 711 768
+## 
+## [[12]]
+## integer(0)
+## 
+## [[13]]
+## [1] 256 311 387
+## 
+## [[14]]
+## integer(0)
+## 
+## [[15]]
+## [1] 311
+## 
+## [[16]]
+## integer(0)
+## 
+## [[17]]
+## [1] 102 415 418 455 564 588 677 776
+## 
+## [[18]]
+## integer(0)
+## 
+## [[19]]
+## [1] 102 677
+## 
+## [[20]]
+## integer(0)
+## 
+## [[21]]
+##  [1] 521 635 643 714 717 718 753 767 773 778 779 787 790 792
+## 
+## [[22]]
+## [1] 246 312 388
+## 
+## [[23]]
+## [1] 246 388 484
+## 
+## [[24]]
+## integer(0)
+## 
+## [[25]]
+## integer(0)
+## 
+## [[26]]
+## [1] 143 354
+## 
+## [[27]]
+## [1]  82 151 522
+## 
+## [[28]]
+## [1] 247
+## 
+## [[29]]
+## integer(0)
+## 
+## [[30]]
+## integer(0)
+## 
+## [[31]]
+## integer(0)</code></pre>
+<pre class="r"><code>outRight</code></pre>
+<pre><code>## [[1]]
+## integer(0)
+## 
+## [[2]]
+## [1] 157 182 190 433 472
+## 
+## [[3]]
+##  [1]  41  57  87  88 103 110 129 130 133 192 217 288 318 326 327 346 355
+## [18] 360 361 388 429 466 510 519 530 538 621 764 781
+## 
+## [[4]]
+##  [1]  41  51  87  88 110 130 217 288 318 327 355 388 410 429 530 536 555
+## [18] 621 697 781
+## 
+## [[5]]
+##  [1]  38  54  57  76 181 184 188 226 256 270 276 299 313 327 361 363 385
+## [18] 388 407 474 510 530 563 580 588 599 605 648 691
+## 
+## [[6]]
+##  [1]  38  54  76 184 202 226 256 270 276 313 327 363 474 514 530 563 580
+## [18] 588
+## 
+## [[7]]
+##  [1]   6  24  34 137 183 223 392 415 416 418 563 697 706 711
+## 
+## [[8]]
+## integer(0)
+## 
+## [[9]]
+## integer(0)
+## 
+## [[10]]
+##  [1]  38 101 137 151 183 184 223 377 415 416 418 563 564 706 711
+## 
+## [[11]]
+## integer(0)
+## 
+## [[12]]
+## integer(0)
+## 
+## [[13]]
+## [1] 382
+## 
+## [[14]]
+## integer(0)
+## 
+## [[15]]
+## [1] 304 388
+## 
+## [[16]]
+## integer(0)
+## 
+## [[17]]
+## integer(0)
+## 
+## [[18]]
+## integer(0)
+## 
+## [[19]]
+## [1] 388 407 418
+## 
+## [[20]]
+## integer(0)
+## 
+## [[21]]
+##   [1]   1   2   3   5   6   7   8   9  10  11  12  13  14  15  16  17  18
+##  [18]  19  20  21  22  23  24  25  27  28  30  31  32  33  35  36  39  40
+##  [35]  42  43  44  45  46  47  48  50  51  52  53  55  56  57  58  59  60
+##  [52]  61  62  63  64  65  66  68  69  70  71  72  73  75  76  78  79  80
+##  [69]  81  82  83  84  85  86  88  89  90  91  92  93  94  95  96  97  98
+##  [86]  99 100 101 102 103 105 106 107 108 109 111 112 113 114 115 116 117
+## [103] 118 119 120 121 122 123 124 125 126 127 128 130 131 132 133 135 136
+## [120] 137 138 139 140 142 144 145 146 148 149 150 151 152 153 154 155 156
+## [137] 157 158 159 160 161 162 163 164 165 166 167 168 169 171 172 173 174
+## [154] 175 176 177 178 179 180 181 182 183 184 185 186 187 188 189 191 193
+## [171] 194 195 196 197 198 199 200 201 203 204 205 206 207 208 209 210 211
+## [188] 212 213 215 216 218 219 220 221 222 223 225 228 229 230 231 232 234
+## [205] 235 236 237 238 239 240 241 242 243 244 245 246 247 248 250 251 252
+## [222] 253 254 255 257 259 260 261 262 263 264 265 267 269 271 272 273 274
+## [239] 275 276 277 278 280 281 282 283 284 285 286 287 288 289 290 291 292
+## [256] 293 294 295 296 297 298 299 301 302 303 305 307 308 309 311 312 313
+## [273] 314 315 316 317 318 319 320 321 322 323 324 325 326 329 330 331 332
+## [290] 333 334 335 336 338 339 340 341 342 343 345 348 351 352 356 357 358
+## [307] 360 361 362 363 364 365 366 367 368 369 370 371 372 373 374 375 376
+## [324] 379 380 381 382 383 384 385 387 388 389 390 391 392 393 394 395 396
+## [341] 397 399 400 401 402 403 404 405 406 408 409 411 412 414 415 416 419
+## [358] 420 421 422 423 424 425 426 427 428 429 430 431 432 433 434 436 438
+## [375] 439 440 441 442 443 445 446 447 448 449 450 451 452 453 454 455 456
+## [392] 457 458 459 460 461 462 463 464 465 466 467 468 469 470 471 473 474
+## [409] 475 476 477 478 479 480 482 483 484 486 487 488 489 490 491 492 494
+## [426] 495 496 497 498 499 501 502 503 504 505 506 507 508 509 510 512 513
+## [443] 515 516 517 518 520 522 524 525 526 527 528 529 531 532 533 534 535
+## [460] 536 537 538 539 540 541 542 543 544 545 546 547 548 549 550 551 552
+## [477] 553 554 555 556 557 558 559 560 561 562 564 565 566 567 568 569 571
+## [494] 572 573 574 575 576 577 579 581 582 583 584 585 586 587 588 589 591
+## [511] 592 594 595 596 597 598 600 601 602 603 604 606 608 609 610 611 612
+## [528] 613 614 615 616 617 618 619 620 621 622 623 624 625 626 628 629 630
+## [545] 631 632 633 634 636 637 638 639 640 641 642 644 645 646 648 649 650
+## [562] 651 652 653 654 655 656 657 658 659 660 661 662 663 664 665 666 667
+## [579] 668 669 670 671 672 673 674 675 676 677 678 679 680 682 683 684 685
+## [596] 686 687 688 689 690 692 693 694 695 696 697 698 699 701 702 703 704
+## [613] 705 707 708 709 710 711 712 715 719 720 721 722 723 724 725 726 727
+## [630] 728 729 730 731 732 733 734 735 736 737 738 739 740 742 743 744 745
+## [647] 746 747 748 749 750 751 752 754 755 756 757 758 759 760 761 762 763
+## [664] 765 766 768 769 770 771 772 774 776 777 780 782 784 785 786 788 789
+## [681] 791 793 794 795 796 797 798 799 800
+## 
+## [[22]]
+## [1] 695
+## 
+## [[23]]
+## [1] 695
+## 
+## [[24]]
+##  [1] 102 194 215 216 271 311 429 456 567 648
+## 
+## [[25]]
+## [1]  34 102 147 271 456 480 567 648
+## 
+## [[26]]
+##  [1]  46  51  71  88  99 107 147 276 310 376 555
+## 
+## [[27]]
+##  [1]  46  71  99 107 133 276 308 310 376 407 723
+## 
+## [[28]]
+## [1]   3 302
+## 
+## [[29]]
+## [1]  39 299 302 382 390 534
+## 
+## [[30]]
+## [1] 87
+## 
+## [[31]]
+## integer(0)</code></pre>
+<pre class="r"><code>head(quant.data.sub2)</code></pre>
+<pre><code>##   Current.height Current.weight Logmar.VA.Right RVA.with.PH Logmar.VA.Left
+## 1             NA             NA            0.02        0.02          -0.04
+## 2            170             78            0.10        0.10           0.16
+## 3            180             86            0.00        0.00           0.00
+## 4            183             NA            0.30        0.10           0.08
+## 5             NA             69            0.00        0.00          -0.10
+## 6            162             NA            0.24        0.16           0.36
+##   LVA.with.PH R.Sph..pre.dilate. R.Cyl..pre.dilate. R.Axis..pre.dilate.
+## 1       -0.04               0.25               0.00                   0
+## 2        0.10               0.00              -0.75                  28
+## 3        0.00               1.25              -1.25                 148
+## 4        0.08               1.25              -0.25                  97
+## 5       -0.10               1.25              -0.25                  37
+## 6        0.14                 NA              -0.50                  46
+##   L.Sph..pre.dilate. L.Cyl..pre.dilate. L.Axis..pre.dilate. R.K.value.H
+## 1               0.25              -0.50                  79       42.00
+## 2              -0.50              -0.25                 164       41.25
+## 3               1.25              -0.25                  24          NA
+## 4               1.50              -0.50                  81       44.75
+## 5               1.25              -0.75                 164       44.75
+## 6               3.75              -0.75                 180       42.00
+##   R.K.Value.H.Axis R.K.value.V R.K.value.V.Axis L.K.value.H
+## 1                2       43.00               92       42.50
+## 2                7       42.25               97       41.50
+## 3               NA          NA               NA          NA
+## 4                5       45.00               95       45.00
+## 5                0       44.75               90       44.25
+## 6                8       43.25               98       42.25
+##   L.K.value.H.Axis L.K.value.V L.K.value.V.Axis Lang.score R.Pachimetry
+## 1                5       43.50               95         NA          532
+## 2              168       42.00               78         NA          608
+## 3               NA          NA               NA         NA          507
+## 4               60       45.25              150         NA          560
+## 5              178       44.75               88         NA          556
+## 6              177       43.25               87         NA          498
+##   L.Pachimetry R.Axial.Length L.Axial.Length AC.Depth.R AC.Depth.L
+## 1          554          24.31          24.10       3.09       3.03
+## 2          612          25.02          25.21       3.38       3.92
+## 3          510          22.78          22.80       3.40       3.45
+## 4          559          23.02          22.98       3.00       2.85
+## 5          562          21.75          22.04       2.60       2.53
+## 6          501          23.06          23.17       2.94       3.04
+##   R.IOP.mmHg L.IOP.mmHg CDR.RE CDR.LE
+## 1         14         14    0.9    0.9
+## 2         16         15    0.9    0.7
+## 3         NA         22    0.7    0.7
+## 4         14         14    0.2    0.2
+## 5         22         21    0.3    0.3
+## 6         18         20    0.6    0.6</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>Try boxplot statistics to identify outliers</li>
+</ol>
+<pre class="r"><code>quant.data.sub3 &lt;- quant.data.subset
+outvalue &lt;-list()
+outindex &lt;-list()
+for (i in 1:ncol(quant.data.sub3)){
+  outvalue[[i]] &lt;-boxplot.stats(quant.data.sub3[,i])$out
+  outindex[[i]] &lt;-which(quant.data.sub3[,i] == outvalue[[i]])
+  quant.data.sub3[outindex[[i]],i] &lt;- NA
+}</code></pre>
+<pre><code>## Warning in quant.data.sub3[, i] == outvalue[[i]]: longer object length is
+## not a multiple of shorter object length
+
+## Warning in quant.data.sub3[, i] == outvalue[[i]]: longer object length is
+## not a multiple of shorter object length
+
+## Warning in quant.data.sub3[, i] == outvalue[[i]]: longer object length is
+## not a multiple of shorter object length
+
+## Warning in quant.data.sub3[, i] == outvalue[[i]]: longer object length is
+## not a multiple of shorter object length
+
+## Warning in quant.data.sub3[, i] == outvalue[[i]]: longer object length is
+## not a multiple of shorter object length
+
+## Warning in quant.data.sub3[, i] == outvalue[[i]]: longer object length is
+## not a multiple of shorter object length
+
+## Warning in quant.data.sub3[, i] == outvalue[[i]]: longer object length is
+## not a multiple of shorter object length
+
+## Warning in quant.data.sub3[, i] == outvalue[[i]]: longer object length is
+## not a multiple of shorter object length
+
+## Warning in quant.data.sub3[, i] == outvalue[[i]]: longer object length is
+## not a multiple of shorter object length
+
+## Warning in quant.data.sub3[, i] == outvalue[[i]]: longer object length is
+## not a multiple of shorter object length
+
+## Warning in quant.data.sub3[, i] == outvalue[[i]]: longer object length is
+## not a multiple of shorter object length
+
+## Warning in quant.data.sub3[, i] == outvalue[[i]]: longer object length is
+## not a multiple of shorter object length
+
+## Warning in quant.data.sub3[, i] == outvalue[[i]]: longer object length is
+## not a multiple of shorter object length
+
+## Warning in quant.data.sub3[, i] == outvalue[[i]]: longer object length is
+## not a multiple of shorter object length
+
+## Warning in quant.data.sub3[, i] == outvalue[[i]]: longer object length is
+## not a multiple of shorter object length
+
+## Warning in quant.data.sub3[, i] == outvalue[[i]]: longer object length is
+## not a multiple of shorter object length
+
+## Warning in quant.data.sub3[, i] == outvalue[[i]]: longer object length is
+## not a multiple of shorter object length
+
+## Warning in quant.data.sub3[, i] == outvalue[[i]]: longer object length is
+## not a multiple of shorter object length
+
+## Warning in quant.data.sub3[, i] == outvalue[[i]]: longer object length is
+## not a multiple of shorter object length
+
+## Warning in quant.data.sub3[, i] == outvalue[[i]]: longer object length is
+## not a multiple of shorter object length
+
+## Warning in quant.data.sub3[, i] == outvalue[[i]]: longer object length is
+## not a multiple of shorter object length
+
+## Warning in quant.data.sub3[, i] == outvalue[[i]]: longer object length is
+## not a multiple of shorter object length
+
+## Warning in quant.data.sub3[, i] == outvalue[[i]]: longer object length is
+## not a multiple of shorter object length</code></pre>
+<pre class="r"><code>#check output
+outvalue</code></pre>
+<pre><code>## [[1]]
+## [1] 138 130 127
+## 
+## [[2]]
+##  [1] 120 118 130 130 131 120 120 140 120 125 121  31 120 119  31
+## 
+## [[3]]
+##  [1] 0.74 0.60 0.94 1.04 0.60 2.00 0.62 0.84 0.72 0.46 0.72 0.46 0.50 0.78
+## [15] 0.58 0.58 0.94 0.80 0.78 0.50 0.46 1.02 0.64 0.74 1.02 0.50 0.70 1.00
+## [29] 0.56 0.70 0.50 1.70 0.60 0.90 0.50 1.00 1.04 0.50
+## 
+## [[4]]
+##  [1] 0.74 0.40 0.50 1.04 2.00 0.40 0.68 0.46 0.40 0.80 1.00 0.40 0.40 0.40
+## [15] 1.70 0.40 0.40 0.64 0.40 1.06
+## 
+## [[5]]
+##  [1] 1.04 0.78 0.54 0.60 0.94 0.48 0.60 0.70 0.60 0.46 1.06 0.50 0.90 0.94
+## [15] 0.64 1.10 1.00 0.88 0.54 0.58 1.02 0.64 0.60 0.84 0.46 0.60 0.54 0.58
+## [29] 0.50 0.54 0.80 0.56 0.94 0.70 0.50 1.70 1.02 0.64 0.78
+## 
+## [[6]]
+##  [1] 0.70 0.78 0.64 0.40 0.38 0.70 0.40 0.44 1.06 0.90 0.94 0.64 0.40 0.40
+## [15] 1.00 0.80 1.02 0.40 0.40 0.60 0.50 0.80 0.40 0.56 0.94 0.70 0.38
+## 
+## [[7]]
+##  [1]  4.00 -3.25  3.75 -2.75  8.50 -3.25 -2.75 -3.75 -2.75  5.25  3.25
+## [12] -2.00  3.25 -2.50  5.00  3.25 -5.00 -3.50  3.25  3.75 -2.25 -2.50
+## [23]  3.50 -3.25 -2.75 -2.50 -4.50  3.25 -4.25 -3.50  3.50  3.25  3.75
+## [34]  5.00  6.50  3.75 -2.50 -4.25  3.50 -8.00 -3.75 -2.00 -2.00 -5.00
+## [45]  4.75  3.25  3.25 -2.50 -4.75 -7.50  6.25  8.50  3.75 -2.75  3.50
+## [56] -2.00 -6.50 -3.75 -2.50
+## 
+## [[8]]
+##  [1]  -2.25  -2.00  -2.50  -3.00  -2.00  -2.75  -2.25  -2.50  -1.75  -3.25
+## [11]  -2.00  -2.00  -2.50  -2.75  -2.00  -2.50  -2.50  -1.75  -2.00  -2.75
+## [21]  -3.75  -2.50  -1.75  -5.50  -2.00  -2.00  -1.75  -1.75  -2.00  -1.75
+## [31]  -1.75 -11.00  -2.50  -6.50  -1.75  -1.75  -5.25  -1.75  -2.75  -1.75
+## [41]  -1.75  -2.25  -4.00  -2.25  -3.50  -2.00  -1.75  -2.25  -1.75  -2.50
+## [51]  -4.75  -2.50  -2.00  -3.50  -2.50  -2.00  -2.00
+## 
+## [[9]]
+## integer(0)
+## 
+## [[10]]
+##  [1]  3.75 -4.75  3.75  3.50 -9.50  5.25 -3.50 -3.00  3.75  4.25  3.50
+## [12]  5.00  4.00 -2.00 -4.75 -3.00  3.50  4.00  4.00 -3.75 -2.75 -2.25
+## [23]  4.25 -2.50 -3.50 -3.25 -2.00 -5.75 -4.00 -4.50 -3.25  3.50  4.25
+## [34]  3.50  3.50  4.25  6.75  4.75 -2.50  3.50 -5.25 -4.25 -4.00  8.00
+## [45]  7.50 -2.25 -2.00  3.25 -2.00 -6.50  3.25  7.50  4.75 -2.75  3.75
+## [56] -2.00 -7.75 -2.50 -2.75
+## 
+## [[11]]
+##  [1] -1.75 -3.00 -1.75 -2.25 -2.25 -2.25 -2.25 -3.25 -2.25 -2.50 -1.75
+## [12] -2.50 -2.50 -3.00 -2.25 -2.50 -3.00 -1.75 -2.50 -1.75 -1.75 -2.50
+## [23] -2.25 -5.00 -2.00 -5.75 -3.50 -5.00 -2.00 -1.75 -1.75 -2.00 -1.75
+## [34] -7.75 -6.75 -3.75 -2.00 -9.75 -4.50 -1.75 -2.00 -2.00 -2.25 -1.75
+## [45] -2.00 -1.75 -2.50 -8.50 -1.75 -7.00 -3.50 -2.25 -4.25 -1.75 -1.75
+## [56] -2.50 -3.25 -2.00 -2.00 -1.75
+## 
+## [[12]]
+## integer(0)
+## 
+## [[13]]
+## [1] 38.25 36.25 48.25 36.00 38.50 38.50
+## 
+## [[14]]
+## integer(0)
+## 
+## [[15]]
+## [1] 39.25 51.00 37.00 48.25 55.00
+## 
+## [[16]]
+## integer(0)
+## 
+## [[17]]
+##  [1] 37.75 38.50 47.25 33.25 38.50 37.25 35.25 35.75 32.75 38.00 37.50
+## 
+## [[18]]
+## integer(0)
+## 
+## [[19]]
+## [1] 39.00 52.00 51.00 48.75 48.50 39.00
+## 
+## [[20]]
+## integer(0)
+## 
+## [[21]]
+##  [1] 1200  600  600 1200  600 1200  600 1200 1200 1200  600  600 1200  600
+## [15] 1200  600  600  600  600  600 1200 1200 1200  600 1200 1200  600 1200
+## [29]  600 1200  600  600  600 1300  600    0 1600 1200  600 1200  600  600
+## [43]  600 1200  600  -99  -99  600  600 1200  -99  -99  -99 1200  600  -99
+## [57]  -99  -99  -99  -99  -99  600  -99  -99
+## 
+## [[22]]
+## [1] 456 454 442 443 428 448 656 635
+## 
+## [[23]]
+## [1] 449 459 634 642 445 449 424 431 658
+## 
+## [[24]]
+##  [1] 26.61 26.04 26.31 26.18 26.18 26.62 27.56 26.13 26.36 27.54 26.44
+## [12] 27.66 20.95
+## 
+## [[25]]
+##  [1] 26.42 26.65 26.60 26.12 26.92 27.15 34.43 26.31 27.49 26.12 26.04
+## 
+## [[26]]
+##  [1] 4.95 2.21 4.68 4.45 4.47 4.60 4.45 2.19 4.46 4.82 4.56 4.32 2.09 4.74
+## [15] 4.37 4.80 4.34
+## 
+## [[27]]
+##  [1] 4.50 4.37 4.59 2.07 4.81 4.50 4.86 2.12 2.10 4.41 4.67 4.87 4.88 4.41
+## [15] 4.34 2.27 2.18 4.91 4.62 2.00 5.13
+## 
+## [[28]]
+## [1] 26 25  6 28 25  7 25
+## 
+## [[29]]
+## [1] 26 26 33 26 27 27 25
+## 
+## [[30]]
+##  [1] 0.90 0.90 0.90 0.90 0.90 0.99 0.90 0.90 0.90 0.90 0.90 0.90 0.90 0.90
+## [15] 0.90 0.90 0.90
+## 
+## [[31]]
+##  [1] 0.9 0.9 0.9 0.9 0.9 0.9 0.9 0.9 0.9 0.9 0.9 0.9</code></pre>
+<pre class="r"><code>head(quant.data.sub3)</code></pre>
+<pre><code>##   Current.height Current.weight Logmar.VA.Right RVA.with.PH Logmar.VA.Left
+## 1             NA             NA            0.02        0.02          -0.04
+## 2            170             78            0.10        0.10           0.16
+## 3            180             86            0.00        0.00           0.00
+## 4            183             NA            0.30        0.10           0.08
+## 5             NA             69            0.00        0.00          -0.10
+## 6            162             NA            0.24        0.16           0.36
+##   LVA.with.PH R.Sph..pre.dilate. R.Cyl..pre.dilate. R.Axis..pre.dilate.
+## 1       -0.04               0.25               0.00                   0
+## 2        0.10               0.00              -0.75                  28
+## 3        0.00               1.25              -1.25                 148
+## 4        0.08               1.25              -0.25                  97
+## 5       -0.10               1.25              -0.25                  37
+## 6        0.14               4.00              -0.50                  46
+##   L.Sph..pre.dilate. L.Cyl..pre.dilate. L.Axis..pre.dilate. R.K.value.H
+## 1               0.25              -0.50                  79       42.00
+## 2              -0.50              -0.25                 164       41.25
+## 3               1.25              -0.25                  24          NA
+## 4               1.50              -0.50                  81       44.75
+## 5               1.25              -0.75                 164       44.75
+## 6               3.75              -0.75                 180       42.00
+##   R.K.Value.H.Axis R.K.value.V R.K.value.V.Axis L.K.value.H
+## 1                2       43.00               92       42.50
+## 2                7       42.25               97       41.50
+## 3               NA          NA               NA          NA
+## 4                5       45.00               95       45.00
+## 5                0       44.75               90       44.25
+## 6                8       43.25               98       42.25
+##   L.K.value.H.Axis L.K.value.V L.K.value.V.Axis Lang.score R.Pachimetry
+## 1                5       43.50               95        550          532
+## 2              168       42.00               78        550          608
+## 3               NA          NA               NA        550          507
+## 4               60       45.25              150         NA          560
+## 5              178       44.75               88        550          556
+## 6              177       43.25               87        550          498
+##   L.Pachimetry R.Axial.Length L.Axial.Length AC.Depth.R AC.Depth.L
+## 1          554          24.31          24.10       3.09       3.03
+## 2          612          25.02          25.21       3.38       3.92
+## 3          510          22.78          22.80       3.40       3.45
+## 4          559          23.02          22.98       3.00       2.85
+## 5          562          21.75          22.04       2.60       2.53
+## 6          501          23.06          23.17       2.94       3.04
+##   R.IOP.mmHg L.IOP.mmHg CDR.RE CDR.LE
+## 1         14         14     NA     NA
+## 2         16         15     NA    0.7
+## 3         26         22    0.7    0.7
+## 4         14         14    0.2    0.2
+## 5         22         21    0.3    0.3
+## 6         18         20    0.6    0.6</code></pre>
+<ul>
+<li>Each [[number]] represents a quantitative variable from the “quant.data.subset” dataset</li>
+<li>Both methods of identifying an outlier removes the outliers from the dataset and replaces them with “NA”.</li>
+</ul>
+</div>
+<div id="discussion" class="section level2">
+<h2>Discussion</h2>
+<p>There are differences in the values identified as outliers using both methods although there are no non-sense data evident. The differences in the outliers identified were due to the the methods employed by the functions. The ‘boxplot.stats’ determines outliers using the interquartile range (IQR), assuming normal distribution. The ‘extremevalues’ package estimates a distribution based on Q-Q plots and then determines whether a value would likely fit within the distribution. From the histograms, it was evident that not all of the variables follow a normal distribution, thus using the boxplot statistics may not be the most appropriate method for determining an outlier. Regardless of these results, outliers will not be removed from the dataset.</p>
+</div>

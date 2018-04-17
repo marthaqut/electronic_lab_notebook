@@ -9,10 +9,19 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Tue, 10 Apr 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 16 Apr 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Finding outliers in quantitative data</title>
+      <link>/posts/finding-outliers-in-quantitative-data/</link>
+      <pubDate>Mon, 16 Apr 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/finding-outliers-in-quantitative-data/</guid>
+      <description>IntroductionFinding outliers in a dataset help identify any non-sense data that may not be obvious from the histograms. If they are not non-sense, they may be present due to measurement variability or it may indicate an error. Regardless, it is important to identify outliers as they can significantly affect the results of subsequent statistical analyses and it may be necessary to exclude them from the dataset prior to data imputation.</description>
+    </item>
     
     <item>
       <title>Plotting histograms for quantitative phenotypic data</title>

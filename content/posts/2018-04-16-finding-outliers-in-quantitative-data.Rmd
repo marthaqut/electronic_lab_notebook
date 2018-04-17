@@ -12,22 +12,28 @@ tags:
 ---
 
 ##Introduction 
-Finding outliers in a dataset help identify any non-sense data that may not be obvious from the histograms. If they are not non-sense, they may present due to measurement variability or it may indicate an error. Regardless, it is important to identify outliers as they can significantly affect the results of subsequent statistical analyses and it may be necessary to exclude them from the dataset prior to data imputation. 
+Finding outliers in a dataset help identify any non-sense data that may not be obvious from the histograms. If they are not non-sense, they may be present due to measurement variability or it may indicate an error. Regardless, it is important to identify outliers as they can significantly affect the results of subsequent statistical analyses and it may be necessary to exclude them from the dataset prior to data imputation. 
 
 ##Aim
-To identify outliers in the quantitative dataset. 
+To identify outliers and non-sense data in the quantitative dataset. 
 
 ##Methods and Results 
-There appears to be two methods to identify outliers in R. I have tested both methods to determine whether the results would differ. (https://stackoverflow.com/questions/45163254/how-can-i-see-multiple-variables-outlier-in-one-boxplot-using-r) 
 
 1. Copy the quantitative dataset so that the original dataset will not be altered 
 ```{r}
+phen.data <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database.csv')
+quant.data <- c("Current.height", "Current.weight", "Logmar.VA.Right", "RVA.with.PH", "Logmar.VA.Left", "LVA.with.PH", 
+"R.Sph..pre.dilate.", "R.Cyl..pre.dilate.", "R.Axis..pre.dilate.", "L.Sph..pre.dilate.","L.Cyl..pre.dilate.",
+"L.Axis..pre.dilate.", "R.K.value.H", "R.K.Value.H.Axis", "R.K.value.V", "R.K.value.V.Axis", "L.K.value.H",
+"L.K.value.H.Axis", "L.K.value.V", "L.K.value.V.Axis", "Lang.score", "R.Pachimetry", "L.Pachimetry", "R.Axial.Length", "L.Axial.Length", "AC.Depth.R", "AC.Depth.L", "R.IOP.mmHg", "L.IOP.mmHg", "CDR.RE", "CDR.LE")
+quant.data.subset <- phen.data[quant.data]
+
 quant.data.sub2 <- quant.data.subset
 ```
 
 2. Try 'extremevalues' package to identify outliers 
 ```{r}
-install.packages('extremevalues')
+install.packages('extremevalues', dependencies = TRUE, repos = "http://cran.us.r-project.org" )
 require(extremevalues)
 
 outRight<-list()
@@ -64,3 +70,6 @@ head(quant.data.sub3)
 
 - Each [[number]] represents a quantitative variable from the "quant.data.subset" dataset
 - Both methods of identifying an outlier removes the outliers from the dataset and replaces them with "NA".
+
+##Discussion
+There are differences in the values identified as outliers using both methods although there are no non-sense data evident. The differences in the outliers identified were due to the the methods employed by the functions. The 'boxplot.stats' determines outliers using the interquartile range (IQR), assuming normal distribution. The 'extremevalues' package estimates a distribution based on Q-Q plots and then determines whether a value would likely fit within the distribution. From the histograms, it was evident that not all of the variables follow a normal distribution, thus using the boxplot statistics may not be the most appropriate method for determining an outlier. Regardless of these results, outliers will not be removed from the dataset. 
