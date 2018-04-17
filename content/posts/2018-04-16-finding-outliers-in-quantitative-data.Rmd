@@ -1,0 +1,66 @@
+---
+title: Finding outliers in quantitative data
+author: Martha Aquino
+date: '2018-04-16'
+slug: finding-outliers-in-quantitative-data
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Data Cleaning
+  - R
+---
+
+##Introduction 
+Finding outliers in a dataset help identify any non-sense data that may not be obvious from the histograms. If they are not non-sense, they may present due to measurement variability or it may indicate an error. Regardless, it is important to identify outliers as they can significantly affect the results of subsequent statistical analyses and it may be necessary to exclude them from the dataset prior to data imputation. 
+
+##Aim
+To identify outliers in the quantitative dataset. 
+
+##Methods and Results 
+There appears to be two methods to identify outliers in R. I have tested both methods to determine whether the results would differ. (https://stackoverflow.com/questions/45163254/how-can-i-see-multiple-variables-outlier-in-one-boxplot-using-r) 
+
+1. Copy the quantitative dataset so that the original dataset will not be altered 
+```{r}
+quant.data.sub2 <- quant.data.subset
+```
+
+2. Try 'extremevalues' package to identify outliers 
+```{r}
+install.packages('extremevalues')
+require(extremevalues)
+
+outRight<-list()
+outLeft<-outRight
+for(i in 1:ncol(quant.data.sub2)){
+  outRight[[i]]<-getOutliers(quant.data.sub2[,i])$iRight
+  outLeft[[i]]<-getOutliers(quant.data.sub2[,i])$iLeft
+  quant.data.sub2[outRight[[i]],i]<- NA
+  quant.data.sub2[outLeft[[i]],i]<-NA
+}
+
+#check output
+outLeft
+outRight
+head(quant.data.sub2)
+```
+
+  
+3. Try boxplot statistics to identify outliers
+```{r}
+quant.data.sub3 <- quant.data.subset
+outvalue <-list()
+outindex <-list()
+for (i in 1:ncol(quant.data.sub3)){
+  outvalue[[i]] <-boxplot.stats(quant.data.sub3[,i])$out
+  outindex[[i]] <-which(quant.data.sub3[,i] == outvalue[[i]])
+  quant.data.sub3[outindex[[i]],i] <- NA
+}
+
+#check output
+outvalue
+head(quant.data.sub3)
+```
+
+- Each [[number]] represents a quantitative variable from the "quant.data.subset" dataset
+- Both methods of identifying an outlier removes the outliers from the dataset and replaces them with "NA".
