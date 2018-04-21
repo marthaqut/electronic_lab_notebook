@@ -1,0 +1,24 @@
+---
+title: 'Understanding ocular biometric measurements'
+author: Martha Aquino
+date: '2018-04-20'
+slug: understanding-oculab-biometric-measurements
+categories:
+  - Reading
+tags:
+  - Reading
+  - Ocular Biometry
+---
+
+##Introduction 
+The histograms and outliers have not revealed any non-sense data - in a statistical sense. However, the data that was collected from the eye examinations as part of the NIES in 2008 was not accompanied with a comprehensive glossary. In order to understand the measurements, and determine whether some values are outside of the possible measurable outcomes, compiling a glossary would be useful. 
+
+1. Visual acuity - LogMAR test
+  - Tests the sharpness of a person's eyes using a letter chart
+  - using the logMAR system, the maximum value is 1.0, and the minimum is -0.3 at the standard distance of 20ft (or 6m)
+  - if vision is very poor, the chart can be moved closer but a correction must be made to the logMAR score and it can therefore exceed 1.0 (e.g. a distance of 1.5m can have a logMAR score of 1.5) 
+  - http://iopscience.iop.org/article/10.1088/1742-6596/772/1/012046/pdf
+  
+1a. Visual acuity with pinhole correction - LogMAR test 
+  
+

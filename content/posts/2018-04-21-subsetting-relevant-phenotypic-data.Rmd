@@ -1,0 +1,53 @@
+---
+title: 'Subsetting relevant phenotypic data'
+author: Martha Aquino
+date: '2018-04-21'
+slug: subsetting-relevant-phenotypic-data
+categories:
+  - Coding
+tags:
+  - Data Cleaning
+  - R
+---
+
+##Introduction 
+The original dataset that was used for descriptive statistics in previous entries contained data for all 801 individuals. However, the ethics approval for this study only allows for adult data to be included in the study. All data for minor individuals must therefore be removed. Additionally, relevant quantitative variables must be selected from the bigger phenotypic dataset since not all quantitative measurements are endophenotypes. 
+
+##Aim
+Remove data for minor individuals and subset relevant quantitative measures. 
+
+##Methods and Results 
+Upon inspection of the participants' reported age on the questionnaire, there were some apparent discrepancies with their recorded DOB and some missing values. I therefore re-calculated age at the time of collection (2008) based on DOB, which has no missing values, using Microsoft Excel. I added the calculated ages in the phenotypic dataset under "Age.excel" and 
+1. loaded this dataset into R: 
+```{r}
+phen.data.age <- read.csv('Data/NIES_master_database-age.csv')
+```
+
+2. Subset data for minor participants 
+```{r}
+phen.data.minors<-phen.data.age[phen.data.age$Age.excel<=17,]
+head(phen.data.minors)
+```
+  - There were 28 minors from the study. 
+  
+3. Remove rows of data of minors 
+```{r}
+phen.data.adults<-phen.data.age[phen.data.age$Age.excel>17,]
+head(phen.data.adults)
+```
+
+4. Subset relevant quantitative variables - based on the methods paper (https://www.ncbi.nlm.nih.gov/pubmed/21314255)
+```{r}
+quant.variables<- c("UUID", "Current.height", "Current.weight", "R.K.value.H", "R.K.Value.H.Axis", "R.K.value.V", "R.K.value.V.Axis", "L.K.value.H",
+                    "L.K.value.H.Axis", "L.K.value.V", "L.K.value.V.Axis", "R.Pachimetry", "L.Pachimetry", "R.Axial.Length",
+                    "L.Axial.Length", "AC.Depth.R", "AC.Depth.L", "R.IOP.mmHg", "L.IOP.mmHg", "CDR.RE", "CDR.LE", "Age.excel")
+quant.data.adults<- phen.data.adults[quant.variables]
+```
+
+5. Check summary statistics
+```{r}
+summary(quant.data.adults)
+```
+
+##Conclusion
+This subset of data contains the quantitative measurements that are attributed to ocular endophenotypes, with the exception of the unique identifiers (UUID), height, weight, and age. 
