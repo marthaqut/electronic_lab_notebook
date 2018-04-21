@@ -20,7 +20,7 @@ Remove data for minor individuals and subset relevant quantitative measures.
 Upon inspection of the participants' reported age on the questionnaire, there were some apparent discrepancies with their recorded DOB and some missing values. I therefore re-calculated age at the time of collection (2008) based on DOB, which has no missing values, using Microsoft Excel. I added the calculated ages in the phenotypic dataset under "Age.excel" and 
 1. loaded this dataset into R: 
 ```{r}
-phen.data.age <- read.csv('Data/NIES_master_database-age.csv')
+phen.data.age <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv')
 ```
 
 2. Subset data for minor participants 

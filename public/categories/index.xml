@@ -16,7 +16,7 @@
     <item>
       <title>Coding</title>
       <link>/categories/coding/</link>
-      <pubDate>Mon, 16 Apr 2018 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 21 Apr 2018 00:00:00 +0000</pubDate>
       <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
       <guid>/categories/coding/</guid>
       <description></description>
@@ -28,6 +28,15 @@
       <pubDate>Mon, 16 Apr 2018 00:00:00 +0000</pubDate>
       <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
       <guid>/categories/experiments/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Reading</title>
+      <link>/categories/reading/</link>
+      <pubDate>Fri, 20 Apr 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/categories/reading/</guid>
       <description></description>
     </item>
     

@@ -9,10 +9,30 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Mon, 16 Apr 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 21 Apr 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Subsetting relevant phenotypic data</title>
+      <link>/posts/subsetting-relevant-phenotypic-data/</link>
+      <pubDate>Sat, 21 Apr 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/subsetting-relevant-phenotypic-data/</guid>
+      <description>IntroductionThe original dataset that was used for descriptive statistics in previous entries contained data for all 801 individuals. However, the ethics approval for this study only allows for adult data to be included in the study. All data for minor individuals must therefore be removed. Additionally, relevant quantitative variables must be selected from the bigger phenotypic dataset since not all quantitative measurements are endophenotypes.
+AimRemove data for minor individuals and subset relevant quantitative measures.</description>
+    </item>
+    
+    <item>
+      <title>Understanding ocular biometric measurements</title>
+      <link>/posts/understanding-oculab-biometric-measurements/</link>
+      <pubDate>Fri, 20 Apr 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/understanding-oculab-biometric-measurements/</guid>
+      <description>IntroductionThe histograms and outliers have not revealed any non-sense data - in a statistical sense. However, the data that was collected from the eye examinations as part of the NIES in 2008 was not accompanied with a comprehensive glossary. In order to understand the measurements, and determine whether some values are outside of the possible measurable outcomes, compiling a glossary would be useful.
+Keratometry - measure of corneal radius of curvature</description>
+    </item>
     
     <item>
       <title>Finding outliers in quantitative data</title>

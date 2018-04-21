@@ -13,12 +13,37 @@ tags:
 ##Introduction 
 The histograms and outliers have not revealed any non-sense data - in a statistical sense. However, the data that was collected from the eye examinations as part of the NIES in 2008 was not accompanied with a comprehensive glossary. In order to understand the measurements, and determine whether some values are outside of the possible measurable outcomes, compiling a glossary would be useful. 
 
-1. Visual acuity - LogMAR test
-  - Tests the sharpness of a person's eyes using a letter chart
-  - using the logMAR system, the maximum value is 1.0, and the minimum is -0.3 at the standard distance of 20ft (or 6m)
-  - if vision is very poor, the chart can be moved closer but a correction must be made to the logMAR score and it can therefore exceed 1.0 (e.g. a distance of 1.5m can have a logMAR score of 1.5) 
-  - http://iopscience.iop.org/article/10.1088/1742-6596/772/1/012046/pdf
-  
-1a. Visual acuity with pinhole correction - LogMAR test 
-  
+1. Keratometry - measure of corneal radius of curvature  
+  - R K-value H = Right K-value Horizontal
+  - R K-value H Axis = Right K-value Horizontal Axis 
+  - R K-value V = Right K-value Vertical 
+  - R K-value V Axis = Right K-value vertical Axis 
+  - L K-value H = Left K-value horizontal 
+  - L K-value H Axs = Left K-value horizontal axis
+  - L K-value V = Left K-value Vertical 
+  - L K-value V Axis = Left K-value vertical Axis
 
+2. Pachimetry - measure of central corneal thickness (CCT) (unit of measurement = micron; measurement range = 200microns to 1100microns)
+  (http://dghtechnology.com/product/pachmate-2/)
+  - R Pachimetry - Right Pachimetry
+  - L Pachimetry - Left 
+
+3. Axial length - measurement from anterior to posterior poles of the eye (unit of measurement = mm; measurement range = 14mm to 38mm)
+  (https://www.zeiss.com/meditec/int/products/ophthalmology-optometry/cataract/diagnostics/optical-biometry/iolmaster-500.html#technical-data)
+  - R Axial Length = Right Axial Length 
+  - L Axial Length = Left Axial Length 
+
+4. Anterior chamber depth (ACD) - measurement between corneal endothelium and anterior capsule of crystalline lens (unit of measurement = mm; measurement range = 1.5mm to 6.5mm)
+  (https://www.zeiss.com/meditec/int/products/ophthalmology-optometry/cataract/diagnostics/optical-biometry/iolmaster-500.html#technical-data)
+  - AC Depth R = Anterior chamber depth Right 
+  - AC Depth L = Anterior chamber depth Left 
+  
+4. Intraocular Pressure (IOP) - measurement of fluid pressure in the eye (unit of measurement = mm of mercury mmHg; measurement range = 5mmHg to 55mmHg)
+  (http://www.reichert.com/product_details.cfm?skuId=2980&skuTk=1037022486#.WtrPFJe-nb0)
+  - R IOP mmHg = Right IOP
+  - L IOP mmHG = Left IOP
+
+5. Cup-to-disc ratio (CDR) - measures the diameter of the optic cup relative to the total diameter of the optic disc (measurement range = 0 to 0.99)
+  (http://bjo.bmj.com/content/bjophthalmol/82/10/1118.full.pdf)
+  - CDR RE = cup to disc ratio right eye
+  - CDR LE = cup to disc ratio left eye 
