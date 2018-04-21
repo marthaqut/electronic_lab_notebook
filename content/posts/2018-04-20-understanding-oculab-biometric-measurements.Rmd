@@ -22,6 +22,8 @@ The histograms and outliers have not revealed any non-sense data - in a statisti
   - L K-value H Axs = Left K-value horizontal axis
   - L K-value V = Left K-value Vertical 
   - L K-value V Axis = Left K-value vertical Axis
+  
+Note: I cannot determine the unit of measurement for the keratometry values with certainty through research but I suspect that the K-values are given as dioptric power (or refractive power) which would be dependent on the curvature of the cornea, and the axes measurements are in degrees.
 
 2. Pachimetry - measure of central corneal thickness (CCT) (unit of measurement = micron; measurement range = 200microns to 1100microns)
   (http://dghtechnology.com/product/pachmate-2/)

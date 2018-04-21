@@ -49,5 +49,5 @@ quant.data.adults<- phen.data.adults[quant.variables]
 summary(quant.data.adults)
 ```
 
-##Conclusion
-This subset of data contains the quantitative measurements that are attributed to ocular endophenotypes, with the exception of the unique identifiers (UUID), height, weight, and age. 
+##Discussion
+This subset of data contains the quantitative measurements that are attributed to ocular endophenotypes, with the exception of the unique identifiers (UUID), height, weight, and age. I suspect that there may be non-sense data in the keratometry readings, given the definition of the measurements. In particular, the axis measurements in degrees should maximise at 180degrees. There is a value of 189 under R K-value V axis, which may be a typographical error and should be replaced in the data set. However, I am not certain whether a measurement of 0degrees is possible or if they signify a missing value. This should be fact checked with a professional. 
