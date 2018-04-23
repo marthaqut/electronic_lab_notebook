@@ -9,10 +9,32 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Sat, 21 Apr 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 23 Apr 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Example of data imputation with missMDA</title>
+      <link>/posts/example-of-data-impuation-with-missmda/</link>
+      <pubDate>Mon, 23 Apr 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/example-of-data-impuation-with-missmda/</guid>
+      <description>IntroductionThis entry will show the results of a single imputation using the missMDA package. The missMDA package imputes quantitative variables using principal component analysis (PCA).
+Methods and Resultsload dataphen.data.age &amp;lt;- read.csv(&amp;#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv&amp;#39;)phen.data.adults&amp;lt;-phen.data.age[phen.data.age$Age.excel&amp;gt;17,]quant.variables&amp;lt;- c(&amp;quot;R.K.value.H&amp;quot;, &amp;quot;R.K.Value.H.Axis&amp;quot;, &amp;quot;R.K.value.V&amp;quot;, &amp;quot;R.K.value.V.Axis&amp;quot;, &amp;quot;L.K.value.H&amp;quot;,&amp;quot;L.K.value.H.Axis&amp;quot;, &amp;quot;L.K.value.V&amp;quot;, &amp;quot;L.K.value.V.Axis&amp;quot;, &amp;quot;R.Pachimetry&amp;quot;, &amp;quot;L.Pachimetry&amp;quot;, &amp;quot;R.Axial.Length&amp;quot;,&amp;quot;L.Axial.Length&amp;quot;, &amp;quot;AC.Depth.R&amp;quot;, &amp;quot;AC.Depth.L&amp;quot;, &amp;quot;R.IOP.mmHg&amp;quot;, &amp;quot;L.IOP.mmHg&amp;quot;, &amp;quot;CDR.RE&amp;quot;, &amp;quot;CDR.LE&amp;quot;)quant.data.adults&amp;lt;- phen.data.adults[quant.variables]install relevant packagesinstall.packages(&amp;#39;missMDA&amp;#39;, dependencies = TRUE, repos = &amp;quot;http://cran.us.r-project.org&amp;quot;)## Installing package into &amp;#39;C:/Users/Martha/Documents/R/win-library/3.</description>
+    </item>
+    
+    <item>
+      <title>Understanding PCA </title>
+      <link>/posts/understanding-pca/</link>
+      <pubDate>Mon, 23 Apr 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/understanding-pca/</guid>
+      <description>IntroductionPrincipal component analysis (PCA) is one of the analysis techniques that I will be performing on my data. For the phenotypic dataset, it will be used to impute missing values to obtain a complete dataset. Later on, PCA will be performed to determine principal components of the endophenotypes to identify any latent phenotypes.
+http://setosa.io/ev/principal-component-analysis/
+https://georgemdallas.wordpress.com/2013/10/30/principal-component-analysis-4-dummies-eigenvectors-eigenvalues-and-dimension-reduction/
+</description>
+    </item>
     
     <item>
       <title>Subsetting relevant phenotypic data</title>

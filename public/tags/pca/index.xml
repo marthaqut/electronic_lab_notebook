@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Experiments on Electronic Lab Notebook</title>
-    <link>/categories/experiments/</link>
-    <description>Recent content in Experiments on Electronic Lab Notebook</description>
+    <title>Pca on Electronic Lab Notebook</title>
+    <link>/tags/pca/</link>
+    <description>Recent content in Pca on Electronic Lab Notebook</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
@@ -11,7 +11,7 @@
     <copyright>(c) 2018 -- All rights reserved.</copyright>
     <lastBuildDate>Mon, 23 Apr 2018 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/categories/experiments/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/tags/pca/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -25,12 +25,15 @@ Methods and Resultsload dataphen.data.age &amp;lt;- read.csv(&amp;#39;C:/User
     </item>
     
     <item>
-      <title>Finding outliers in quantitative data</title>
-      <link>/posts/finding-outliers-in-quantitative-data/</link>
-      <pubDate>Mon, 16 Apr 2018 00:00:00 +0000</pubDate>
+      <title>Understanding PCA </title>
+      <link>/posts/understanding-pca/</link>
+      <pubDate>Mon, 23 Apr 2018 00:00:00 +0000</pubDate>
       <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
-      <guid>/posts/finding-outliers-in-quantitative-data/</guid>
-      <description>IntroductionFinding outliers in a dataset help identify any non-sense data that may not be obvious from the histograms. If they are not non-sense, they may be present due to measurement variability or it may indicate an error. Regardless, it is important to identify outliers as they can significantly affect the results of subsequent statistical analyses and it may be necessary to exclude them from the dataset prior to data imputation.</description>
+      <guid>/posts/understanding-pca/</guid>
+      <description>IntroductionPrincipal component analysis (PCA) is one of the analysis techniques that I will be performing on my data. For the phenotypic dataset, it will be used to impute missing values to obtain a complete dataset. Later on, PCA will be performed to determine principal components of the endophenotypes to identify any latent phenotypes.
+http://setosa.io/ev/principal-component-analysis/
+https://georgemdallas.wordpress.com/2013/10/30/principal-component-analysis-4-dummies-eigenvectors-eigenvalues-and-dimension-reduction/
+</description>
     </item>
     
   </channel>

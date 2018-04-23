@@ -3,8 +3,8 @@
 <head>
   
   <meta charset="utf-8">
-  <title>Reading</title>
-  <meta name="description" content="Reading">
+  <title>Example of data imputation with missMDA</title>
+  <meta name="description" content="Example of data imputation with missMDA">
   <meta name="author" content="Martha Aquino">
   
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -420,8 +420,6 @@ based on dark.css by Ivan Sagalaev
 
   
   
-  <link href="/categories/reading/index.xml" rel="alternate" type="application/rss+xml" title="Electronic Lab Notebook Feed" />
-  
 
   <meta name="generator" content="Hugo 0.38.2" />
 
@@ -487,43 +485,123 @@ based on dark.css by Ivan Sagalaev
 </div>
 
 
-
 <div class="pure-g">
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
   <div class="pure-u-11-12 pure-u-md-2-3">
-    <div class="post-content">
-      <p class="posts-name">Reading:</p>
+    <div class="post">
 
-      <ul class="posts">
+      <div class="post-title">
+        <p class="footnote">
+        <time class="">04-23-2018</time>
         
         
+        |
         
-        <li>
-          
-          <a class="post-list" href="/posts/understanding-pca/">Understanding PCA </a>
+        
+        tags: [ <a href="/tags/data-cleaning">Data Cleaning</a> <a href="/tags/imputation">Imputation</a> <a href="/tags/pca">PCA</a> <a href="/tags/r">R</a> ]
+        
 
-          <p class="footnote">
-          <time datetime="04-23-2018">
-            04-23-2018
-          </time>
-          </p>
-        </li>
         
+        categories: [<a href="/categories/experiments">Experiments</a> <a href="/categories/coding">Coding</a> ]
         
-        
-        <li>
-          
-          <a class="post-list" href="/posts/understanding-oculab-biometric-measurements/">Understanding ocular biometric measurements</a>
 
-          <p class="footnote">
-          <time datetime="04-20-2018">
-            04-20-2018
-          </time>
-          </p>
-        </li>
         
-        
-      </ul>
+        </p>
+        <h1>Example of data imputation with missMDA</h1>
+      </div>
+
+      <div class="post-content">
+        <div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This entry will show the results of a single imputation using the missMDA package. The missMDA package imputes quantitative variables using principal component analysis (PCA).</p>
+<div id="methods-and-results" class="section level2">
+<h2>Methods and Results</h2>
+<ol style="list-style-type: decimal">
+<li>load data</li>
+</ol>
+<pre class="r"><code>phen.data.age &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv&#39;)
+phen.data.adults&lt;-phen.data.age[phen.data.age$Age.excel&gt;17,]
+quant.variables&lt;- c(&quot;R.K.value.H&quot;, &quot;R.K.Value.H.Axis&quot;, &quot;R.K.value.V&quot;, &quot;R.K.value.V.Axis&quot;, &quot;L.K.value.H&quot;,
+                    &quot;L.K.value.H.Axis&quot;, &quot;L.K.value.V&quot;, &quot;L.K.value.V.Axis&quot;, &quot;R.Pachimetry&quot;, &quot;L.Pachimetry&quot;, &quot;R.Axial.Length&quot;,
+                    &quot;L.Axial.Length&quot;, &quot;AC.Depth.R&quot;, &quot;AC.Depth.L&quot;, &quot;R.IOP.mmHg&quot;, &quot;L.IOP.mmHg&quot;, &quot;CDR.RE&quot;, &quot;CDR.LE&quot;)
+quant.data.adults&lt;- phen.data.adults[quant.variables]</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>install relevant packages</li>
+</ol>
+<pre class="r"><code>install.packages(&#39;missMDA&#39;, dependencies = TRUE, repos = &quot;http://cran.us.r-project.org&quot;)</code></pre>
+<pre><code>## Installing package into &#39;C:/Users/Martha/Documents/R/win-library/3.4&#39;
+## (as &#39;lib&#39; is unspecified)</code></pre>
+<pre><code>## package &#39;missMDA&#39; successfully unpacked and MD5 sums checked
+## 
+## The downloaded binary packages are in
+##  C:\Users\Martha\AppData\Local\Temp\Rtmp48Yrhv\downloaded_packages</code></pre>
+<pre class="r"><code>require(missMDA)</code></pre>
+<pre><code>## Loading required package: missMDA</code></pre>
+<pre class="r"><code>require(FactoMineR)</code></pre>
+<pre><code>## Loading required package: FactoMineR</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>Estimate the number of dimensions to be used for the reconstruction formula</li>
+</ol>
+<pre class="r"><code>data(quant.data.adults)</code></pre>
+<pre><code>## Warning in data(quant.data.adults): data set &#39;quant.data.adults&#39; not found</code></pre>
+<pre class="r"><code>nb = estim_ncpPCA(quant.data.adults)
+nb</code></pre>
+<pre><code>## $ncp
+## [1] 0
+## 
+## $criterion
+##         0         1         2         3         4         5 
+##  805.8485  909.0843  966.6860 1029.7058 1088.5330  880.8944</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>Impute the data with the number of dimensions previously calculated</li>
+</ol>
+<pre class="r"><code>res.comp = imputePCA(quant.data.adults,ncp=nb$ncp)
+head(res.comp$completeObs) #view imputed dataset</code></pre>
+<pre><code>##   R.K.value.H R.K.Value.H.Axis R.K.value.V R.K.value.V.Axis L.K.value.H
+## 1    42.00000          2.00000    43.00000         92.00000    42.50000
+## 2    41.25000          7.00000    42.25000         97.00000    41.50000
+## 3    42.96687         93.74108    43.79634         91.19287    42.96871
+## 4    44.75000          5.00000    45.00000         95.00000    45.00000
+## 5    44.75000          0.00000    44.75000         90.00000    44.25000
+## 6    42.00000          8.00000    43.25000         98.00000    42.25000
+##   L.K.value.H.Axis L.K.value.V L.K.value.V.Axis R.Pachimetry L.Pachimetry
+## 1          5.00000    43.50000         95.00000          532          554
+## 2        168.00000    42.00000         78.00000          608          612
+## 3         87.79947    43.87197         92.21768          507          510
+## 4         60.00000    45.25000        150.00000          560          559
+## 5        178.00000    44.75000         88.00000          556          562
+## 6        177.00000    43.25000         87.00000          498          501
+##   R.Axial.Length L.Axial.Length AC.Depth.R AC.Depth.L R.IOP.mmHg
+## 1          24.31          24.10       3.09       3.03         14
+## 2          25.02          25.21       3.38       3.92         16
+## 3          22.78          22.80       3.40       3.45         26
+## 4          23.02          22.98       3.00       2.85         14
+## 5          21.75          22.04       2.60       2.53         22
+## 6          23.06          23.17       2.94       3.04         18
+##   L.IOP.mmHg CDR.RE CDR.LE
+## 1         14    0.9    0.9
+## 2         15    0.9    0.7
+## 3         22    0.7    0.7
+## 4         14    0.2    0.2
+## 5         21    0.3    0.3
+## 6         20    0.6    0.6</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li>Perform PCA on the imputed data set and plot uncertainties</li>
+</ol>
+<pre class="r"><code>res.pca = PCA(res.comp$completeObs)</code></pre>
+<p><img src="/posts/2018-04-23-example-of-data-impuation-with-missmda_files/figure-html/unnamed-chunk-5-1.png" width="672" /><img src="/posts/2018-04-23-example-of-data-impuation-with-missmda_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+<ol start="6" style="list-style-type: decimal">
+<li>Perform multiple imputations</li>
+</ol>
+<p>“res.comp = MIPCA(quant.data.adults, ncp = nb$ncp, nboot = 1000)”</p>
+</div>
+<div id="discussion" class="section level2">
+<h2>Discussion</h2>
+<p>The single imputation has produced a complete dataset. It is difficult to interpret the individuals factor map in detail because there are a large number of individuals in the study, and each dot represents an individual. If any of the participants had a signifiant amount of data missing, a circle around the dot would be present signifying the uncertainty of the imputed values. The larger the area of the circle, the higher the uncertainty. However, there does not appear to be any that are clearly visible in this plot, which suggests that the imputed values for each individual fits well. It also possible that any circles that are present are not visible because of the dense cluster of dots in the plot. The variables factor map shows the uncertainty of the imputed values for each variable.</p>
+</div>
+</div>
+
+      </div>
     </div>
   </div>
   <div class="pure-u-1-24 pure-u-md-1-6"></div>

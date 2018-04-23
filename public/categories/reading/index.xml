@@ -9,10 +9,22 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Fri, 20 Apr 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 23 Apr 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/categories/reading/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Understanding PCA </title>
+      <link>/posts/understanding-pca/</link>
+      <pubDate>Mon, 23 Apr 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/understanding-pca/</guid>
+      <description>IntroductionPrincipal component analysis (PCA) is one of the analysis techniques that I will be performing on my data. For the phenotypic dataset, it will be used to impute missing values to obtain a complete dataset. Later on, PCA will be performed to determine principal components of the endophenotypes to identify any latent phenotypes.
+http://setosa.io/ev/principal-component-analysis/
+https://georgemdallas.wordpress.com/2013/10/30/principal-component-analysis-4-dummies-eigenvectors-eigenvalues-and-dimension-reduction/
+</description>
+    </item>
     
     <item>
       <title>Understanding ocular biometric measurements</title>

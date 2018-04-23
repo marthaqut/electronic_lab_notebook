@@ -1,0 +1,19 @@
+---
+title: 'Understanding PCA '
+author: Martha Aquino
+date: '2018-04-23'
+slug: understanding-pca
+categories:
+  - Reading
+tags:
+  - PCA
+  - Imputation
+  - Data Cleaning
+---
+
+##Introduction 
+Principal component analysis (PCA) is one of the analysis techniques that I will be performing on my data. For the phenotypic dataset, it will be used to impute missing values to obtain a complete dataset. Later on, PCA will be performed to determine principal components of the endophenotypes to identify any latent phenotypes.
+
+http://setosa.io/ev/principal-component-analysis/
+
+https://georgemdallas.wordpress.com/2013/10/30/principal-component-analysis-4-dummies-eigenvectors-eigenvalues-and-dimension-reduction/
