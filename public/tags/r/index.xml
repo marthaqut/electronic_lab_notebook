@@ -9,10 +9,19 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Mon, 23 Apr 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 29 Apr 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/r/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Multiple PCA Imputation of Phenotypic Data</title>
+      <link>/posts/multiple-pca-imputation-of-phenotypic-data/</link>
+      <pubDate>Sun, 29 Apr 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/multiple-pca-imputation-of-phenotypic-data/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Example of data imputation with missMDA</title>

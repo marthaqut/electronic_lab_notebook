@@ -1,0 +1,55 @@
+---
+title: Multiple PCA Imputation of Quantitative Phenotypic Data  - updated
+author: Martha Aquino
+date: '2018-05-04'
+slug: multiple-pca-imputation-of-quantitative-phenotypic-data-updated
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Data Cleaning
+  - Imputation
+  - PCA
+  - R
+---
+
+
+##Methods and Results 
+```{r}
+phen.data.age <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv')
+
+#include logMAR and base-out prism test values 
+quant.variables<- c("Logmar.VA.Right", "RVA.with.PH", "Logmar.VA.Left", "LVA.with.PH", "R.Sph..pre.dilate.", "R.Cyl..pre.dilate.",
+                    "R.Axis..pre.dilate.", "L.Sph..pre.dilate.", "L.Cyl..pre.dilate.", "L.Axis..pre.dilate.",
+                    "R.K.value.H", "R.K.Value.H.Axis", "R.K.value.V", "R.K.value.V.Axis", "L.K.value.H",
+                    "L.K.value.H.Axis", "L.K.value.V", "L.K.value.V.Axis", "R.Pachimetry", "L.Pachimetry", "R.Axial.Length",
+                    "L.Axial.Length", "AC.Depth.R", "AC.Depth.L", "R.IOP.mmHg", "L.IOP.mmHg", "CDR.RE", "CDR.LE")
+quant.data.adults<- phen.data.adults[quant.variables]
+summary(quant.data.adults)
+```
+
+2. duplicate data set 
+```{r}
+ocular_data <- quant.data.adults
+```
+
+3.  Convert to double matrix to ensure that all data is 'numeric'
+```{r}
+ocular_data <- as.matrix(ocular_data)
+```
+
+4. Perform imputation
+```{r}
+nbdim = estim_ncpPCA(ocular_data, method = 'EM', method.cv="Kfold")
+nbdim
+res.comp = MIPCA(ocular_data, ncp = nbdim$ncp, nboot = 1000)
+png('indiv_supp_plot.png', width = 3200, height = 3200, res = 150)
+plot.MIPCA(res.comp, choice = "ind.supp") 
+dev.off()
+png('var_factor_plot.png', width = 3200, height = 3200, res = 150)
+plot.MIPCA(res.comp, choice = "var") 
+dev.off()
+```
+
+##Discussion 
+From the variable factor plot, it is apparent that the logMAR with pinhole correction values (RVA and LVA with PH) have a large spread, much more scattered than all the other variables. This indicates a relatively large uncertainty for the imputed values for those variables. From the summary statistics, these variables have around 200 missing values, whereas all other variables only have up to 16 missing values. For this reason, we have decided to exclude these variables from subsequent analyses. 

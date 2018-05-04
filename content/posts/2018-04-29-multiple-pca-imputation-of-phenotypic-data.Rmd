@@ -1,0 +1,59 @@
+---
+title: Multiple PCA Imputation of Phenotypic Data
+author: Martha Aquino
+date: '2018-04-29'
+slug: multiple-pca-imputation-of-phenotypic-data
+categories:
+  - Coding
+  - Experiments
+tags:
+  - R
+  - Imputation
+  - PCA
+---
+
+##Introduction 
+Single PCA imputation was performed on the quantitative phenotypic data. 
+
+##Methods and Results 
+1. load data 
+```{r}
+phen.data.age <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv')
+phen.data.adults<-phen.data.age[phen.data.age$Age.excel>17,]
+quant.variables<- c("R.K.value.H", "R.K.Value.H.Axis", "R.K.value.V", "R.K.value.V.Axis", "L.K.value.H",
+                    "L.K.value.H.Axis", "L.K.value.V", "L.K.value.V.Axis", "R.Pachimetry", "L.Pachimetry", "R.Axial.Length",
+                    "L.Axial.Length", "AC.Depth.R", "AC.Depth.L", "R.IOP.mmHg", "L.IOP.mmHg", "CDR.RE", "CDR.LE")
+quant.data.adults<- phen.data.adults[quant.variables]
+
+#export subset of data 
+write.csv(quant.data.adults, file = "quant.data.adults.csv")
+```
+
+2. duplicate data set 
+```{r}
+ocuar_data <-quant.data.adults
+```
+
+3. Convert to double matrix to ensure that all data is 'numeric'
+```{r}
+ocular_data <- as.matrix(ocular_data)
+```
+
+4. Perform imputation
+```{r}
+nbdim = estim_ncpPCA(ocular_data, method = 'EM', method.cv="Kfold")
+nbdim
+res.comp = MIPCA(ocular_data, ncp = nbdim$ncp, nboot = 1000)
+png('indiv_supp_plot.png', width = 3200, height = 3200, res = 150)
+plot.MIPCA(res.comp, choice = "ind.supp") 
+dev.off()
+png('var_factor_plot.png', width = 3200, height = 3200, res = 150)
+plot.MIPCA(res.comp, choice = "var") 
+dev.off()
+```
+
+##Discussion
+Phenotypic data was successfully imputed. The individual supplementary projection and variable factor map plots show the uncertainty of the imputation for each individual and each variable. The plots suggest that the imputation was successful and there are relatively small uncertainties. The next step would be to perform summary and distribution statistics on the imputed data set in order to make an informed decision about whether to transform data or not before proceeding to perform a PCA. 
+
+This exercise will have to repeated to include more variables. I originally excluded the visual acuity (logMAR) and prism test (cyl and axis) variables as they were not included in the original analysis from the NI study and are not technically endophenotypes (?). However, after further discussions, we have decided that there may be merit to adding the values into my analysis. Therefore, I will be including these variables and repeating this imputation step. 
+

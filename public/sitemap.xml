@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>/posts/multiple-pca-imputation-of-phenotypic-data/</loc>
+    <lastmod>2018-04-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/posts/example-of-data-impuation-with-missmda/</loc>
     <lastmod>2018-04-23T00:00:00+00:00</lastmod>
   </url>
@@ -49,7 +54,7 @@
   
   <url>
     <loc>/categories/coding/</loc>
-    <lastmod>2018-04-23T00:00:00+00:00</lastmod>
+    <lastmod>2018-04-29T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -61,19 +66,19 @@
   
   <url>
     <loc>/</loc>
-    <lastmod>2018-04-23T00:00:00+00:00</lastmod>
+    <lastmod>2018-04-29T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/categories/experiments/</loc>
-    <lastmod>2018-04-23T00:00:00+00:00</lastmod>
+    <lastmod>2018-04-29T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/tags/imputation/</loc>
-    <lastmod>2018-04-23T00:00:00+00:00</lastmod>
+    <lastmod>2018-04-29T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -85,31 +90,31 @@
   
   <url>
     <loc>/tags/pca/</loc>
-    <lastmod>2018-04-23T00:00:00+00:00</lastmod>
+    <lastmod>2018-04-29T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/posts/</loc>
-    <lastmod>2018-04-23T00:00:00+00:00</lastmod>
+    <lastmod>2018-04-29T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/tags/r/</loc>
-    <lastmod>2018-04-23T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>/categories/reading/</loc>
-    <lastmod>2018-04-23T00:00:00+00:00</lastmod>
+    <lastmod>2018-04-29T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/tags/reading/</loc>
     <lastmod>2018-04-20T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/categories/reading/</loc>
+    <lastmod>2018-04-23T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
