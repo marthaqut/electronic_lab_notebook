@@ -46,6 +46,11 @@ res.comp = MIPCA(ocular_data, ncp = nbdim$ncp, nboot = 1000)
 png('indiv_supp_plot.png', width = 3200, height = 3200, res = 150)
 plot.MIPCA(res.comp, choice = "ind.supp") 
 dev.off()
+
+```
+
+5. Plot variable factor plot
+```{r}
 png('var_factor_plot.png', width = 3200, height = 3200, res = 150)
 plot.MIPCA(res.comp, choice = "var") 
 dev.off()
@@ -53,3 +58,5 @@ dev.off()
 
 ##Discussion 
 From the variable factor plot, it is apparent that the logMAR with pinhole correction values (RVA and LVA with PH) have a large spread, much more scattered than all the other variables. This indicates a relatively large uncertainty for the imputed values for those variables. From the summary statistics, these variables have around 200 missing values, whereas all other variables only have up to 16 missing values. For this reason, we have decided to exclude these variables from subsequent analyses. 
+
+Note: this multiple PCA found five components.
