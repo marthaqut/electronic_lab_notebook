@@ -7,7 +7,7 @@ blogdown::update_hugo()
 
 blogdown::serve_site()
 
-blogdown::new_post(title = 'Test lab book entry', 
+instablogdown::new_post(title = 'Test lab book entry', 
                    date = '2018-04-01', 
                    ext = '.Rmd', 
                    subdir = 'posts', 
