@@ -12,8 +12,6 @@ tags:
   - PCA
 ---
 
-##Introduction 
-Single PCA imputation was performed on the quantitative phenotypic data. 
 
 ##Methods and Results 
 1. load data 
