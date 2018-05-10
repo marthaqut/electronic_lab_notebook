@@ -9,10 +9,19 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Sun, 29 Apr 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 04 May 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Multiple PCA Imputation of Quantitative Phenotypic Data  - updated</title>
+      <link>/posts/multiple-pca-imputation-of-quantitative-phenotypic-data-updated/</link>
+      <pubDate>Fri, 04 May 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/multiple-pca-imputation-of-quantitative-phenotypic-data-updated/</guid>
+      <description>Methods and Resultsphen.data.age &amp;lt;- read.csv(&amp;#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv&amp;#39;)#include logMAR and base-out prism test values phen.data.adults&amp;lt;-phen.data.age[phen.data.age$Age.excel&amp;gt;17,]quant.variables&amp;lt;- c(&amp;quot;Logmar.VA.Right&amp;quot;, &amp;quot;RVA.with.PH&amp;quot;, &amp;quot;Logmar.VA.Left&amp;quot;, &amp;quot;LVA.with.PH&amp;quot;, &amp;quot;R.Sph..pre.dilate.&amp;quot;, &amp;quot;R.Cyl..pre.dilate.&amp;quot;,&amp;quot;R.Axis..pre.dilate.&amp;quot;, &amp;quot;L.Sph..pre.dilate.&amp;quot;, &amp;quot;L.Cyl..pre.dilate.&amp;quot;, &amp;quot;L.Axis..pre.dilate.&amp;quot;,&amp;quot;R.K.value.H&amp;quot;, &amp;quot;R.K.Value.H.Axis&amp;quot;, &amp;quot;R.K.value.V&amp;quot;, &amp;quot;R.K.value.V.Axis&amp;quot;, &amp;quot;L.K.value.H&amp;quot;,&amp;quot;L.K.value.H.Axis&amp;quot;, &amp;quot;L.K.value.V&amp;quot;, &amp;quot;L.K.value.V.Axis&amp;quot;, &amp;quot;R.Pachimetry&amp;quot;, &amp;quot;L.Pachimetry&amp;quot;, &amp;quot;R.Axial.Length&amp;quot;,&amp;quot;L.Axial.Length&amp;quot;, &amp;quot;AC.Depth.R&amp;quot;, &amp;quot;AC.Depth.L&amp;quot;, &amp;quot;R.IOP.mmHg&amp;quot;, &amp;quot;L.IOP.mmHg&amp;quot;, &amp;quot;CDR.RE&amp;quot;, &amp;quot;CDR.LE&amp;quot;)quant.data.adults&amp;lt;- phen.data.adults[quant.variables]summary(quant.data.adults)## Logmar.VA.Right RVA.with.PH Logmar.VA.Left ## Min. :-0.30000 Min. :-0.2400 Min. :-0.30000 ## 1st Qu.:-0.08000 1st Qu.:-0.0600 1st Qu.:-0.10000 ## Median : 0.02000 Median : 0.</description>
+    </item>
     
     <item>
       <title>Multiple PCA Imputation of Phenotypic Data</title>
@@ -20,7 +29,7 @@
       <pubDate>Sun, 29 Apr 2018 00:00:00 +0000</pubDate>
       <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
       <guid>/posts/multiple-pca-imputation-of-phenotypic-data/</guid>
-      <description></description>
+      <description>Methods and Resultsload dataphen.data.age &amp;lt;- read.csv(&amp;#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv&amp;#39;)phen.data.adults&amp;lt;-phen.data.age[phen.data.age$Age.excel&amp;gt;17,]quant.variables&amp;lt;- c(&amp;quot;R.K.value.H&amp;quot;, &amp;quot;R.K.Value.H.Axis&amp;quot;, &amp;quot;R.K.value.V&amp;quot;, &amp;quot;R.K.value.V.Axis&amp;quot;, &amp;quot;L.K.value.H&amp;quot;,&amp;quot;L.K.value.H.Axis&amp;quot;, &amp;quot;L.K.value.V&amp;quot;, &amp;quot;L.K.value.V.Axis&amp;quot;, &amp;quot;R.Pachimetry&amp;quot;, &amp;quot;L.Pachimetry&amp;quot;, &amp;quot;R.Axial.Length&amp;quot;,&amp;quot;L.Axial.Length&amp;quot;, &amp;quot;AC.Depth.R&amp;quot;, &amp;quot;AC.Depth.L&amp;quot;, &amp;quot;R.IOP.mmHg&amp;quot;, &amp;quot;L.IOP.mmHg&amp;quot;, &amp;quot;CDR.RE&amp;quot;, &amp;quot;CDR.LE&amp;quot;)quant.data.adults&amp;lt;- phen.data.adults[quant.variables]#export subset of data write.csv(quant.data.adults, file = &amp;quot;quant.data.adults.csv&amp;quot;)duplicate data setocular_data &amp;lt;-quant.data.adultsConvert to double matrix to ensure that all data is ‘numeric’ocular_data &amp;lt;- as.matrix(ocular_data)Perform imputationrequire(missMDA)## Loading required package: missMDArequire(FactoMineR)## Loading required package: FactoMineRnbdim = estim_ncpPCA(ocular_data, method = &amp;#39;EM&amp;#39;, method.</description>
     </item>
     
     <item>

@@ -39,6 +39,8 @@ ocular_data <- as.matrix(ocular_data)
 
 4. Perform imputation
 ```{r}
+require(missMDA)
+require(FactoMineR)
 nbdim = estim_ncpPCA(ocular_data, method = 'EM', method.cv="Kfold")
 nbdim
 res.comp = MIPCA(ocular_data, ncp = nbdim$ncp, nboot = 1000)

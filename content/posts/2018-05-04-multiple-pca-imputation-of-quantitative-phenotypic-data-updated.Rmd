@@ -19,6 +19,7 @@ tags:
 phen.data.age <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv')
 
 #include logMAR and base-out prism test values 
+phen.data.adults<-phen.data.age[phen.data.age$Age.excel>17,]
 quant.variables<- c("Logmar.VA.Right", "RVA.with.PH", "Logmar.VA.Left", "LVA.with.PH", "R.Sph..pre.dilate.", "R.Cyl..pre.dilate.",
                     "R.Axis..pre.dilate.", "L.Sph..pre.dilate.", "L.Cyl..pre.dilate.", "L.Axis..pre.dilate.",
                     "R.K.value.H", "R.K.Value.H.Axis", "R.K.value.V", "R.K.value.V.Axis", "L.K.value.H",
@@ -40,6 +41,8 @@ ocular_data <- as.matrix(ocular_data)
 
 4. Perform imputation
 ```{r}
+require(missMDA)
+require(FactoMineR)
 nbdim = estim_ncpPCA(ocular_data, method = 'EM', method.cv="Kfold")
 nbdim
 res.comp = MIPCA(ocular_data, ncp = nbdim$ncp, nboot = 1000)

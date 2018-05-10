@@ -421,7 +421,7 @@ based on dark.css by Ivan Sagalaev
   
   
 
-  <meta name="generator" content="Hugo 0.38.2" />
+  <meta name="generator" content="Hugo 0.40.3" />
 
   
   
@@ -511,7 +511,352 @@ based on dark.css by Ivan Sagalaev
       </div>
 
       <div class="post-content">
-        
+        <div id="methods-and-results" class="section level2">
+<h2>Methods and Results</h2>
+<ol style="list-style-type: decimal">
+<li>load data</li>
+</ol>
+<pre class="r"><code>phen.data.age &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv&#39;)
+phen.data.adults&lt;-phen.data.age[phen.data.age$Age.excel&gt;17,]
+quant.variables&lt;- c(&quot;R.K.value.H&quot;, &quot;R.K.Value.H.Axis&quot;, &quot;R.K.value.V&quot;, &quot;R.K.value.V.Axis&quot;, &quot;L.K.value.H&quot;,
+                    &quot;L.K.value.H.Axis&quot;, &quot;L.K.value.V&quot;, &quot;L.K.value.V.Axis&quot;, &quot;R.Pachimetry&quot;, &quot;L.Pachimetry&quot;, &quot;R.Axial.Length&quot;,
+                    &quot;L.Axial.Length&quot;, &quot;AC.Depth.R&quot;, &quot;AC.Depth.L&quot;, &quot;R.IOP.mmHg&quot;, &quot;L.IOP.mmHg&quot;, &quot;CDR.RE&quot;, &quot;CDR.LE&quot;)
+quant.data.adults&lt;- phen.data.adults[quant.variables]
+
+#export subset of data 
+write.csv(quant.data.adults, file = &quot;quant.data.adults.csv&quot;)</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>duplicate data set</li>
+</ol>
+<pre class="r"><code>ocular_data &lt;-quant.data.adults</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>Convert to double matrix to ensure that all data is ‘numeric’</li>
+</ol>
+<pre class="r"><code>ocular_data &lt;- as.matrix(ocular_data)</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>Perform imputation</li>
+</ol>
+<pre class="r"><code>require(missMDA)</code></pre>
+<pre><code>## Loading required package: missMDA</code></pre>
+<pre class="r"><code>require(FactoMineR)</code></pre>
+<pre><code>## Loading required package: FactoMineR</code></pre>
+<pre class="r"><code>nbdim = estim_ncpPCA(ocular_data, method = &#39;EM&#39;, method.cv=&quot;Kfold&quot;)</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |                                                                 |   0%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |=                                                                |   1%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |=                                                                |   2%
+  |                                                                       
+  |==                                                               |   3%
+  |                                                                       
+  |===                                                              |   4%
+  |                                                                       
+  |===                                                              |   5%
+  |                                                                       
+  |====                                                             |   6%
+  |                                                                       
+  |=====                                                            |   7%
+  |                                                                       
+  |=====                                                            |   8%
+  |                                                                       
+  |======                                                           |   9%
+  |                                                                       
+  |=======                                                          |  10%
+  |                                                                       
+  |=======                                                          |  11%
+  |                                                                       
+  |========                                                         |  12%
+  |                                                                       
+  |=========                                                        |  13%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |=========                                                        |  14%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |==========                                                       |  15%
+  |                                                                       
+  |===========                                                      |  16%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |===========                                                      |  17%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |============                                                     |  18%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |============                                                     |  19%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |=============                                                    |  20%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |==============                                                   |  21%
+  |                                                                       
+  |==============                                                   |  22%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |===============                                                  |  23%
+  |                                                                       
+  |================                                                 |  24%
+  |                                                                       
+  |================                                                 |  25%
+  |                                                                       
+  |=================                                                |  26%
+  |                                                                       
+  |==================                                               |  27%
+  |                                                                       
+  |==================                                               |  28%
+  |                                                                       
+  |===================                                              |  29%
+  |                                                                       
+  |====================                                             |  30%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |====================                                             |  31%
+  |                                                                       
+  |=====================                                            |  32%
+  |                                                                       
+  |======================                                           |  33%
+  |                                                                       
+  |======================                                           |  34%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |=======================                                          |  35%
+  |                                                                       
+  |========================                                         |  36%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |========================                                         |  37%
+  |                                                                       
+  |=========================                                        |  38%
+  |                                                                       
+  |==========================                                       |  39%
+  |                                                                       
+  |==========================                                       |  40%
+  |                                                                       
+  |===========================                                      |  41%
+  |                                                                       
+  |============================                                     |  42%
+  |                                                                       
+  |============================                                     |  43%
+  |                                                                       
+  |=============================                                    |  44%
+  |                                                                       
+  |==============================                                   |  45%
+  |                                                                       
+  |==============================                                   |  46%
+  |                                                                       
+  |===============================                                  |  47%
+  |                                                                       
+  |================================                                 |  48%
+  |                                                                       
+  |================================                                 |  49%
+  |                                                                       
+  |=================================                                |  51%
+  |                                                                       
+  |=================================                                |  52%
+  |                                                                       
+  |==================================                               |  53%
+  |                                                                       
+  |===================================                              |  54%
+  |                                                                       
+  |===================================                              |  55%
+  |                                                                       
+  |====================================                             |  56%
+  |                                                                       
+  |=====================================                            |  57%
+  |                                                                       
+  |=====================================                            |  58%
+  |                                                                       
+  |======================================                           |  59%
+  |                                                                       
+  |=======================================                          |  60%
+  |                                                                       
+  |=======================================                          |  61%
+  |                                                                       
+  |========================================                         |  62%
+  |                                                                       
+  |=========================================                        |  63%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |=========================================                        |  64%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |==========================================                       |  65%
+  |                                                                       
+  |===========================================                      |  66%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |===========================================                      |  67%
+  |                                                                       
+  |============================================                     |  68%
+  |                                                                       
+  |=============================================                    |  69%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |=============================================                    |  70%
+  |                                                                       
+  |==============================================                   |  71%
+  |                                                                       
+  |===============================================                  |  72%
+  |                                                                       
+  |===============================================                  |  73%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |================================================                 |  74%
+  |                                                                       
+  |=================================================                |  75%
+  |                                                                       
+  |=================================================                |  76%
+  |                                                                       
+  |==================================================               |  77%
+  |                                                                       
+  |===================================================              |  78%
+  |                                                                       
+  |===================================================              |  79%
+  |                                                                       
+  |====================================================             |  80%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |=====================================================            |  81%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |=====================================================            |  82%
+  |                                                                       
+  |======================================================           |  83%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |======================================================           |  84%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |=======================================================          |  85%
+  |                                                                       
+  |========================================================         |  86%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |========================================================         |  87%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |=========================================================        |  88%
+  |                                                                       
+  |==========================================================       |  89%
+  |                                                                       
+  |==========================================================       |  90%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |===========================================================      |  91%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |============================================================     |  92%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |============================================================     |  93%
+  |                                                                       
+  |=============================================================    |  94%
+  |                                                                       
+  |==============================================================   |  95%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |==============================================================   |  96%
+  |                                                                       
+  |===============================================================  |  97%
+  |                                                                       
+  |================================================================ |  98%
+  |                                                                       
+  |================================================================ |  99%</code></pre>
+<pre><code>## Warning in impute(X, ncp = ncp, scale = scale, method = method, threshold =
+## threshold, : Stopped after 1000 iterations</code></pre>
+<pre><code>## 
+  |                                                                       
+  |=================================================================| 100%</code></pre>
+<pre class="r"><code>nbdim</code></pre>
+<pre><code>## $ncp
+## [1] 3
+## 
+## $criterion
+##        0        1        2        3        4        5 
+## 560477.7 561959.8 557300.8 535041.0 539694.5 574626.8</code></pre>
+<pre class="r"><code>res.comp = MIPCA(ocular_data, ncp = nbdim$ncp, nboot = 1000)
+png(&#39;indiv_supp_plot.png&#39;, width = 3200, height = 3200, res = 150)
+plot.MIPCA(res.comp, choice = &quot;ind.supp&quot;) 
+dev.off()</code></pre>
+<pre><code>## png 
+##   2</code></pre>
+<pre class="r"><code>png(&#39;var_factor_plot.png&#39;, width = 3200, height = 3200, res = 150)
+plot.MIPCA(res.comp, choice = &quot;var&quot;) 
+dev.off()</code></pre>
+<pre><code>## png 
+##   2</code></pre>
+</div>
+<div id="discussion" class="section level2">
+<h2>Discussion</h2>
+<p>Phenotypic data was successfully imputed. The individual supplementary projection and variable factor map plots show the uncertainty of the imputation for each individual and each variable. The plots suggest that the imputation was successful and there are relatively small uncertainties. The next step would be to perform summary and distribution statistics on the imputed data set in order to make an informed decision about whether to transform data or not before proceeding to perform a PCA.</p>
+<p>This exercise will have to repeated to include more variables. I originally excluded the visual acuity (logMAR) and prism test (cyl and axis) variables as they were not included in the original analysis from the NI study and are not technically endophenotypes (?). However, after further discussions, we have decided that there may be merit to adding the values into my analysis. Therefore, I will be including these variables and repeating this imputation step.</p>
+<p>Note: this multiple PCA imputation identified three components</p>
+</div>
+
       </div>
     </div>
   </div>
