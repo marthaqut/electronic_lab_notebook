@@ -1,0 +1,119 @@
+---
+title: 'Adding Conjunctival UVAF to dataset '
+author: Martha Aquino
+date: '2018-05-10'
+slug: adding-conjunctival-uvaf-to-dataset
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Bivariate Correlations
+  - Data Cleaning
+  - Imputation
+  - Ocular Biometry
+  - PCA
+  - R
+---
+
+#Introduction 
+Upon inspection of the current data set being used, we realised that there was a variable missing. The variable was a total meausure of conjunctival ultraviolet fluorescence (UVAF). This was included in the original NI Eye Study and therefore, we decided to introduce the variable to this study. 
+
+#Methods and Results 
+```{r}
+phen.data.uvaf <- read.csv('Data/NIES_master_database_120815_data_dictionary-2.csv')
+phen.data.uvaf
+
+pkgs<- (c("dplyr", "tidyr","broom"))
+install.packages(pkgs)
+sapply(pkgs, require, character.only = T)
+
+summary.uvaf <- summary(phen.data.uvaf)
+summary.uvaf
+write.csv(summary.uvaf, file = "summary_stats_uvaf.csv")
+
+quant.data_uvaf <- c("R.Logmar.VA", "RVA.with.PH", "L.Logmar.VA", "LVA.with.PH", 
+                "R.Sph..pre.dilate.", "R.Cyl..pre.dilate.", "R.Axis..pre.dilate.", "L.Sph..pre.dilate.", "L.Cyl..pre.dilate.",
+                "L.Axis..pre.dilate.", "R.K.value.H", "R.K.Value.H.Axis", "R.K.value.V", "R.K.value.V.Axis", "L.K.value.H",
+                "L.K.value.H.Axis", "L.K.value.V", "L.K.value.V.Axis", "R.Pachimetry", "L.Pachimetry", "R.Axial.Length",
+                "L.Axial.Length", "R.AC.Depth", "L.AC.Depth", "R.IOP.mmHg", "L.IOP.mmHg", "R.CDR", "L.CDR", "totaluvafmm")
+
+quant.data_uvaf
+quant.data.subset_uvaf <- phen.data.uvaf[quant.data_uvaf]
+quant.data.subset_uvaf
+
+
+phen.data.adults_uvaf<-phen.data.uvaf[phen.data.uvaf$Age.excel>17,]
+
+quant.variables_uvaf<- c("R.Logmar.VA", "L.Logmar.VA",
+                         "R.Sph..pre.dilate.", "R.Cyl..pre.dilate.", "R.Axis..pre.dilate.", "L.Sph..pre.dilate.", "L.Cyl..pre.dilate.",
+                         "L.Axis..pre.dilate.", "R.K.value.H", "R.K.Value.H.Axis", "R.K.value.V", "R.K.value.V.Axis", "L.K.value.H",
+                         "L.K.value.H.Axis", "L.K.value.V", "L.K.value.V.Axis", "R.Pachimetry", "L.Pachimetry", "R.Axial.Length",
+                         "L.Axial.Length", "R.AC.Depth", "L.AC.Depth", "R.IOP.mmHg", "L.IOP.mmHg", "R.CDR", "L.CDR", "totaluvafmm")
+quant.data.adults_uvaf<- phen.data.adults_uvaf[quant.variables_uvaf]
+quant.data.adults_uvaf
+write.csv(quant.data.adults_uvaf, file = "quant.data.adults_uvaf.csv")
+summary(quant.data.adults_uvaf)
+
+
+ocular_data_uvaf <- read.csv('quant.data.adults_uvaf.csv', head = T, as.is = T, row.names = 1)
+ocular_data_uvaf <- as.matrix(ocular_data_uvaf)
+head(ocular_data_uvaf)
+
+require(missMDA)
+require(FactoMineR)
+nbdim = estim_ncpPCA(ocular_data_uvaf, method = 'EM', method.cv="Kfold")
+nbdim
+res.comp = MIPCA(ocular_data_uvaf, ncp = nbdim$ncp, nboot = 1000)
+png('indiv_plot_uvaf.png', width = 3200, height = 3200, res = 150)
+plot.MIPCA(res.comp, choice = "ind.supp") 
+dev.off()
+png('var_plot_uvaf.png', width = 3200, height = 3200, res = 150)
+plot.MIPCA(res.comp, choice = "var") 
+dev.off()
+
+imputed_phen_data_uvaf<-res.comp$res.imputePCA
+write.csv(imputed_phen_data_uvaf, file = "imputed_phenotypic_data_uvaf.csv")
+summary_stats_imputed_uvaf <-summary(imputed_phen_data_uvaf)
+write.csv(summary_stats_imputed_uvaf, file = "summary_stats_imputed_uvaf.csv")
+
+require(purrr)
+install.packages("tidyr")
+require(tidyr)
+install.packages("ggplot2")
+require(ggplot2)
+
+imputed_phen_data_uvaf %>%
+  as.data.frame() %>%
+  keep(is.numeric) %>%
+  gather() %>%
+  ggplot(aes(value)) + facet_wrap(~ key, scales = "free") + geom_histogram(fill = 'grey', colour = "black")
+
+is.numeric(imputed_phen_data_uvaf)
+
+install.packages("moments")
+require(moments)
+skewness_imp_uvaf<-skewness(imputed_phen_data_uvaf)
+kurtosis_imp_uvaf<-kurtosis(imputed_phen_data_uvaf)
+
+summary_stats_imputed_uvaf<-rbind(summary_stats_imputed_uvaf, skewness_imp_uvaf, kurtosis_imp_uvaf)
+write.csv(summary_stats_imputed_uvaf, file = "summary_stats_imputed_uvaf.csv")
+
+
+install.packages("Hmisc")
+library(Hmisc)
+pearson_imputed_data_uvaf<-rcorr(imputed_phen_data_uvaf, type="pearson")
+pearson_coeff_uvaf<-rcorr(imputed_phen_data_uvaf, type="pearson")$r
+pearson_pval_uvaf<-rcorr(imputed_phen_data_uvaf, type="pearson")$P
+pearson_phen_data_uvaf<-rbind(pearson_coeff_uvaf, pearson_pval_uvaf)
+write.csv(pearson_phen_data_uvaf, file="pearson_imp_data_uvaf.csv")
+require(corrplot)
+title<- "Pearson correlation of imputed phenotypic data with UVAF"
+corrplot.mixed(pearson_coeff_uvaf, p.mat=pearson_pval_uvaf, sig.level = 0.05, insig="blank", tl.pos = 'lt',
+               tl.col="black", tl.cex=0.60, mar=c(0,0,1,0), number.cex = 0.50, title=title)
+
+```
+
+#Discussion
+The results of this multiple PCA imputation provides me with a complete data set, including the conjunctival UVAF variable. From the variable factor plot, it appears that the spread for the UVAF is larger than all other variables, which was expected since it had the most number of missing values. Unlike the logMAR with PH variables, this uncertainty is not large enough to exclude the UVAF variable, so it will be included for subsequent analysis. 
+From the histograms of the imputed data, the axes variables evidently have trimodal distributions. It is unknown whether this type of distribution would affect the results of the PCA. I will run a PCA with all of the variables, regardless. 
+All correlations shown in the correlation plot are statistically significant (p < 0.05). The Pearson correlation plots show several strongly positively correlated variables, which are the left and right measurements of the same variable and is expected. There are also some negatively correlated variables, suggesting that the Sph pre-dilate variables are correlated with axial length and anterior chamber depth. Clinically, these correlations make sense since the Sph pre-dilate values measure astigmatism, and unusual axial length and ACD contribute to it. It also shows that keratometry measurements are negatively correlated with axial length. This is also logically sound because keratometry tests measure corneal curvature and axial length directly affects it. The plot also shows that axial length and anterior chamber depth are positively correlated. 
