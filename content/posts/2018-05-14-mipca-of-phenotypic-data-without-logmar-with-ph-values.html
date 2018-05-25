@@ -1,0 +1,538 @@
+---
+title: MIPCA of Phenotypic Data without LogMAR-with-PH values
+author: Martha Aquino
+date: '2018-05-05'
+slug: mipca-of-phenotypic-data-without-logmar-with-ph-values
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Data Cleaning
+  - Imputation
+  - PCA
+  - R
+---
+
+
+
+<pre class="r"><code># required packages
+require(tidyverse)
+require(broom)
+require(missMDA)
+require(FactoMineR)
+require(moments)
+require(Hmisc)
+require(corrplot)</code></pre>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>After adding in additional variables, which included logMAR and base-out prism test values, the variable factor plots indicated that there was a large uncertainty around the imputed values of the logMAR with pinhole correction values. Therefore, the right and left pinhole correction variables (LVA and RVA with PH).</p>
+</div>
+<div id="methods-and-results" class="section level1">
+<h1>Methods and Results</h1>
+<div id="subset-quantitative-variables-excluding-lva-and-rva-with-ph-variables." class="section level2">
+<h2>1. Subset quantitative variables excluding LVA and RVA with PH variables.</h2>
+<pre class="r"><code>phen.data.age&lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv&#39;)
+phen.data.adults&lt;-phen.data.age[phen.data.age$Age.excel&gt;17,]
+quant.variables&lt;- c(&quot;Logmar.VA.Right&quot;, &quot;Logmar.VA.Left&quot;, &quot;R.Sph..pre.dilate.&quot;, &quot;R.Cyl..pre.dilate.&quot;,
+                    &quot;R.Axis..pre.dilate.&quot;, &quot;L.Sph..pre.dilate.&quot;, &quot;L.Cyl..pre.dilate.&quot;, &quot;L.Axis..pre.dilate.&quot;,
+                    &quot;R.K.value.H&quot;, &quot;R.K.Value.H.Axis&quot;, &quot;R.K.value.V&quot;, &quot;R.K.value.V.Axis&quot;, &quot;L.K.value.H&quot;,
+                    &quot;L.K.value.H.Axis&quot;, &quot;L.K.value.V&quot;, &quot;L.K.value.V.Axis&quot;, &quot;R.Pachimetry&quot;, &quot;L.Pachimetry&quot;,
+                    &quot;R.Axial.Length&quot;,&quot;L.Axial.Length&quot;, &quot;AC.Depth.R&quot;, &quot;AC.Depth.L&quot;, &quot;R.IOP.mmHg&quot;, &quot;L.IOP.mmHg&quot;,
+                    &quot;CDR.RE&quot;, &quot;CDR.LE&quot;)
+quant.data.adults&lt;- phen.data.adults[quant.variables]
+summary(quant.data.adults)</code></pre>
+<pre><code>##  Logmar.VA.Right    Logmar.VA.Left     R.Sph..pre.dilate.
+##  Min.   :-0.30000   Min.   :-0.30000   Min.   :-8.0000   
+##  1st Qu.:-0.08000   1st Qu.:-0.10000   1st Qu.: 0.0000   
+##  Median : 0.02000   Median : 0.02000   Median : 0.5000   
+##  Mean   : 0.06608   Mean   : 0.06359   Mean   : 0.5455   
+##  3rd Qu.: 0.14000   3rd Qu.: 0.13000   3rd Qu.: 1.2500   
+##  Max.   : 2.00000   Max.   : 1.70000   Max.   : 8.5000   
+##  NA&#39;s   :3          NA&#39;s   :6          NA&#39;s   :10        
+##  R.Cyl..pre.dilate. R.Axis..pre.dilate. L.Sph..pre.dilate.
+##  Min.   :-11.0000   Min.   :  0.00      Min.   :-9.5000   
+##  1st Qu.: -0.7500   1st Qu.: 25.50      1st Qu.: 0.0000   
+##  Median : -0.5000   Median : 85.00      Median : 0.5000   
+##  Mean   : -0.6497   Mean   : 80.23      Mean   : 0.5887   
+##  3rd Qu.: -0.2500   3rd Qu.:119.00      3rd Qu.: 1.2500   
+##  Max.   :  0.0000   Max.   :180.00      Max.   : 8.0000   
+##  NA&#39;s   :10         NA&#39;s   :10          NA&#39;s   :9         
+##  L.Cyl..pre.dilate. L.Axis..pre.dilate.  R.K.value.H    R.K.Value.H.Axis
+##  Min.   :-9.7500    Min.   :  0.00      Min.   :36.00   Min.   :  0.00  
+##  1st Qu.:-0.7500    1st Qu.: 13.00      1st Qu.:42.00   1st Qu.: 42.00  
+##  Median :-0.5000    Median : 70.00      Median :43.00   Median : 91.00  
+##  Mean   :-0.6522    Mean   : 72.25      Mean   :42.97   Mean   : 93.74  
+##  3rd Qu.:-0.2500    3rd Qu.:113.00      3rd Qu.:44.00   3rd Qu.:156.00  
+##  Max.   : 0.0000    Max.   :180.00      Max.   :48.25   Max.   :180.00  
+##  NA&#39;s   :9          NA&#39;s   :9           NA&#39;s   :16      NA&#39;s   :16      
+##   R.K.value.V    R.K.value.V.Axis  L.K.value.H    L.K.value.H.Axis
+##  Min.   :37.00   Min.   :  1.00   Min.   :32.75   Min.   :  0.0   
+##  1st Qu.:42.75   1st Qu.: 62.00   1st Qu.:42.00   1st Qu.: 24.0   
+##  Median :43.75   Median : 89.00   Median :43.00   Median : 88.5   
+##  Mean   :43.80   Mean   : 91.18   Mean   :42.97   Mean   : 87.8   
+##  3rd Qu.:45.00   3rd Qu.:127.00   3rd Qu.:44.00   3rd Qu.:147.0   
+##  Max.   :55.00   Max.   :180.00   Max.   :47.25   Max.   :180.0   
+##  NA&#39;s   :16      NA&#39;s   :16       NA&#39;s   :15      NA&#39;s   :15      
+##   L.K.value.V    L.K.value.V.Axis  R.Pachimetry    L.Pachimetry  
+##  Min.   :39.00   Min.   :  0.00   Min.   :428.0   Min.   :424.0  
+##  1st Qu.:42.81   1st Qu.: 65.25   1st Qu.:527.0   1st Qu.:526.0  
+##  Median :43.75   Median : 90.00   Median :546.0   Median :547.0  
+##  Mean   :43.87   Mean   : 92.22   Mean   :546.2   Mean   :546.3  
+##  3rd Qu.:44.75   3rd Qu.:119.75   3rd Qu.:570.0   3rd Qu.:568.0  
+##  Max.   :52.00   Max.   :180.00   Max.   :656.0   Max.   :658.0  
+##  NA&#39;s   :15      NA&#39;s   :15       NA&#39;s   :14      NA&#39;s   :16     
+##  R.Axial.Length  L.Axial.Length    AC.Depth.R      AC.Depth.L   
+##  Min.   :20.95   Min.   :21.29   Min.   :2.090   Min.   :2.000  
+##  1st Qu.:22.90   1st Qu.:22.87   1st Qu.:3.058   1st Qu.:3.040  
+##  Median :23.50   Median :23.46   Median :3.310   Median :3.280  
+##  Mean   :23.56   Mean   :23.54   Mean   :3.320   Mean   :3.306  
+##  3rd Qu.:24.09   3rd Qu.:24.11   3rd Qu.:3.550   3rd Qu.:3.553  
+##  Max.   :27.66   Max.   :34.43   Max.   :4.950   Max.   :5.130  
+##  NA&#39;s   :13      NA&#39;s   :13      NA&#39;s   :13      NA&#39;s   :13     
+##    R.IOP.mmHg      L.IOP.mmHg        CDR.RE           CDR.LE      
+##  Min.   : 6.00   Min.   : 8.00   Min.   :0.0000   Min.   :0.0000  
+##  1st Qu.:14.00   1st Qu.:14.00   1st Qu.:0.3000   1st Qu.:0.3000  
+##  Median :16.00   Median :16.00   Median :0.4000   Median :0.4000  
+##  Mean   :15.88   Mean   :16.06   Mean   :0.4057   Mean   :0.4022  
+##  3rd Qu.:18.00   3rd Qu.:18.00   3rd Qu.:0.5000   3rd Qu.:0.5000  
+##  Max.   :28.00   Max.   :33.00   Max.   :0.9900   Max.   :0.9000  
+##  NA&#39;s   :2       NA&#39;s   :3       NA&#39;s   :19       NA&#39;s   :17</code></pre>
+</div>
+<div id="duplicate-subset-of-data-and-force-into-a-matrix" class="section level2">
+<h2>2. Duplicate subset of data and force into a matrix</h2>
+<pre class="r"><code>ocular_data &lt;- quant.data.adults
+ocular_data &lt;- as.matrix(ocular_data)</code></pre>
+</div>
+<div id="run-multiple-pca-imputation" class="section level2">
+<h2>3. Run multiple PCA imputation</h2>
+<pre class="r"><code>nbdim = estim_ncpPCA(ocular_data, method = &#39;EM&#39;, method.cv=&quot;Kfold&quot;)</code></pre>
+<pre><code>## 
+  |                                                                       
+  |                                                                 |   0%
+  |                                                                       
+  |=                                                                |   1%
+  |                                                                       
+  |=                                                                |   2%
+  |                                                                       
+  |==                                                               |   3%
+  |                                                                       
+  |===                                                              |   4%
+  |                                                                       
+  |===                                                              |   5%
+  |                                                                       
+  |====                                                             |   6%
+  |                                                                       
+  |=====                                                            |   7%
+  |                                                                       
+  |=====                                                            |   8%
+  |                                                                       
+  |======                                                           |   9%
+  |                                                                       
+  |=======                                                          |  10%
+  |                                                                       
+  |=======                                                          |  11%
+  |                                                                       
+  |========                                                         |  12%
+  |                                                                       
+  |=========                                                        |  13%
+  |                                                                       
+  |=========                                                        |  14%
+  |                                                                       
+  |==========                                                       |  15%
+  |                                                                       
+  |===========                                                      |  16%
+  |                                                                       
+  |===========                                                      |  17%
+  |                                                                       
+  |============                                                     |  18%
+  |                                                                       
+  |============                                                     |  19%
+  |                                                                       
+  |=============                                                    |  20%
+  |                                                                       
+  |==============                                                   |  21%
+  |                                                                       
+  |==============                                                   |  22%
+  |                                                                       
+  |===============                                                  |  23%
+  |                                                                       
+  |================                                                 |  24%
+  |                                                                       
+  |================                                                 |  25%
+  |                                                                       
+  |=================                                                |  26%
+  |                                                                       
+  |==================                                               |  27%
+  |                                                                       
+  |==================                                               |  28%
+  |                                                                       
+  |===================                                              |  29%
+  |                                                                       
+  |====================                                             |  30%
+  |                                                                       
+  |====================                                             |  31%
+  |                                                                       
+  |=====================                                            |  32%
+  |                                                                       
+  |======================                                           |  33%
+  |                                                                       
+  |======================                                           |  34%
+  |                                                                       
+  |=======================                                          |  35%
+  |                                                                       
+  |========================                                         |  36%
+  |                                                                       
+  |========================                                         |  37%
+  |                                                                       
+  |=========================                                        |  38%
+  |                                                                       
+  |==========================                                       |  39%
+  |                                                                       
+  |==========================                                       |  40%
+  |                                                                       
+  |===========================                                      |  41%
+  |                                                                       
+  |============================                                     |  42%
+  |                                                                       
+  |============================                                     |  43%
+  |                                                                       
+  |=============================                                    |  44%
+  |                                                                       
+  |==============================                                   |  45%
+  |                                                                       
+  |==============================                                   |  46%
+  |                                                                       
+  |===============================                                  |  47%
+  |                                                                       
+  |================================                                 |  48%
+  |                                                                       
+  |================================                                 |  49%
+  |                                                                       
+  |=================================                                |  51%
+  |                                                                       
+  |=================================                                |  52%
+  |                                                                       
+  |==================================                               |  53%
+  |                                                                       
+  |===================================                              |  54%
+  |                                                                       
+  |===================================                              |  55%
+  |                                                                       
+  |====================================                             |  56%
+  |                                                                       
+  |=====================================                            |  57%
+  |                                                                       
+  |=====================================                            |  58%
+  |                                                                       
+  |======================================                           |  59%
+  |                                                                       
+  |=======================================                          |  60%
+  |                                                                       
+  |=======================================                          |  61%
+  |                                                                       
+  |========================================                         |  62%
+  |                                                                       
+  |=========================================                        |  63%
+  |                                                                       
+  |=========================================                        |  64%
+  |                                                                       
+  |==========================================                       |  65%
+  |                                                                       
+  |===========================================                      |  66%
+  |                                                                       
+  |===========================================                      |  67%
+  |                                                                       
+  |============================================                     |  68%
+  |                                                                       
+  |=============================================                    |  69%
+  |                                                                       
+  |=============================================                    |  70%
+  |                                                                       
+  |==============================================                   |  71%
+  |                                                                       
+  |===============================================                  |  72%
+  |                                                                       
+  |===============================================                  |  73%
+  |                                                                       
+  |================================================                 |  74%
+  |                                                                       
+  |=================================================                |  75%
+  |                                                                       
+  |=================================================                |  76%
+  |                                                                       
+  |==================================================               |  77%
+  |                                                                       
+  |===================================================              |  78%
+  |                                                                       
+  |===================================================              |  79%
+  |                                                                       
+  |====================================================             |  80%
+  |                                                                       
+  |=====================================================            |  81%
+  |                                                                       
+  |=====================================================            |  82%
+  |                                                                       
+  |======================================================           |  83%
+  |                                                                       
+  |======================================================           |  84%
+  |                                                                       
+  |=======================================================          |  85%
+  |                                                                       
+  |========================================================         |  86%
+  |                                                                       
+  |========================================================         |  87%
+  |                                                                       
+  |=========================================================        |  88%
+  |                                                                       
+  |==========================================================       |  89%
+  |                                                                       
+  |==========================================================       |  90%
+  |                                                                       
+  |===========================================================      |  91%
+  |                                                                       
+  |============================================================     |  92%
+  |                                                                       
+  |============================================================     |  93%
+  |                                                                       
+  |=============================================================    |  94%
+  |                                                                       
+  |==============================================================   |  95%
+  |                                                                       
+  |==============================================================   |  96%
+  |                                                                       
+  |===============================================================  |  97%
+  |                                                                       
+  |================================================================ |  98%
+  |                                                                       
+  |================================================================ |  99%
+  |                                                                       
+  |=================================================================| 100%</code></pre>
+<pre class="r"><code>nbdim</code></pre>
+<pre><code>## $ncp
+## [1] 5
+## 
+## $criterion
+##        0        1        2        3        4        5 
+## 807347.2 809277.1 805498.0 805007.5 798120.2 786467.2</code></pre>
+<pre class="r"><code>res.comp = MIPCA(ocular_data, ncp = nbdim$ncp, nboot = 1000)
+png(&#39;indiv_plot_2.png&#39;, width = 3200, height = 3200, res = 150)
+plot.MIPCA(res.comp, choice = &quot;ind.supp&quot;) 
+dev.off()</code></pre>
+<pre><code>## png 
+##   2</code></pre>
+<pre class="r"><code>png(&#39;var_plot_2.png&#39;, width = 3200, height = 3200, res = 150)
+plot.MIPCA(res.comp, choice = &quot;var&quot;) 
+dev.off()</code></pre>
+<pre><code>## png 
+##   2</code></pre>
+</div>
+<div id="run-summary-and-distribution-statistics-post-imputation" class="section level2">
+<h2>4. Run summary and distribution statistics post-imputation</h2>
+<pre class="r"><code>imputed_phen_data&lt;-res.comp$res.imputePCA
+head(imputed_phen_data)</code></pre>
+<pre><code>##   Logmar.VA.Right Logmar.VA.Left R.Sph..pre.dilate. R.Cyl..pre.dilate.
+## 1            0.02          -0.04               0.25               0.00
+## 2            0.10           0.16               0.00              -0.75
+## 3            0.00           0.00               1.25              -1.25
+## 4            0.30           0.08               1.25              -0.25
+## 5            0.00          -0.10               1.25              -0.25
+## 6            0.24           0.36               4.00              -0.50
+##   R.Axis..pre.dilate. L.Sph..pre.dilate. L.Cyl..pre.dilate.
+## 1                   0               0.25              -0.50
+## 2                  28              -0.50              -0.25
+## 3                 148               1.25              -0.25
+## 4                  97               1.50              -0.50
+## 5                  37               1.25              -0.75
+## 6                  46               3.75              -0.75
+##   L.Axis..pre.dilate. R.K.value.H R.K.Value.H.Axis R.K.value.V
+## 1                  79    42.00000           2.0000    43.00000
+## 2                 164    41.25000           7.0000    42.25000
+## 3                  24    43.77619         147.5682    44.76719
+## 4                  81    44.75000           5.0000    45.00000
+## 5                 164    44.75000           0.0000    44.75000
+## 6                 180    42.00000           8.0000    43.25000
+##   R.K.value.V.Axis L.K.value.H L.K.value.H.Axis L.K.value.V
+## 1         92.00000    42.50000          5.00000    43.50000
+## 2         97.00000    41.50000        168.00000    42.00000
+## 3         48.29713    43.92883         36.60368    44.74071
+## 4         95.00000    45.00000         60.00000    45.25000
+## 5         90.00000    44.25000        178.00000    44.75000
+## 6         98.00000    42.25000        177.00000    43.25000
+##   L.K.value.V.Axis R.Pachimetry L.Pachimetry R.Axial.Length L.Axial.Length
+## 1          95.0000          532          554          24.31          24.10
+## 2          78.0000          608          612          25.02          25.21
+## 3         138.2271          507          510          22.78          22.80
+## 4         150.0000          560          559          23.02          22.98
+## 5          88.0000          556          562          21.75          22.04
+## 6          87.0000          498          501          23.06          23.17
+##   AC.Depth.R AC.Depth.L R.IOP.mmHg L.IOP.mmHg CDR.RE CDR.LE
+## 1       3.09       3.03         14         14    0.9    0.9
+## 2       3.38       3.92         16         15    0.9    0.7
+## 3       3.40       3.45         26         22    0.7    0.7
+## 4       3.00       2.85         14         14    0.2    0.2
+## 5       2.60       2.53         22         21    0.3    0.3
+## 6       2.94       3.04         18         20    0.6    0.6</code></pre>
+<pre class="r"><code>summary_stats_imputed &lt;-summary(imputed_phen_data)
+summary_stats_imputed</code></pre>
+<pre><code>##  Logmar.VA.Right    Logmar.VA.Left     R.Sph..pre.dilate.
+##  Min.   :-0.30000   Min.   :-0.30000   Min.   :-8.0000   
+##  1st Qu.:-0.08000   1st Qu.:-0.10000   1st Qu.: 0.0000   
+##  Median : 0.02000   Median : 0.02000   Median : 0.5000   
+##  Mean   : 0.06624   Mean   : 0.06451   Mean   : 0.5477   
+##  3rd Qu.: 0.14000   3rd Qu.: 0.14000   3rd Qu.: 1.2500   
+##  Max.   : 2.00000   Max.   : 1.70000   Max.   : 8.5000   
+##  R.Cyl..pre.dilate. R.Axis..pre.dilate. L.Sph..pre.dilate.
+##  Min.   :-11.0000   Min.   :  0.00      Min.   :-9.5000   
+##  1st Qu.: -0.7500   1st Qu.: 26.00      1st Qu.: 0.0000   
+##  Median : -0.5000   Median : 85.00      Median : 0.5000   
+##  Mean   : -0.6542   Mean   : 80.25      Mean   : 0.5938   
+##  3rd Qu.: -0.2500   3rd Qu.:118.00      3rd Qu.: 1.2500   
+##  Max.   :  0.0000   Max.   :180.00      Max.   : 8.0000   
+##  L.Cyl..pre.dilate. L.Axis..pre.dilate.  R.K.value.H    R.K.Value.H.Axis
+##  Min.   :-9.7500    Min.   :  0.00      Min.   :36.00   Min.   :  0.00  
+##  1st Qu.:-0.7500    1st Qu.: 14.00      1st Qu.:42.00   1st Qu.: 44.00  
+##  Median :-0.5000    Median : 72.00      Median :43.00   Median : 92.00  
+##  Mean   :-0.6572    Mean   : 72.44      Mean   :42.96   Mean   : 93.86  
+##  3rd Qu.:-0.2500    3rd Qu.:112.00      3rd Qu.:44.00   3rd Qu.:154.00  
+##  Max.   : 0.0000    Max.   :180.00      Max.   :48.25   Max.   :180.00  
+##   R.K.value.V    R.K.value.V.Axis  L.K.value.H    L.K.value.H.Axis
+##  Min.   :37.00   Min.   :  1.00   Min.   :32.75   Min.   :  0.00  
+##  1st Qu.:42.75   1st Qu.: 63.00   1st Qu.:42.00   1st Qu.: 26.00  
+##  Median :43.75   Median : 89.00   Median :43.00   Median : 88.00  
+##  Mean   :43.80   Mean   : 91.07   Mean   :42.96   Mean   : 87.76  
+##  3rd Qu.:44.77   3rd Qu.:124.00   3rd Qu.:44.00   3rd Qu.:145.00  
+##  Max.   :55.00   Max.   :180.00   Max.   :47.25   Max.   :180.00  
+##   L.K.value.V    L.K.value.V.Axis  R.Pachimetry  L.Pachimetry  
+##  Min.   :39.00   Min.   :  0.0    Min.   :428   Min.   :424.0  
+##  1st Qu.:42.88   1st Qu.: 68.0    1st Qu.:526   1st Qu.:526.0  
+##  Median :43.75   Median : 90.0    Median :546   Median :547.0  
+##  Mean   :43.87   Mean   : 92.3    Mean   :546   Mean   :546.1  
+##  3rd Qu.:44.75   3rd Qu.:119.0    3rd Qu.:569   3rd Qu.:568.0  
+##  Max.   :52.00   Max.   :180.0    Max.   :656   Max.   :658.0  
+##  R.Axial.Length  L.Axial.Length    AC.Depth.R      AC.Depth.L   
+##  Min.   :20.95   Min.   :21.29   Min.   :2.090   Min.   :2.000  
+##  1st Qu.:22.91   1st Qu.:22.87   1st Qu.:3.060   1st Qu.:3.040  
+##  Median :23.51   Median :23.47   Median :3.310   Median :3.290  
+##  Mean   :23.56   Mean   :23.54   Mean   :3.322   Mean   :3.308  
+##  3rd Qu.:24.10   3rd Qu.:24.11   3rd Qu.:3.560   3rd Qu.:3.560  
+##  Max.   :27.66   Max.   :34.43   Max.   :4.950   Max.   :5.130  
+##    R.IOP.mmHg      L.IOP.mmHg        CDR.RE           CDR.LE      
+##  Min.   : 6.00   Min.   : 8.00   Min.   :0.0000   Min.   :0.0000  
+##  1st Qu.:14.00   1st Qu.:14.00   1st Qu.:0.3000   1st Qu.:0.3000  
+##  Median :16.00   Median :16.00   Median :0.4000   Median :0.4000  
+##  Mean   :15.88   Mean   :16.06   Mean   :0.4077   Mean   :0.4039  
+##  3rd Qu.:18.00   3rd Qu.:18.00   3rd Qu.:0.5000   3rd Qu.:0.5000  
+##  Max.   :28.00   Max.   :33.00   Max.   :0.9900   Max.   :0.9000</code></pre>
+</div>
+<div id="plot-histograms-of-imputed-data" class="section level2">
+<h2>5. Plot histograms of imputed data</h2>
+<pre class="r"><code>imputed_phen_data %&gt;% 
+  as.data.frame %&gt;%
+  keep(is.numeric) %&gt;%
+  gather() %&gt;%
+  ggplot(aes(value)) + facet_wrap(~ key, scales = &quot;free&quot;) + geom_histogram(fill = &#39;grey&#39;, colour = &quot;black&quot;)</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="/posts/2018-05-14-mipca-of-phenotypic-data-without-logmar-with-ph-values_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="find-skewness-and-kurtosis-of-imputed-data" class="section level2">
+<h2>6. Find skewness and kurtosis of imputed data</h2>
+<pre class="r"><code>skewness_imp&lt;-skewness(imputed_phen_data)
+kurtosis_imp&lt;-kurtosis(imputed_phen_data)
+sum_skew_kurt_stats&lt;-rbind(summary_stats_imputed, skewness_imp, kurtosis_imp)
+sum_skew_kurt_stats</code></pre>
+<pre><code>##              Logmar.VA.Right      Logmar.VA.Left      
+##              &quot;Min.   :-0.30000  &quot; &quot;Min.   :-0.30000  &quot;
+##              &quot;1st Qu.:-0.08000  &quot; &quot;1st Qu.:-0.10000  &quot;
+##              &quot;Median : 0.02000  &quot; &quot;Median : 0.02000  &quot;
+##              &quot;Mean   : 0.06624  &quot; &quot;Mean   : 0.06451  &quot;
+##              &quot;3rd Qu.: 0.14000  &quot; &quot;3rd Qu.: 0.14000  &quot;
+##              &quot;Max.   : 2.00000  &quot; &quot;Max.   : 1.70000  &quot;
+## skewness_imp &quot;2.59213925781422&quot;   &quot;1.9858399104377&quot;   
+## kurtosis_imp &quot;15.6535529988487&quot;   &quot;9.79308760942436&quot;  
+##              R.Sph..pre.dilate.   R.Cyl..pre.dilate.  
+##              &quot;Min.   :-8.0000  &quot;  &quot;Min.   :-11.0000  &quot;
+##              &quot;1st Qu.: 0.0000  &quot;  &quot;1st Qu.: -0.7500  &quot;
+##              &quot;Median : 0.5000  &quot;  &quot;Median : -0.5000  &quot;
+##              &quot;Mean   : 0.5477  &quot;  &quot;Mean   : -0.6542  &quot;
+##              &quot;3rd Qu.: 1.2500  &quot;  &quot;3rd Qu.: -0.2500  &quot;
+##              &quot;Max.   : 8.5000  &quot;  &quot;Max.   :  0.0000  &quot;
+## skewness_imp &quot;-0.496979099960277&quot; &quot;-5.06776895408613&quot; 
+## kurtosis_imp &quot;9.82563682016026&quot;   &quot;50.4636709556355&quot;  
+##              R.Axis..pre.dilate.  L.Sph..pre.dilate.   L.Cyl..pre.dilate. 
+##              &quot;Min.   :  0.00  &quot;   &quot;Min.   :-9.5000  &quot;  &quot;Min.   :-9.7500  &quot;
+##              &quot;1st Qu.: 26.00  &quot;   &quot;1st Qu.: 0.0000  &quot;  &quot;1st Qu.:-0.7500  &quot;
+##              &quot;Median : 85.00  &quot;   &quot;Median : 0.5000  &quot;  &quot;Median :-0.5000  &quot;
+##              &quot;Mean   : 80.25  &quot;   &quot;Mean   : 0.5938  &quot;  &quot;Mean   :-0.6572  &quot;
+##              &quot;3rd Qu.:118.00  &quot;   &quot;3rd Qu.: 1.2500  &quot;  &quot;3rd Qu.:-0.2500  &quot;
+##              &quot;Max.   :180.00  &quot;   &quot;Max.   : 8.0000  &quot;  &quot;Max.   : 0.0000  &quot;
+## skewness_imp &quot;0.0676297008960507&quot; &quot;-0.702742368467331&quot; &quot;-4.73466819820079&quot;
+## kurtosis_imp &quot;1.90089128041046&quot;   &quot;10.4640526005827&quot;   &quot;35.5700850187859&quot; 
+##              L.Axis..pre.dilate.  R.K.value.H         R.K.Value.H.Axis    
+##              &quot;Min.   :  0.00  &quot;  &quot;Min.   :36.00  &quot;    &quot;Min.   :  0.00  &quot;  
+##              &quot;1st Qu.: 14.00  &quot;  &quot;1st Qu.:42.00  &quot;    &quot;1st Qu.: 44.00  &quot;  
+##              &quot;Median : 72.00  &quot;  &quot;Median :43.00  &quot;    &quot;Median : 92.00  &quot;  
+##              &quot;Mean   : 72.44  &quot;  &quot;Mean   :42.96  &quot;    &quot;Mean   : 93.86  &quot;  
+##              &quot;3rd Qu.:112.00  &quot;  &quot;3rd Qu.:44.00  &quot;    &quot;3rd Qu.:154.00  &quot;  
+##              &quot;Max.   :180.00  &quot;  &quot;Max.   :48.25  &quot;    &quot;Max.   :180.00  &quot;  
+## skewness_imp &quot;0.298060949039886&quot; &quot;-0.329380707180307&quot; &quot;-0.086835172184765&quot;
+## kurtosis_imp &quot;1.88816243797929&quot;  &quot;3.66766428468599&quot;   &quot;1.72958520888624&quot;  
+##               R.K.value.V       R.K.value.V.Axis      L.K.value.H        
+##              &quot;Min.   :37.00  &quot;  &quot;Min.   :  1.00  &quot;   &quot;Min.   :32.75  &quot;   
+##              &quot;1st Qu.:42.75  &quot;  &quot;1st Qu.: 63.00  &quot;   &quot;1st Qu.:42.00  &quot;   
+##              &quot;Median :43.75  &quot;  &quot;Median : 89.00  &quot;   &quot;Median :43.00  &quot;   
+##              &quot;Mean   :43.80  &quot;  &quot;Mean   : 91.07  &quot;   &quot;Mean   :42.96  &quot;   
+##              &quot;3rd Qu.:44.77  &quot;  &quot;3rd Qu.:124.00  &quot;   &quot;3rd Qu.:44.00  &quot;   
+##              &quot;Max.   :55.00  &quot;  &quot;Max.   :180.00  &quot;   &quot;Max.   :47.25  &quot;   
+## skewness_imp &quot;0.43233098223396&quot; &quot;0.0453466088684528&quot; &quot;-0.938227281325446&quot;
+## kurtosis_imp &quot;6.27962328259508&quot; &quot;2.29020773340462&quot;   &quot;6.95195691414879&quot;  
+##              L.K.value.H.Axis      L.K.value.V       
+##              &quot;Min.   :  0.00  &quot;   &quot;Min.   :39.00  &quot;  
+##              &quot;1st Qu.: 26.00  &quot;   &quot;1st Qu.:42.88  &quot;  
+##              &quot;Median : 88.00  &quot;   &quot;Median :43.75  &quot;  
+##              &quot;Mean   : 87.76  &quot;   &quot;Mean   :43.87  &quot;  
+##              &quot;3rd Qu.:145.00  &quot;   &quot;3rd Qu.:44.75  &quot;  
+##              &quot;Max.   :180.00  &quot;   &quot;Max.   :52.00  &quot;  
+## skewness_imp &quot;0.0561687602827247&quot; &quot;0.230213726384767&quot;
+## kurtosis_imp &quot;1.69477477774781&quot;   &quot;4.10550830623158&quot; 
+##              L.K.value.V.Axis       R.Pachimetry       
+##              &quot;Min.   :  0.0  &quot;     &quot;Min.   :428  &quot;     
+##              &quot;1st Qu.: 68.0  &quot;     &quot;1st Qu.:526  &quot;     
+##              &quot;Median : 90.0  &quot;     &quot;Median :546  &quot;     
+##              &quot;Mean   : 92.3  &quot;     &quot;Mean   :546  &quot;     
+##              &quot;3rd Qu.:119.0  &quot;     &quot;3rd Qu.:569  &quot;     
+##              &quot;Max.   :180.0  &quot;     &quot;Max.   :656  &quot;     
+## skewness_imp &quot;-0.0260547158131096&quot; &quot;-0.129162958803714&quot;
+## kurtosis_imp &quot;2.3872472044967&quot;     &quot;3.11054159015654&quot;  
+##               L.Pachimetry         R.Axial.Length      L.Axial.Length    
+##              &quot;Min.   :424.0  &quot;     &quot;Min.   :20.95  &quot;   &quot;Min.   :21.29  &quot; 
+##              &quot;1st Qu.:526.0  &quot;     &quot;1st Qu.:22.91  &quot;   &quot;1st Qu.:22.87  &quot; 
+##              &quot;Median :547.0  &quot;     &quot;Median :23.51  &quot;   &quot;Median :23.47  &quot; 
+##              &quot;Mean   :546.1  &quot;     &quot;Mean   :23.56  &quot;   &quot;Mean   :23.54  &quot; 
+##              &quot;3rd Qu.:568.0  &quot;     &quot;3rd Qu.:24.10  &quot;   &quot;3rd Qu.:24.11  &quot; 
+##              &quot;Max.   :658.0  &quot;     &quot;Max.   :27.66  &quot;   &quot;Max.   :34.43  &quot; 
+## skewness_imp &quot;-0.0946336090284606&quot; &quot;0.623525487607831&quot; &quot;2.03281154238147&quot;
+## kurtosis_imp &quot;3.24201178838641&quot;    &quot;4.20517591208724&quot;  &quot;20.6444882646786&quot;
+##                AC.Depth.R          AC.Depth.L          R.IOP.mmHg       
+##              &quot;Min.   :2.090  &quot;   &quot;Min.   :2.000  &quot;   &quot;Min.   : 6.00  &quot;  
+##              &quot;1st Qu.:3.060  &quot;   &quot;1st Qu.:3.040  &quot;   &quot;1st Qu.:14.00  &quot;  
+##              &quot;Median :3.310  &quot;   &quot;Median :3.290  &quot;   &quot;Median :16.00  &quot;  
+##              &quot;Mean   :3.322  &quot;   &quot;Mean   :3.308  &quot;   &quot;Mean   :15.88  &quot;  
+##              &quot;3rd Qu.:3.560  &quot;   &quot;3rd Qu.:3.560  &quot;   &quot;3rd Qu.:18.00  &quot;  
+##              &quot;Max.   :4.950  &quot;   &quot;Max.   :5.130  &quot;   &quot;Max.   :28.00  &quot;  
+## skewness_imp &quot;0.384450222967117&quot; &quot;0.410626913089036&quot; &quot;0.219078586934118&quot;
+## kurtosis_imp &quot;3.99826255554454&quot;  &quot;4.26858836528065&quot;  &quot;3.09283419803348&quot; 
+##                L.IOP.mmHg            CDR.RE              CDR.LE         
+##              &quot;Min.   : 8.00  &quot;   &quot;Min.   :0.0000  &quot;  &quot;Min.   :0.0000  &quot; 
+##              &quot;1st Qu.:14.00  &quot;   &quot;1st Qu.:0.3000  &quot;  &quot;1st Qu.:0.3000  &quot; 
+##              &quot;Median :16.00  &quot;   &quot;Median :0.4000  &quot;  &quot;Median :0.4000  &quot; 
+##              &quot;Mean   :16.06  &quot;   &quot;Mean   :0.4077  &quot;  &quot;Mean   :0.4039  &quot; 
+##              &quot;3rd Qu.:18.00  &quot;   &quot;3rd Qu.:0.5000  &quot;  &quot;3rd Qu.:0.5000  &quot; 
+##              &quot;Max.   :33.00  &quot;   &quot;Max.   :0.9900  &quot;  &quot;Max.   :0.9000  &quot; 
+## skewness_imp &quot;0.456553888331421&quot; &quot;0.526448428177066&quot; &quot;0.509487222778446&quot;
+## kurtosis_imp &quot;3.91355078592957&quot;  &quot;2.74101114433666&quot;  &quot;2.74660317565884&quot;</code></pre>
+</div>
+</div>
+<div id="discussion" class="section level1">
+<h1>Discussion</h1>
+<p>The data was imputed successfully and produced a complete data set. The histograms of the imputed values show that most variables have a single peak and are relatively normally distributed. The histograms for the axes variables (Left/Right V/H Axis), however, exhibit a trimodal distribution, showing peaks around 0, 90, and 180 degrees. The distribution statistics indicate that the logMAR values (left and right) and left axial length are strongly positively skewed, while the left/right Cryl pre-dilate variables are negatively skewed. Interestingly, the right axial length is only slightly positively skewed (skewness = 0.62).</p>
+</div>

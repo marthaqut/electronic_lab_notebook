@@ -1,0 +1,76 @@
+---
+title: 'PCA of Phenotypic Data '
+author: Martha Aquino
+date: '2018-05-17'
+slug: pca-of-phenotypic-data
+categories:
+  - Coding
+  - Experiments
+tags:
+  - PCA
+  - Ocular Biometry
+  - R
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages, message=FALSE, warning=FALSE}
+# required packages
+require(tidyverse)
+require(broom)
+require(missMDA)
+require(FactoMineR)
+require(moments)
+require(Hmisc)
+require(corrplot)
+```
+
+#Introduction
+The results of the Pearson correlations between the phenotypic variables, indicate that there were several correlated variables, that were not due to being left and right values of the same variable. For example, the keratometry measurements were negatively correlated with axial length. These relationships suggest that there is an underlying component, or a latent phenotype, that may better explain these variables. Performing a principal component analysis on these variables would reduce the dimensions that need to be considered in subsequent analyses, without excluding any variables, by identifying principal components. 
+https://towardsdatascience.com/a-one-stop-shop-for-principal-component-analysis-5582fb7e0a9c
+
+#Methods and Results 
+## 1. Load data
+```{r, cache=TRUE}
+phen.data.uvaf <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database_120815_data_dictionary-2.csv')
+summary.uvaf <- summary(phen.data.uvaf)
+quant.data_uvaf <- c("R.Logmar.VA", "RVA.with.PH", "L.Logmar.VA", "LVA.with.PH", 
+                "R.Sph..pre.dilate.", "R.Cyl..pre.dilate.", "R.Axis..pre.dilate.", "L.Sph..pre.dilate.", "L.Cyl..pre.dilate.","L.Axis..pre.dilate.", "R.K.value.H", "R.K.Value.H.Axis", "R.K.value.V", "R.K.value.V.Axis", "L.K.value.H","L.K.value.H.Axis", "L.K.value.V", "L.K.value.V.Axis", "R.Pachimetry", "L.Pachimetry", "R.Axial.Length","L.Axial.Length", "R.AC.Depth", "L.AC.Depth", "R.IOP.mmHg", "L.IOP.mmHg", "R.CDR", "L.CDR", "totaluvafmm")
+
+quant.data.subset_uvaf <- phen.data.uvaf[quant.data_uvaf]
+
+phen.data.adults_uvaf<-phen.data.uvaf[phen.data.uvaf$Age.excel>17,]
+
+quant.variables_uvaf<- c("R.Logmar.VA", "L.Logmar.VA","R.Sph..pre.dilate.", "R.Cyl..pre.dilate.", "R.Axis..pre.dilate.", "L.Sph..pre.dilate.", "L.Cyl..pre.dilate.","L.Axis..pre.dilate.", "R.K.value.H", "R.K.Value.H.Axis", "R.K.value.V", "R.K.value.V.Axis", "L.K.value.H", "L.K.value.H.Axis", "L.K.value.V", "L.K.value.V.Axis", "R.Pachimetry", "L.Pachimetry", "R.Axial.Length","L.Axial.Length", "R.AC.Depth", "L.AC.Depth", "R.IOP.mmHg", "L.IOP.mmHg", "R.CDR", "L.CDR", "totaluvafmm")
+quant.data.adults_uvaf<- phen.data.adults_uvaf[quant.variables_uvaf]
+
+ocular_data_uvaf <- read.csv('quant.data.adults_uvaf.csv', head = T, as.is = T, row.names = 1)
+ocular_data_uvaf <- as.matrix(ocular_data_uvaf)
+
+nbdim = estim_ncpPCA(ocular_data_uvaf, method = 'EM', method.cv="Kfold")
+nbdim
+res.comp = MIPCA(ocular_data_uvaf, ncp = nbdim$ncp, nboot = 1000)
+imputed_phen_data_uvaf<-res.comp$res.imputePCA
+```
+
+```{r, cache=TRUE}
+data.imputed.phen<-as.data.frame(imputed_phen_data_uvaf)
+data("data.imputed.phen")
+res.pca.phen<-PCA(imputed_phen_data_uvaf, graph = FALSE)
+eig.val.phen<-res.pca.phen$eig
+barplot(eig.val.phen[, 2], 
+        names.arg = 1:nrow(eig.val.phen), 
+        main = "Variances Explained by PCs (%)",
+        xlab = "Principal Components",
+        ylab = "Percentage of variances",
+        col ="steelblue")
+lines(x = 1:nrow(eig.val.phen), eig.val.phen[, 2], 
+      type = "b", pch = 19, col = "red")
+eigen.imputed<-res.pca.phen$eig
+eigen.imputed
+res.pca.phen$var
+```
+
+#Discussion

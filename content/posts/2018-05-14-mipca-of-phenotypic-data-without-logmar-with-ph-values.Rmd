@@ -12,34 +12,54 @@ tags:
   - PCA
   - R
 ---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
-##Introduction 
-After adding in additional variables, which included logMAR and base-out prism test values, the variable factor plots indicated that there was a large uncertainty around the imputed values of the logMAR with pinhole correction values. Therefore, the right and left pinhole correction variables (LVA and RVA with PH). 
+```{r packages, message=FALSE, warning=FALSE}
+# required packages
+require(tidyverse)
+require(broom)
+require(missMDA)
+require(FactoMineR)
+require(moments)
+require(Hmisc)
+require(corrplot)
+```
 
-#Methods and Results 
-1. Subset quantitative variables excluding LVA and RVA with PH variables. 
-```{r}
-phen.data.age <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv')
+# Introduction 
+
+After adding in additional variables, which included logMAR and base-out prism test values, the variable factor plots indicated 
+that there was a large uncertainty around the imputed values of the logMAR with pinhole correction values. Therefore, the right 
+and left pinhole correction variables (LVA and RVA with PH). 
+
+# Methods and Results 
+
+## 1. Subset quantitative variables excluding LVA and RVA with PH variables. 
+
+```{r, cache=TRUE}
+phen.data.age<- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv')
 phen.data.adults<-phen.data.age[phen.data.age$Age.excel>17,]
 quant.variables<- c("Logmar.VA.Right", "Logmar.VA.Left", "R.Sph..pre.dilate.", "R.Cyl..pre.dilate.",
                     "R.Axis..pre.dilate.", "L.Sph..pre.dilate.", "L.Cyl..pre.dilate.", "L.Axis..pre.dilate.",
                     "R.K.value.H", "R.K.Value.H.Axis", "R.K.value.V", "R.K.value.V.Axis", "L.K.value.H",
-                    "L.K.value.H.Axis", "L.K.value.V", "L.K.value.V.Axis", "R.Pachimetry", "L.Pachimetry", "R.Axial.Length",
-                    "L.Axial.Length", "AC.Depth.R", "AC.Depth.L", "R.IOP.mmHg", "L.IOP.mmHg", "CDR.RE", "CDR.LE")
+                    "L.K.value.H.Axis", "L.K.value.V", "L.K.value.V.Axis", "R.Pachimetry", "L.Pachimetry",
+                    "R.Axial.Length","L.Axial.Length", "AC.Depth.R", "AC.Depth.L", "R.IOP.mmHg", "L.IOP.mmHg",
+                    "CDR.RE", "CDR.LE")
 quant.data.adults<- phen.data.adults[quant.variables]
 summary(quant.data.adults)
 ```
 
-2. Duplicate subset of data and force into a matrix
-```{r}
+## 2. Duplicate subset of data and force into a matrix  
+
+```{r, cache=TRUE}
 ocular_data <- quant.data.adults
 ocular_data <- as.matrix(ocular_data)
 ```
 
-3. Run multiple PCA imputation 
-```{r}
-require(missMDA)
-require(FactoMineR)
+## 3. Run multiple PCA imputation 
+
+```{r, cache=TRUE}
 nbdim = estim_ncpPCA(ocular_data, method = 'EM', method.cv="Kfold")
 nbdim
 res.comp = MIPCA(ocular_data, ncp = nbdim$ncp, nboot = 1000)
@@ -51,40 +71,38 @@ plot.MIPCA(res.comp, choice = "var")
 dev.off()
 ```
 
-4. Run summary and distribution statistics post-imputation
-```{r}
-head(res.comp)
+## 4. Run summary and distribution statistics post-imputation
+
+```{r, cache=TRUE}
 imputed_phen_data<-res.comp$res.imputePCA
-imputed_phen_data
+head(imputed_phen_data)
 summary_stats_imputed <-summary(imputed_phen_data)
 summary_stats_imputed
 ```
 
-5. Plot histograms of imputed data 
-```{r}
-require(purrr)
-require(tidyr)
-require(ggplot2)
+## 5. Plot histograms of imputed data 
 
-imputed_phen_data %>% #will need to rerun res.comp - imputed_phen_data is empty 
+```{r, cache=TRUE}
+imputed_phen_data %>% 
   as.data.frame %>%
   keep(is.numeric) %>%
   gather() %>%
   ggplot(aes(value)) + facet_wrap(~ key, scales = "free") + geom_histogram(fill = 'grey', colour = "black")
-
 ```
 
-6. Find skewness and kurtosis of 
-```{r}
-install.packages('moments')
-require(moments)
+## 6. Find skewness and kurtosis of imputed data
+
+```{r, cache=TRUE}
 skewness_imp<-skewness(imputed_phen_data)
 kurtosis_imp<-kurtosis(imputed_phen_data)
-
-rbind(summary_stats_imputed, skewness_imp, kurtosis_imp)
 sum_skew_kurt_stats<-rbind(summary_stats_imputed, skewness_imp, kurtosis_imp)
 sum_skew_kurt_stats
 ```
 
-#Discussion
-The data was imputed successfully and produced a complete data set. The histograms of the imputed values show that most variables have a single peak and are relatively normally distributed. The histograms for the axes variables (Left/Right V/H Axis), however, exhibit a trimodal distribution, showing peaks around 0, 90, and 180 degrees. The distribution statistics indicate that the logMAR values (left and right) and left axial length are strongly positively skewed, while the left/right Cryl pre-dilate variables are negatively skewed. Interestingly, the right axial length is only slightly positively skewed (skewness = 0.62).    
+# Discussion
+
+The data was imputed successfully and produced a complete data set. The histograms of the imputed values show that most variables have a single 
+peak and are relatively normally distributed. The histograms for the axes variables (Left/Right V/H Axis), however, exhibit a trimodal distribution, 
+showing peaks around 0, 90, and 180 degrees. The distribution statistics indicate that the logMAR values (left and right) and left axial length are 
+strongly positively skewed, while the left/right Cryl pre-dilate variables are negatively skewed. Interestingly, the right axial length is only slightly 
+positively skewed (skewness = 0.62).    

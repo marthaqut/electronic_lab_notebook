@@ -1,0 +1,568 @@
+---
+title: 'PCA of Phenotypic Data '
+author: Martha Aquino
+date: '2018-05-17'
+slug: pca-of-phenotypic-data
+categories:
+  - Coding
+  - Experiments
+tags:
+  - PCA
+  - Ocular Biometry
+  - R
+---
+
+
+
+<pre class="r"><code># required packages
+require(tidyverse)
+require(broom)
+require(missMDA)
+require(FactoMineR)
+require(moments)
+require(Hmisc)
+require(corrplot)</code></pre>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>The results of the Pearson correlations between the phenotypic variables, indicate that there were several correlated variables, that were not due to being left and right values of the same variable. For example, the keratometry measurements were negatively correlated with axial length. These relationships suggest that there is an underlying component, or a latent phenotype, that may better explain these variables. Performing a principal component analysis on these variables would reduce the dimensions that need to be considered in subsequent analyses, without excluding any variables, by identifying principal components. <a href="https://towardsdatascience.com/a-one-stop-shop-for-principal-component-analysis-5582fb7e0a9c" class="uri">https://towardsdatascience.com/a-one-stop-shop-for-principal-component-analysis-5582fb7e0a9c</a></p>
+</div>
+<div id="methods-and-results" class="section level1">
+<h1>Methods and Results</h1>
+<div id="load-data" class="section level2">
+<h2>1. Load data</h2>
+<pre class="r"><code>phen.data.uvaf &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database_120815_data_dictionary-2.csv&#39;)
+summary.uvaf &lt;- summary(phen.data.uvaf)
+quant.data_uvaf &lt;- c(&quot;R.Logmar.VA&quot;, &quot;RVA.with.PH&quot;, &quot;L.Logmar.VA&quot;, &quot;LVA.with.PH&quot;, 
+                &quot;R.Sph..pre.dilate.&quot;, &quot;R.Cyl..pre.dilate.&quot;, &quot;R.Axis..pre.dilate.&quot;, &quot;L.Sph..pre.dilate.&quot;, &quot;L.Cyl..pre.dilate.&quot;,&quot;L.Axis..pre.dilate.&quot;, &quot;R.K.value.H&quot;, &quot;R.K.Value.H.Axis&quot;, &quot;R.K.value.V&quot;, &quot;R.K.value.V.Axis&quot;, &quot;L.K.value.H&quot;,&quot;L.K.value.H.Axis&quot;, &quot;L.K.value.V&quot;, &quot;L.K.value.V.Axis&quot;, &quot;R.Pachimetry&quot;, &quot;L.Pachimetry&quot;, &quot;R.Axial.Length&quot;,&quot;L.Axial.Length&quot;, &quot;R.AC.Depth&quot;, &quot;L.AC.Depth&quot;, &quot;R.IOP.mmHg&quot;, &quot;L.IOP.mmHg&quot;, &quot;R.CDR&quot;, &quot;L.CDR&quot;, &quot;totaluvafmm&quot;)
+
+quant.data.subset_uvaf &lt;- phen.data.uvaf[quant.data_uvaf]
+
+phen.data.adults_uvaf&lt;-phen.data.uvaf[phen.data.uvaf$Age.excel&gt;17,]
+
+quant.variables_uvaf&lt;- c(&quot;R.Logmar.VA&quot;, &quot;L.Logmar.VA&quot;,&quot;R.Sph..pre.dilate.&quot;, &quot;R.Cyl..pre.dilate.&quot;, &quot;R.Axis..pre.dilate.&quot;, &quot;L.Sph..pre.dilate.&quot;, &quot;L.Cyl..pre.dilate.&quot;,&quot;L.Axis..pre.dilate.&quot;, &quot;R.K.value.H&quot;, &quot;R.K.Value.H.Axis&quot;, &quot;R.K.value.V&quot;, &quot;R.K.value.V.Axis&quot;, &quot;L.K.value.H&quot;, &quot;L.K.value.H.Axis&quot;, &quot;L.K.value.V&quot;, &quot;L.K.value.V.Axis&quot;, &quot;R.Pachimetry&quot;, &quot;L.Pachimetry&quot;, &quot;R.Axial.Length&quot;,&quot;L.Axial.Length&quot;, &quot;R.AC.Depth&quot;, &quot;L.AC.Depth&quot;, &quot;R.IOP.mmHg&quot;, &quot;L.IOP.mmHg&quot;, &quot;R.CDR&quot;, &quot;L.CDR&quot;, &quot;totaluvafmm&quot;)
+quant.data.adults_uvaf&lt;- phen.data.adults_uvaf[quant.variables_uvaf]
+
+ocular_data_uvaf &lt;- read.csv(&#39;quant.data.adults_uvaf.csv&#39;, head = T, as.is = T, row.names = 1)
+ocular_data_uvaf &lt;- as.matrix(ocular_data_uvaf)
+
+nbdim = estim_ncpPCA(ocular_data_uvaf, method = &#39;EM&#39;, method.cv=&quot;Kfold&quot;)</code></pre>
+<pre><code>## 
+  |                                                                       
+  |                                                                 |   0%
+  |                                                                       
+  |=                                                                |   1%
+  |                                                                       
+  |=                                                                |   2%
+  |                                                                       
+  |==                                                               |   3%
+  |                                                                       
+  |===                                                              |   4%
+  |                                                                       
+  |===                                                              |   5%
+  |                                                                       
+  |====                                                             |   6%
+  |                                                                       
+  |=====                                                            |   7%
+  |                                                                       
+  |=====                                                            |   8%
+  |                                                                       
+  |======                                                           |   9%
+  |                                                                       
+  |=======                                                          |  10%
+  |                                                                       
+  |=======                                                          |  11%
+  |                                                                       
+  |========                                                         |  12%
+  |                                                                       
+  |=========                                                        |  13%
+  |                                                                       
+  |=========                                                        |  14%
+  |                                                                       
+  |==========                                                       |  15%
+  |                                                                       
+  |===========                                                      |  16%
+  |                                                                       
+  |===========                                                      |  17%
+  |                                                                       
+  |============                                                     |  18%
+  |                                                                       
+  |============                                                     |  19%
+  |                                                                       
+  |=============                                                    |  20%
+  |                                                                       
+  |==============                                                   |  21%
+  |                                                                       
+  |==============                                                   |  22%
+  |                                                                       
+  |===============                                                  |  23%
+  |                                                                       
+  |================                                                 |  24%
+  |                                                                       
+  |================                                                 |  25%
+  |                                                                       
+  |=================                                                |  26%
+  |                                                                       
+  |==================                                               |  27%
+  |                                                                       
+  |==================                                               |  28%
+  |                                                                       
+  |===================                                              |  29%
+  |                                                                       
+  |====================                                             |  30%
+  |                                                                       
+  |====================                                             |  31%
+  |                                                                       
+  |=====================                                            |  32%
+  |                                                                       
+  |======================                                           |  33%
+  |                                                                       
+  |======================                                           |  34%
+  |                                                                       
+  |=======================                                          |  35%
+  |                                                                       
+  |========================                                         |  36%
+  |                                                                       
+  |========================                                         |  37%
+  |                                                                       
+  |=========================                                        |  38%
+  |                                                                       
+  |==========================                                       |  39%
+  |                                                                       
+  |==========================                                       |  40%
+  |                                                                       
+  |===========================                                      |  41%
+  |                                                                       
+  |============================                                     |  42%
+  |                                                                       
+  |============================                                     |  43%
+  |                                                                       
+  |=============================                                    |  44%
+  |                                                                       
+  |==============================                                   |  45%
+  |                                                                       
+  |==============================                                   |  46%
+  |                                                                       
+  |===============================                                  |  47%
+  |                                                                       
+  |================================                                 |  48%
+  |                                                                       
+  |================================                                 |  49%
+  |                                                                       
+  |=================================                                |  51%
+  |                                                                       
+  |=================================                                |  52%
+  |                                                                       
+  |==================================                               |  53%
+  |                                                                       
+  |===================================                              |  54%
+  |                                                                       
+  |===================================                              |  55%
+  |                                                                       
+  |====================================                             |  56%
+  |                                                                       
+  |=====================================                            |  57%
+  |                                                                       
+  |=====================================                            |  58%
+  |                                                                       
+  |======================================                           |  59%
+  |                                                                       
+  |=======================================                          |  60%
+  |                                                                       
+  |=======================================                          |  61%
+  |                                                                       
+  |========================================                         |  62%
+  |                                                                       
+  |=========================================                        |  63%
+  |                                                                       
+  |=========================================                        |  64%
+  |                                                                       
+  |==========================================                       |  65%
+  |                                                                       
+  |===========================================                      |  66%
+  |                                                                       
+  |===========================================                      |  67%
+  |                                                                       
+  |============================================                     |  68%
+  |                                                                       
+  |=============================================                    |  69%
+  |                                                                       
+  |=============================================                    |  70%
+  |                                                                       
+  |==============================================                   |  71%
+  |                                                                       
+  |===============================================                  |  72%
+  |                                                                       
+  |===============================================                  |  73%
+  |                                                                       
+  |================================================                 |  74%
+  |                                                                       
+  |=================================================                |  75%
+  |                                                                       
+  |=================================================                |  76%
+  |                                                                       
+  |==================================================               |  77%
+  |                                                                       
+  |===================================================              |  78%
+  |                                                                       
+  |===================================================              |  79%
+  |                                                                       
+  |====================================================             |  80%
+  |                                                                       
+  |=====================================================            |  81%
+  |                                                                       
+  |=====================================================            |  82%
+  |                                                                       
+  |======================================================           |  83%
+  |                                                                       
+  |======================================================           |  84%
+  |                                                                       
+  |=======================================================          |  85%
+  |                                                                       
+  |========================================================         |  86%
+  |                                                                       
+  |========================================================         |  87%
+  |                                                                       
+  |=========================================================        |  88%
+  |                                                                       
+  |==========================================================       |  89%
+  |                                                                       
+  |==========================================================       |  90%
+  |                                                                       
+  |===========================================================      |  91%
+  |                                                                       
+  |============================================================     |  92%
+  |                                                                       
+  |============================================================     |  93%
+  |                                                                       
+  |=============================================================    |  94%
+  |                                                                       
+  |==============================================================   |  95%
+  |                                                                       
+  |==============================================================   |  96%
+  |                                                                       
+  |===============================================================  |  97%
+  |                                                                       
+  |================================================================ |  98%
+  |                                                                       
+  |================================================================ |  99%
+  |                                                                       
+  |=================================================================| 100%</code></pre>
+<pre class="r"><code>nbdim</code></pre>
+<pre><code>## $ncp
+## [1] 5
+## 
+## $criterion
+##        0        1        2        3        4        5 
+## 827407.7 829593.9 824966.6 826207.3 817653.0 798909.9</code></pre>
+<pre class="r"><code>res.comp = MIPCA(ocular_data_uvaf, ncp = nbdim$ncp, nboot = 1000)
+imputed_phen_data_uvaf&lt;-res.comp$res.imputePCA</code></pre>
+<pre class="r"><code>data.imputed.phen&lt;-as.data.frame(imputed_phen_data_uvaf)
+data(&quot;data.imputed.phen&quot;)</code></pre>
+<pre><code>## Warning in data(&quot;data.imputed.phen&quot;): data set &#39;data.imputed.phen&#39; not
+## found</code></pre>
+<pre class="r"><code>res.pca.phen&lt;-PCA(imputed_phen_data_uvaf, graph = FALSE)
+eig.val.phen&lt;-res.pca.phen$eig
+barplot(eig.val.phen[, 2], 
+        names.arg = 1:nrow(eig.val.phen), 
+        main = &quot;Variances Explained by PCs (%)&quot;,
+        xlab = &quot;Principal Components&quot;,
+        ylab = &quot;Percentage of variances&quot;,
+        col =&quot;steelblue&quot;)
+lines(x = 1:nrow(eig.val.phen), eig.val.phen[, 2], 
+      type = &quot;b&quot;, pch = 19, col = &quot;red&quot;)</code></pre>
+<p><img src="/posts/2018-05-17-pca-of-phenotypic-data_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code>eigen.imputed&lt;-res.pca.phen$eig
+eigen.imputed</code></pre>
+<pre><code>##         eigenvalue percentage of variance
+## comp 1  4.46445605             16.5350224
+## comp 2  3.03462767             11.2393617
+## comp 3  2.70591009             10.0218892
+## comp 4  2.29083212              8.4845634
+## comp 5  1.99631740              7.3937681
+## comp 6  1.73902134              6.4408198
+## comp 7  1.33361314              4.9393079
+## comp 8  1.14042049              4.2237796
+## comp 9  1.03413600              3.8301334
+## comp 10 0.95617736              3.5413976
+## comp 11 0.90422198              3.3489703
+## comp 12 0.82071526              3.0396861
+## comp 13 0.76532587              2.8345402
+## comp 14 0.69691037              2.5811495
+## comp 15 0.62562435              2.3171272
+## comp 16 0.56537477              2.0939806
+## comp 17 0.43981044              1.6289276
+## comp 18 0.37185411              1.3772374
+## comp 19 0.23882002              0.8845186
+## comp 20 0.20310730              0.7522492
+## comp 21 0.19345131              0.7164863
+## comp 22 0.15046332              0.5572715
+## comp 23 0.10063631              0.3727271
+## comp 24 0.09238358              0.3421614
+## comp 25 0.05514221              0.2042304
+## comp 26 0.04775727              0.1768788
+## comp 27 0.03288987              0.1218143
+##         cumulative percentage of variance
+## comp 1                           16.53502
+## comp 2                           27.77438
+## comp 3                           37.79627
+## comp 4                           46.28084
+## comp 5                           53.67460
+## comp 6                           60.11542
+## comp 7                           65.05473
+## comp 8                           69.27851
+## comp 9                           73.10865
+## comp 10                          76.65004
+## comp 11                          79.99901
+## comp 12                          83.03870
+## comp 13                          85.87324
+## comp 14                          88.45439
+## comp 15                          90.77152
+## comp 16                          92.86550
+## comp 17                          94.49442
+## comp 18                          95.87166
+## comp 19                          96.75618
+## comp 20                          97.50843
+## comp 21                          98.22492
+## comp 22                          98.78219
+## comp 23                          99.15492
+## comp 24                          99.49708
+## comp 25                          99.70131
+## comp 26                          99.87819
+## comp 27                         100.00000</code></pre>
+<pre class="r"><code>res.pca.phen$var</code></pre>
+<pre><code>## $coord
+##                             Dim.1        Dim.2        Dim.3        Dim.4
+## R.Logmar.VA          0.0544464200 -0.114937900  0.540407138  0.183366000
+## L.Logmar.VA          0.0025023044 -0.161163535  0.545612781  0.215880315
+## R.Sph..pre.dilate.   0.2222981329 -0.749667932 -0.074503133 -0.099498700
+## R.Cyl..pre.dilate.  -0.0389650618 -0.007827815 -0.677201661 -0.182137588
+## R.Axis..pre.dilate.  0.0744110543 -0.036495457  0.180273031  0.116551594
+## L.Sph..pre.dilate.   0.2157730734 -0.741563320 -0.028337763 -0.099630446
+## L.Cyl..pre.dilate.  -0.0353192404  0.015101176 -0.659967624 -0.129377482
+## L.Axis..pre.dilate. -0.0663972718 -0.094991703  0.150404068 -0.006797582
+## R.K.value.H          0.8477612821  0.362041934  0.008288281  0.006889421
+## R.K.Value.H.Axis     0.0148145126  0.108818430 -0.039062580  0.076872515
+## R.K.value.V          0.8529066416  0.331382329  0.239749496  0.054567761
+## R.K.value.V.Axis     0.0293931928 -0.117603074  0.041566255 -0.081364253
+## L.K.value.H          0.8067098352  0.390929801 -0.066829148  0.024529945
+## L.K.value.H.Axis     0.0025602251 -0.160882634  0.146649344 -0.117936268
+## L.K.value.V          0.8377724869  0.355676325  0.253603322  0.047540429
+## L.K.value.V.Axis    -0.0004256266  0.085964553 -0.050067628  0.150582886
+## R.Pachimetry        -0.0403711404  0.073509124 -0.432580223  0.602275884
+## L.Pachimetry        -0.0418685404  0.054815570 -0.431089452  0.614955798
+## R.Axial.Length      -0.8163529851  0.364141160  0.148322854  0.097480184
+## L.Axial.Length      -0.7689956145  0.353186716  0.154045266  0.091400848
+## R.AC.Depth          -0.3054051944  0.640632645  0.190011182 -0.106126466
+## L.AC.Depth          -0.3456434183  0.606894505  0.198229281 -0.109559431
+## R.IOP.mmHg           0.0772203412  0.058119319 -0.232760509  0.666948632
+## L.IOP.mmHg           0.0603489198  0.040067981 -0.210765096  0.689190117
+## R.CDR               -0.1224100323 -0.341268728  0.447955677  0.408191925
+## L.CDR               -0.1315457636 -0.349791812  0.416555582  0.398488175
+## totaluvafmm         -0.1926461484 -0.073715297 -0.200184007 -0.212104536
+##                            Dim.5
+## R.Logmar.VA         -0.073819981
+## L.Logmar.VA         -0.105400976
+## R.Sph..pre.dilate.  -0.025395355
+## R.Cyl..pre.dilate.   0.119434081
+## R.Axis..pre.dilate.  0.425202489
+## L.Sph..pre.dilate.  -0.002422289
+## L.Cyl..pre.dilate.   0.204580195
+## L.Axis..pre.dilate. -0.491021665
+## R.K.value.H          0.009406417
+## R.K.Value.H.Axis     0.527260543
+## R.K.value.V         -0.030477293
+## R.K.value.V.Axis    -0.519474330
+## L.K.value.H          0.072463954
+## L.K.value.H.Axis    -0.491642347
+## L.K.value.V         -0.050871910
+## L.K.value.V.Axis     0.504744985
+## R.Pachimetry        -0.321465517
+## L.Pachimetry        -0.324539655
+## R.Axial.Length       0.008961286
+## L.Axial.Length      -0.064433440
+## R.AC.Depth          -0.040846644
+## L.AC.Depth          -0.019516425
+## R.IOP.mmHg           0.005568590
+## L.IOP.mmHg           0.007289724
+## R.CDR                0.289681991
+## L.CDR                0.316173256
+## totaluvafmm          0.221325266
+## 
+## $cor
+##                             Dim.1        Dim.2        Dim.3        Dim.4
+## R.Logmar.VA          0.0544464200 -0.114937900  0.540407138  0.183366000
+## L.Logmar.VA          0.0025023044 -0.161163535  0.545612781  0.215880315
+## R.Sph..pre.dilate.   0.2222981329 -0.749667932 -0.074503133 -0.099498700
+## R.Cyl..pre.dilate.  -0.0389650618 -0.007827815 -0.677201661 -0.182137588
+## R.Axis..pre.dilate.  0.0744110543 -0.036495457  0.180273031  0.116551594
+## L.Sph..pre.dilate.   0.2157730734 -0.741563320 -0.028337763 -0.099630446
+## L.Cyl..pre.dilate.  -0.0353192404  0.015101176 -0.659967624 -0.129377482
+## L.Axis..pre.dilate. -0.0663972718 -0.094991703  0.150404068 -0.006797582
+## R.K.value.H          0.8477612821  0.362041934  0.008288281  0.006889421
+## R.K.Value.H.Axis     0.0148145126  0.108818430 -0.039062580  0.076872515
+## R.K.value.V          0.8529066416  0.331382329  0.239749496  0.054567761
+## R.K.value.V.Axis     0.0293931928 -0.117603074  0.041566255 -0.081364253
+## L.K.value.H          0.8067098352  0.390929801 -0.066829148  0.024529945
+## L.K.value.H.Axis     0.0025602251 -0.160882634  0.146649344 -0.117936268
+## L.K.value.V          0.8377724869  0.355676325  0.253603322  0.047540429
+## L.K.value.V.Axis    -0.0004256266  0.085964553 -0.050067628  0.150582886
+## R.Pachimetry        -0.0403711404  0.073509124 -0.432580223  0.602275884
+## L.Pachimetry        -0.0418685404  0.054815570 -0.431089452  0.614955798
+## R.Axial.Length      -0.8163529851  0.364141160  0.148322854  0.097480184
+## L.Axial.Length      -0.7689956145  0.353186716  0.154045266  0.091400848
+## R.AC.Depth          -0.3054051944  0.640632645  0.190011182 -0.106126466
+## L.AC.Depth          -0.3456434183  0.606894505  0.198229281 -0.109559431
+## R.IOP.mmHg           0.0772203412  0.058119319 -0.232760509  0.666948632
+## L.IOP.mmHg           0.0603489198  0.040067981 -0.210765096  0.689190117
+## R.CDR               -0.1224100323 -0.341268728  0.447955677  0.408191925
+## L.CDR               -0.1315457636 -0.349791812  0.416555582  0.398488175
+## totaluvafmm         -0.1926461484 -0.073715297 -0.200184007 -0.212104536
+##                            Dim.5
+## R.Logmar.VA         -0.073819981
+## L.Logmar.VA         -0.105400976
+## R.Sph..pre.dilate.  -0.025395355
+## R.Cyl..pre.dilate.   0.119434081
+## R.Axis..pre.dilate.  0.425202489
+## L.Sph..pre.dilate.  -0.002422289
+## L.Cyl..pre.dilate.   0.204580195
+## L.Axis..pre.dilate. -0.491021665
+## R.K.value.H          0.009406417
+## R.K.Value.H.Axis     0.527260543
+## R.K.value.V         -0.030477293
+## R.K.value.V.Axis    -0.519474330
+## L.K.value.H          0.072463954
+## L.K.value.H.Axis    -0.491642347
+## L.K.value.V         -0.050871910
+## L.K.value.V.Axis     0.504744985
+## R.Pachimetry        -0.321465517
+## L.Pachimetry        -0.324539655
+## R.Axial.Length       0.008961286
+## L.Axial.Length      -0.064433440
+## R.AC.Depth          -0.040846644
+## L.AC.Depth          -0.019516425
+## R.IOP.mmHg           0.005568590
+## L.IOP.mmHg           0.007289724
+## R.CDR                0.289681991
+## L.CDR                0.316173256
+## totaluvafmm          0.221325266
+## 
+## $cos2
+##                            Dim.1        Dim.2        Dim.3        Dim.4
+## R.Logmar.VA         2.964413e-03 1.321072e-02 0.2920398743 3.362309e-02
+## L.Logmar.VA         6.261527e-06 2.597369e-02 0.2976933064 4.660431e-02
+## R.Sph..pre.dilate.  4.941646e-02 5.620020e-01 0.0055507169 9.899991e-03
+## R.Cyl..pre.dilate.  1.518276e-03 6.127469e-05 0.4586020895 3.317410e-02
+## R.Axis..pre.dilate. 5.537005e-03 1.331918e-03 0.0324983658 1.358427e-02
+## L.Sph..pre.dilate.  4.655802e-02 5.499162e-01 0.0008030288 9.926226e-03
+## L.Cyl..pre.dilate.  1.247449e-03 2.280455e-04 0.4355572644 1.673853e-02
+## L.Axis..pre.dilate. 4.408598e-03 9.023424e-03 0.0226213836 4.620712e-05
+## R.K.value.H         7.186992e-01 1.310744e-01 0.0000686956 4.746413e-05
+## R.K.Value.H.Axis    2.194698e-04 1.184145e-02 0.0015258852 5.909384e-03
+## R.K.value.V         7.274497e-01 1.098142e-01 0.0574798209 2.977640e-03
+## R.K.value.V.Axis    8.639598e-04 1.383048e-02 0.0017277536 6.620142e-03
+## L.K.value.H         6.507808e-01 1.528261e-01 0.0044661351 6.017182e-04
+## L.K.value.H.Axis    6.554753e-06 2.588322e-02 0.0215060300 1.390896e-02
+## L.K.value.V         7.018627e-01 1.265056e-01 0.0643146447 2.260092e-03
+## L.K.value.V.Axis    1.811580e-07 7.389904e-03 0.0025067674 2.267521e-02
+## R.Pachimetry        1.629829e-03 5.403591e-03 0.1871256489 3.627362e-01
+## L.Pachimetry        1.752975e-03 3.004747e-03 0.1858381156 3.781706e-01
+## R.Axial.Length      6.664322e-01 1.325988e-01 0.0219996690 9.502386e-03
+## L.Axial.Length      5.913543e-01 1.247409e-01 0.0237299439 8.354115e-03
+## R.AC.Depth          9.327233e-02 4.104102e-01 0.0361042494 1.126283e-02
+## L.AC.Depth          1.194694e-01 3.683209e-01 0.0392948476 1.200327e-02
+## R.IOP.mmHg          5.962981e-03 3.377855e-03 0.0541774544 4.448205e-01
+## L.IOP.mmHg          3.641992e-03 1.605443e-03 0.0444219259 4.749830e-01
+## R.CDR               1.498422e-02 1.164643e-01 0.2006642887 1.666206e-01
+## L.CDR               1.730429e-02 1.223543e-01 0.1735185526 1.587928e-01
+## totaluvafmm         3.711254e-02 5.433945e-03 0.0400736365 4.498833e-02
+##                            Dim.5
+## R.Logmar.VA         5.449390e-03
+## L.Logmar.VA         1.110937e-02
+## R.Sph..pre.dilate.  6.449240e-04
+## R.Cyl..pre.dilate.  1.426450e-02
+## R.Axis..pre.dilate. 1.807972e-01
+## L.Sph..pre.dilate.  5.867484e-06
+## L.Cyl..pre.dilate.  4.185306e-02
+## L.Axis..pre.dilate. 2.411023e-01
+## R.K.value.H         8.848068e-05
+## R.K.Value.H.Axis    2.780037e-01
+## R.K.value.V         9.288654e-04
+## R.K.value.V.Axis    2.698536e-01
+## L.K.value.H         5.251025e-03
+## L.K.value.H.Axis    2.417122e-01
+## L.K.value.V         2.587951e-03
+## L.K.value.V.Axis    2.547675e-01
+## R.Pachimetry        1.033401e-01
+## L.Pachimetry        1.053260e-01
+## R.Axial.Length      8.030465e-05
+## L.Axial.Length      4.151668e-03
+## R.AC.Depth          1.668448e-03
+## L.AC.Depth          3.808908e-04
+## R.IOP.mmHg          3.100919e-05
+## L.IOP.mmHg          5.314007e-05
+## R.CDR               8.391566e-02
+## L.CDR               9.996553e-02
+## totaluvafmm         4.898487e-02
+## 
+## $contrib
+##                            Dim.1        Dim.2        Dim.3        Dim.4
+## R.Logmar.VA         6.640031e-02  0.435332513 10.792667312  1.467723882
+## L.Logmar.VA         1.402529e-04  0.855910112 11.001596356  2.034383483
+## R.Sph..pre.dilate.  1.106886e+00 18.519636345  0.205133086  0.432157000
+## R.Cyl..pre.dilate.  3.400809e-02  0.002019183 16.948164330  1.448124495
+## R.Axis..pre.dilate. 1.240242e-01  0.043890668  1.201014249  0.592984272
+## L.Sph..pre.dilate.  1.042860e+00 18.121371640  0.029676847  0.433302189
+## L.Cyl..pre.dilate.  2.794179e-02  0.007514777 16.096516484  0.730674795
+## L.Axis..pre.dilate. 9.874882e-02  0.297348627  0.835999085  0.002017045
+## R.K.value.H         1.609825e+01  4.319289748  0.002538724  0.002071916
+## R.K.Value.H.Axis    4.915936e-03  0.390210995  0.056390831  0.257957950
+## R.K.value.V         1.629425e+01  3.618705831  2.124232472  0.129980738
+## R.K.value.V.Axis    1.935196e-02  0.455755514  0.063851107  0.288984151
+## L.K.value.H         1.457693e+01  5.036074482  0.165051126  0.026266359
+## L.K.value.H.Axis    1.468209e-04  0.852929085  0.794779916  0.607157686
+## L.K.value.V         1.572113e+01  4.168737071  2.376821198  0.098658142
+## L.K.value.V.Axis    4.057785e-06  0.243519313  0.092640454  0.989823976
+## R.Pachimetry        3.650678e-02  0.178064391  6.915442213 15.834256823
+## L.Pachimetry        3.926513e-02  0.099015332  6.867859947 16.508002987
+## R.Axial.Length      1.492751e+01  4.369524006  0.813022912  0.414800638
+## L.Axial.Length      1.324583e+01  4.110581931  0.876967196  0.364676001
+## R.AC.Depth          2.089221e+00 13.524235309  1.334273800  0.491647847
+## L.AC.Depth          2.676012e+00 12.137269560  1.452186003  0.523969819
+## R.IOP.mmHg          1.335657e-01  0.111310369  2.002189745 19.417419319
+## L.IOP.mmHg          8.157751e-02  0.052904121  1.641663038 20.734082340
+## R.CDR               3.356336e-01  3.837846261  7.415778120  7.273367900
+## L.CDR               3.876013e-01  4.031938178  6.412576416  6.931665771
+## totaluvafmm         8.312891e-01  0.179064638  1.480967035  1.963842478
+##                            Dim.5
+## R.Logmar.VA         2.729721e-01
+## L.Logmar.VA         5.564930e-01
+## R.Sph..pre.dilate.  3.230569e-02
+## R.Cyl..pre.dilate.  7.145407e-01
+## R.Axis..pre.dilate. 9.056534e+00
+## L.Sph..pre.dilate.  2.939154e-04
+## L.Cyl..pre.dilate.  2.096513e+00
+## L.Axis..pre.dilate. 1.207735e+01
+## R.K.value.H         4.432195e-03
+## R.K.Value.H.Axis    1.392583e+01
+## R.K.value.V         4.652894e-02
+## R.K.value.V.Axis    1.351757e+01
+## L.K.value.H         2.630356e-01
+## L.K.value.H.Axis    1.210790e+01
+## L.K.value.V         1.296363e-01
+## L.K.value.V.Axis    1.276187e+01
+## R.Pachimetry        5.176535e+00
+## L.Pachimetry        5.276014e+00
+## R.Axial.Length      4.022639e-03
+## L.Axial.Length      2.079663e-01
+## R.AC.Depth          8.357630e-02
+## L.AC.Depth          1.907967e-02
+## R.IOP.mmHg          1.553320e-03
+## L.IOP.mmHg          2.661905e-03
+## R.CDR               4.203523e+00
+## L.CDR               5.007497e+00
+## totaluvafmm         2.453762e+00</code></pre>
+</div>
+</div>
+<div id="discussion" class="section level1">
+<h1>Discussion</h1>
+</div>

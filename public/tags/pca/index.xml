@@ -9,10 +9,39 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Fri, 04 May 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 17 May 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/pca/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>PCA of Phenotypic Data </title>
+      <link>/posts/pca-of-phenotypic-data/</link>
+      <pubDate>Thu, 17 May 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/pca-of-phenotypic-data/</guid>
+      <description># required packagesrequire(tidyverse)require(broom)require(missMDA)require(FactoMineR)require(moments)require(Hmisc)require(corrplot)IntroductionThe results of the Pearson correlations between the phenotypic variables, indicate that there were several correlated variables, that were not due to being left and right values of the same variable. For example, the keratometry measurements were negatively correlated with axial length. These relationships suggest that there is an underlying component, or a latent phenotype, that may better explain these variables.</description>
+    </item>
+    
+    <item>
+      <title>Adding Conjunctival UVAF to dataset </title>
+      <link>/posts/adding-conjunctival-uvaf-to-dataset/</link>
+      <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/adding-conjunctival-uvaf-to-dataset/</guid>
+      <description># required packagesrequire(tidyverse)require(broom)require(missMDA)require(FactoMineR)require(moments)require(Hmisc)require(corrplot)IntroductionUpon inspection of the current data set being used, we realised that there was a variable missing. The variable was a total meausure of conjunctival ultraviolet fluorescence (UVAF). This was included in the original NI Eye Study and therefore, we decided to introduce the variable to this study.
+Methods and Results1. Load phenotype dataphen.data.uvaf &amp;lt;- read.csv(&amp;#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database_120815_data_dictionary-2.csv&amp;#39;)head(phen.</description>
+    </item>
+    
+    <item>
+      <title>MIPCA of Phenotypic Data without LogMAR-with-PH values</title>
+      <link>/posts/mipca-of-phenotypic-data-without-logmar-with-ph-values/</link>
+      <pubDate>Sat, 05 May 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/mipca-of-phenotypic-data-without-logmar-with-ph-values/</guid>
+      <description># required packagesrequire(tidyverse)require(broom)require(missMDA)require(FactoMineR)require(moments)require(Hmisc)require(corrplot)IntroductionAfter adding in additional variables, which included logMAR and base-out prism test values, the variable factor plots indicated that there was a large uncertainty around the imputed values of the logMAR with pinhole correction values. Therefore, the right and left pinhole correction variables (LVA and RVA with PH).
+Methods and Results1. Subset quantitative variables excluding LVA and RVA with PH variables.</description>
+    </item>
     
     <item>
       <title>Multiple PCA Imputation of Quantitative Phenotypic Data  - updated</title>
