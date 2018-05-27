@@ -58,7 +58,7 @@ imputed_phen_data_uvaf<-res.comp$res.imputePCA
 ```{r, cache=TRUE}
 data.imputed.phen<-as.data.frame(imputed_phen_data_uvaf)
 data("data.imputed.phen")
-res.pca.phen<-PCA(imputed_phen_data_uvaf, graph = FALSE)
+res.pca.phen<-PCA(imputed_phen_data_uvaf, ncp = 9, graph = FALSE)
 eig.val.phen<-res.pca.phen$eig
 barplot(eig.val.phen[, 2], 
         names.arg = 1:nrow(eig.val.phen), 
