@@ -1,0 +1,2 @@
+"0","png('var_factor_plot.png', width = 3200, height = 3200, res = 150)"
+"0","plot.MIPCA(res.comp, choice = ""var"") "

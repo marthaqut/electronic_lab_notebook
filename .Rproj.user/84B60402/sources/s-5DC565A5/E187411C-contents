@@ -1,0 +1,77 @@
+---
+title: Pearson's correlations on imputed data set
+author: Martha Aquino
+date: '2018-05-09'
+slug: pearson-s-correlations-on-imputed-data-set
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Data Cleaning
+  - Imputation
+  - Bivariate Correlations
+  - R
+---
+ 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages, message=FALSE, warning=FALSE}
+# required packages
+require(corrplot)
+require(missMDA)
+require(FactoMineR)
+library(Hmisc)
+```
+
+# Introduction 
+
+Prior to performing principal component analyses, bivariate correlations need to be performed between variables to determine any underlying relationships.
+
+# Methods and Results
+
+### Load data
+
+```{r, cache=TRUE}
+phen.data.age <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv')
+phen.data.adults<-phen.data.age[phen.data.age$Age.excel>17,]
+quant.variables<- c("Logmar.VA.Right", "Logmar.VA.Left", "R.Sph..pre.dilate.", "R.Cyl..pre.dilate.",
+                    "R.Axis..pre.dilate.", "L.Sph..pre.dilate.", "L.Cyl..pre.dilate.", "L.Axis..pre.dilate.",
+                    "R.K.value.H", "R.K.Value.H.Axis", "R.K.value.V", "R.K.value.V.Axis", "L.K.value.H",
+                    "L.K.value.H.Axis", "L.K.value.V", "L.K.value.V.Axis", "R.Pachimetry", "L.Pachimetry", "R.Axial.Length",
+                    "L.Axial.Length", "AC.Depth.R", "AC.Depth.L", "R.IOP.mmHg", "L.IOP.mmHg", "CDR.RE", "CDR.LE")
+quant.data.adults<- phen.data.adults[quant.variables]
+ocular_data <- quant.data.adults
+ocular_data <- as.matrix(ocular_data)
+```
+
+### Perform imputation
+
+```{r, cache=TRUE}
+nbdim = estim_ncpPCA(ocular_data, method = 'EM', method.cv="Kfold")
+nbdim
+res.comp = MIPCA(ocular_data, ncp = nbdim$ncp, nboot = 1000)
+imputed_phen_data<-res.comp$res.imputePCA
+head(imputed_phen_data) # don't show large data sets, good idea to just use head()
+```
+
+##1. Perform Pearson's correlation
+
+```{r, cache=TRUE}
+pearson_imputed_data_2<-rcorr(imputed_phen_data, type="pearson")
+pearson_coeff_2<-rcorr(imputed_phen_data, type="pearson")$r #extract pearson correlation coefficients
+pearson_pval_2<-rcorr(imputed_phen_data, type="pearson")$P #extract p-values of correlations
+pearson_phen_data_F<-rbind(pearson_coeff_2, pearson_pval_2) #bind p-values and coefficients
+pearson_phen_data_F
+```
+
+## 2. Plot significant results from correlation
+
+```{r, cache=TRUE}
+title <- "Pearson correlation of imputed phenotypic data"
+corrplot.mixed(pearson_coeff_2, p.mat=pearson_pval_2, sig.level = 0.05, insig="blank", tl.pos = 'lt',
+               tl.col="black", tl.cex=0.60, mar=c(0,0,1,1), number.cex = 0.65, title=title)
+```
+
+# Discussion

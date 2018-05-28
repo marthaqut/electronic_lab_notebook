@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1522888644472.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "9733EB5E",
+    "lastKnownWriteTime" : 1526807920,
+    "last_content_update" : 1526807920961,
+    "path" : "~/Honours/Project/electronic_lab_notebook-master/lab_book_setup.R",
+    "project_path" : "lab_book_setup.R",
+    "properties" : {
+        "cursorPosition" : "15,0",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

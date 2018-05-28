@@ -1,0 +1,5 @@
+"0","phen.data.age <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv/')
+"
+"2","cannot open file 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv/': Invalid argument"
+"2","Error in file(file, ""rt"") : cannot open the connection
+"

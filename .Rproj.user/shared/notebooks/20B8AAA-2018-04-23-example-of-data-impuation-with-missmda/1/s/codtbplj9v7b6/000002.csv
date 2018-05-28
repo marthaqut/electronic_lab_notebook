@@ -1,0 +1,5 @@
+"0","nb = estim_ncpPCA(quant.data.adults)
+"
+"2","Error in estim_ncpPCA(quant.data.adults) : 
+  could not find function ""estim_ncpPCA""
+"
