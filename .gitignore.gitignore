@@ -3,6 +3,7 @@
 .RData
 .Ruserdata
 
-.rdx
-.rdb
-.RData
+*.rdx
+*.rdb
+*.RData
+*.RHISTORY
