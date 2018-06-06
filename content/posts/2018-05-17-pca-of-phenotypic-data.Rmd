@@ -74,3 +74,4 @@ res.pca.phen$var
 ```
 
 #Discussion
+The PCA identified nine principal components with an eigenvalue of >1. These principal components have an additive contribution to variance of about 73%, with the first principal component contributing about 16%. 
