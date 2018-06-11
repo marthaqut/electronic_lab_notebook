@@ -27,12 +27,11 @@ library(Hmisc)
 
 # Introduction 
 
-Prior to performing principal component analyses, bivariate correlations need to be performed between variables to determine any underlying relationships.
+Prior to performing principal component analyses, bivariate correlations need to be performed between variables to determine any underlying relationships. This is because PCA indentifies components that may better explain relationships or variability among variables that are related. If none of the variables are correlated, it would be futile to perform a PCA.
 
 # Methods and Results
 
-### Load data
-
+##1. Load data
 ```{r, cache=TRUE}
 phen.data.age <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv')
 phen.data.adults<-phen.data.age[phen.data.age$Age.excel>17,]
@@ -46,17 +45,17 @@ ocular_data <- quant.data.adults
 ocular_data <- as.matrix(ocular_data)
 ```
 
-### Perform imputation
+##2. Perform imputation
 
 ```{r, cache=TRUE}
 nbdim = estim_ncpPCA(ocular_data, method = 'EM', method.cv="Kfold")
 nbdim
 res.comp = MIPCA(ocular_data, ncp = nbdim$ncp, nboot = 1000)
 imputed_phen_data<-res.comp$res.imputePCA
-head(imputed_phen_data) # don't show large data sets, good idea to just use head()
+head(imputed_phen_data)
 ```
 
-##1. Perform Pearson's correlation
+##3. Perform Pearson's correlation
 
 ```{r, cache=TRUE}
 pearson_imputed_data_2<-rcorr(imputed_phen_data, type="pearson")
@@ -66,7 +65,7 @@ pearson_phen_data_F<-rbind(pearson_coeff_2, pearson_pval_2) #bind p-values and c
 pearson_phen_data_F
 ```
 
-## 2. Plot significant results from correlation
+##4. Plot significant results from correlation
 
 ```{r, cache=TRUE}
 title <- "Pearson correlation of imputed phenotypic data"
@@ -75,3 +74,5 @@ corrplot.mixed(pearson_coeff_2, p.mat=pearson_pval_2, sig.level = 0.05, insig="b
 ```
 
 # Discussion
+The correlation plots show very strong relationships between the left and right measurements for the same test, as expected. It is also evident that negative correlations exist between axial length and corneal curvature (keratometry), while there are positive correlations between axial length and anterior chamber depth, and corneal thickness and intraocular pressure. These relationships are expected as they overlap in function. Interestingly, there are very weak negative correlations between corneal curvature (keratometry / K-values) and cup-to-disc ratio. This has been reported in other studies (https://www.nature.com/articles/eye201098.pdf?origin=ppub), although the biological reason for this relationship is not well-established. 
+There is also a very weak positive correlaton between the intraocular pressure for left eye, but not right, measurements and cup-to-disc ratio measurements for both eyes. And weak negative correlations between the anterior chamber depth for the right eye, but not left, and cup-to-disc ratio for both eyes. 

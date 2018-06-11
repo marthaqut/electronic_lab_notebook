@@ -12,9 +12,11 @@ tags:
   - PCA
   - R
 ---
+#Introduction
+Multiple imputation with PCA performed on larger data set. 
 
-
-##Methods and Results 
+#Methods and Results 
+##1. Load data 
 ```{r}
 phen.data.age <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv')
 
@@ -29,30 +31,54 @@ quant.data.adults<- phen.data.adults[quant.variables]
 summary(quant.data.adults)
 ```
 
-2. duplicate data set 
+##2. Subset relevant data (quantitative only, including logMAR and prism test values, and excluding information from minors)
+```{r}
+phen.data.adults<-phen.data.age[phen.data.age$Age.excel>17,]
+quant.variables<- c("Logmar.VA.Right", "RVA.with.PH", "Logmar.VA.Left", "LVA.with.PH", "R.Sph..pre.dilate.", "R.Cyl..pre.dilate.",
+                    "R.Axis..pre.dilate.", "L.Sph..pre.dilate.", "L.Cyl..pre.dilate.", "L.Axis..pre.dilate.",
+                    "R.K.value.H", "R.K.Value.H.Axis", "R.K.value.V", "R.K.value.V.Axis", "L.K.value.H",
+                    "L.K.value.H.Axis", "L.K.value.V", "L.K.value.V.Axis", "R.Pachimetry", "L.Pachimetry", "R.Axial.Length",
+                    "L.Axial.Length", "AC.Depth.R", "AC.Depth.L", "R.IOP.mmHg", "L.IOP.mmHg", "CDR.RE", "CDR.LE")
+quant.data.adults<- phen.data.adults[quant.variables]
+head(quant.data.adults)
+
+```
+
+##3. View summary statistics of data subset 
+```{r}
+summary(quant.data.adults)
+```
+
+##4. Duplicate data set 
 ```{r}
 ocular_data <- quant.data.adults
 ```
 
-3.  Convert to double matrix to ensure that all data is 'numeric'
+##5. Convert to double matrix to ensure that all data is 'numeric'
 ```{r}
 ocular_data <- as.matrix(ocular_data)
 ```
 
-4. Perform imputation
+##6.Perform imputation
 ```{r}
 require(missMDA)
 require(FactoMineR)
 nbdim = estim_ncpPCA(ocular_data, method = 'EM', method.cv="Kfold")
 nbdim
 res.comp = MIPCA(ocular_data, ncp = nbdim$ncp, nboot = 1000)
+
+res.comp$ncp
+```
+
+##7. Plot individuals plot to view uncertainty of predicted values 
+```{r}
 png('indiv_supp_plot.png', width = 3200, height = 3200, res = 150)
 plot.MIPCA(res.comp, choice = "ind.supp") 
 dev.off()
-
 ```
 
-5. Plot variable factor plot
+
+##8. Plot variable factor plot
 ```{r}
 png('var_factor_plot.png', width = 3200, height = 3200, res = 150)
 plot.MIPCA(res.comp, choice = "var") 

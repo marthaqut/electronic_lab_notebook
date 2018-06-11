@@ -11,42 +11,69 @@ tags:
   - Imputation
   - PCA
 ---
+#Introduction
+Multiple imputation using PCA is an effective method for imputing an incomplete data set with missing at random (MAR) data. It takes into account the variability of the data and the uncertainty of the predicted values. By doing so, the resulting imputed data set has integrity and is filled with values that will be valuable in subsequent statistical analyses. This is unlike other standard methods of imputation, like using mean or regression imputation, which is single dimensional and may skew results of further analyses. 
 
+https://link.springer.com/article/10.1007/s11634-011-0086-7
 
-##Methods and Results 
-1. load data 
+#Methods and Results 
+##1. load data 
 ```{r}
 phen.data.age <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv')
-phen.data.adults<-phen.data.age[phen.data.age$Age.excel>17,]
 quant.variables<- c("R.K.value.H", "R.K.Value.H.Axis", "R.K.value.V", "R.K.value.V.Axis", "L.K.value.H",
                     "L.K.value.H.Axis", "L.K.value.V", "L.K.value.V.Axis", "R.Pachimetry", "L.Pachimetry", "R.Axial.Length",
                     "L.Axial.Length", "AC.Depth.R", "AC.Depth.L", "R.IOP.mmHg", "L.IOP.mmHg", "CDR.RE", "CDR.LE")
 quant.data.adults<- phen.data.adults[quant.variables]
 
-#export subset of data 
-write.csv(quant.data.adults, file = "quant.data.adults.csv")
 ```
 
-2. duplicate data set 
+##2. Exclude data from minors (<18yrs)
+```{r}
+phen.data.adults<-phen.data.age[phen.data.age$Age.excel>17,]
+
+```
+
+##3. Subset quantitative data only from relevant phenotypes
+```{r}
+quant.variables<- c("R.K.value.H", "R.K.Value.H.Axis", "R.K.value.V", "R.K.value.V.Axis", "L.K.value.H",
+                    "L.K.value.H.Axis", "L.K.value.V", "L.K.value.V.Axis", "R.Pachimetry", "L.Pachimetry", "R.Axial.Length",
+                    "L.Axial.Length", "AC.Depth.R", "AC.Depth.L", "R.IOP.mmHg", "L.IOP.mmHg", "CDR.RE", "CDR.LE")
+quant.data.adults<- phen.data.adults[quant.variables]
+
+head(quant.data.adults)
+```
+
+##4.Duplicate data set
 ```{r}
 ocular_data <-quant.data.adults
 ```
 
-3. Convert to double matrix to ensure that all data is 'numeric'
+##5. Convert to double matrix to ensure that all data is 'numeric'
 ```{r}
 ocular_data <- as.matrix(ocular_data)
 ```
 
-4. Perform imputation
+##6. Perform imputation
 ```{r}
 require(missMDA)
 require(FactoMineR)
 nbdim = estim_ncpPCA(ocular_data, method = 'EM', method.cv="Kfold")
 nbdim
 res.comp = MIPCA(ocular_data, ncp = nbdim$ncp, nboot = 1000)
+
+res.comp$ncp
+```
+
+##7. Plot individuals to view uncertainty of predicted values 
+```{r}
 png('indiv_supp_plot.png', width = 3200, height = 3200, res = 150)
 plot.MIPCA(res.comp, choice = "ind.supp") 
 dev.off()
+
+```
+
+##8. Plot variables to view uncertainty of predicted values
+```{r}
 png('var_factor_plot.png', width = 3200, height = 3200, res = 150)
 plot.MIPCA(res.comp, choice = "var") 
 dev.off()
