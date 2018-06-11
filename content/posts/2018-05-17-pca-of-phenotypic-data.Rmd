@@ -32,7 +32,7 @@ The results of the Pearson correlations between the phenotypic variables, indica
 https://towardsdatascience.com/a-one-stop-shop-for-principal-component-analysis-5582fb7e0a9c
 
 #Methods and Results 
-## 1. Load data
+## 1. Load and generate initial data (incl. subsetting and mipca)
 ```{r, cache=TRUE}
 phen.data.uvaf <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database_120815_data_dictionary-2.csv')
 summary.uvaf <- summary(phen.data.uvaf)
@@ -55,11 +55,25 @@ res.comp = MIPCA(ocular_data_uvaf, ncp = nbdim$ncp, nboot = 1000)
 imputed_phen_data_uvaf<-res.comp$res.imputePCA
 ```
 
+##2. Force data into data frame
 ```{r, cache=TRUE}
 data.imputed.phen<-as.data.frame(imputed_phen_data_uvaf)
 data("data.imputed.phen")
+```
+
+##3. Perform PCA 
+```{r}
 res.pca.phen<-PCA(imputed_phen_data_uvaf, ncp = 9, graph = FALSE)
+```
+
+##4. Extract eigenvalues and variable contribution values
+```{r}
 eig.val.phen<-res.pca.phen$eig
+eig.val.phen
+```
+
+##5. Produce screeplot
+```{r}
 barplot(eig.val.phen[, 2], 
         names.arg = 1:nrow(eig.val.phen), 
         main = "Variances Explained by PCs (%)",
@@ -68,10 +82,18 @@ barplot(eig.val.phen[, 2],
         col ="steelblue")
 lines(x = 1:nrow(eig.val.phen), eig.val.phen[, 2], 
       type = "b", pch = 19, col = "red")
-eigen.imputed<-res.pca.phen$eig
-eigen.imputed
-res.pca.phen$var
 ```
 
+##6. View variable results from PCA 
+```{r}
+head(res.pca.phen$var)
+```
+
+##7. View individual results from PCA 
+```{r}
+head(res.pca.phen$indiv)
+```
+
+
 #Discussion
-The PCA identified nine principal components with an eigenvalue of >1. These principal components have an additive contribution to variance of about 73%, with the first principal component contributing about 16%. 
+The PCA identified nine principal components with an eigenvalue of >1. These principal components have an additive contribution to variance of about 73%, with the first principal component contributing about 16%. These nine principal components will be carried forward to the heritability analyses (aim 2) along with the 27 phenotypic variables to determine which variables and components are highly heritable. By using principal components for the subsequent aims (heritability analysis and GWAS), important pleiotropic variants may be found. 

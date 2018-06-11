@@ -134,8 +134,11 @@ summary_stats_imputed_uvaf
 
 ```{r, cache=TRUE}
 pearson_imputed_data_uvaf<-rcorr(imputed_phen_data_uvaf, type="pearson")
+#extract correlation coefficients
 pearson_coeff_uvaf<-rcorr(imputed_phen_data_uvaf, type="pearson")$r
+#extract p-values for correlations
 pearson_pval_uvaf<-rcorr(imputed_phen_data_uvaf, type="pearson")$P
+#bind coefficients and p-values
 pearson_phen_data_uvaf<-rbind(pearson_coeff_uvaf, pearson_pval_uvaf)
 head(pearson_phen_data_uvaf)
 ```
