@@ -6,8 +6,8 @@
     <description>Recent content in Imputation on Electronic Lab Notebook</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <managingEditor>your@email.com (Your Name)</managingEditor>
-    <webMaster>your@email.com (Your Name)</webMaster>
+    <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
+    <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
     <lastBuildDate>Thu, 10 May 2018 00:00:00 +0000</lastBuildDate>
     
@@ -18,7 +18,7 @@
       <title>Adding Conjunctival UVAF to dataset </title>
       <link>/posts/adding-conjunctival-uvaf-to-dataset/</link>
       <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
-      <author>your@email.com (Your Name)</author>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
       <guid>/posts/adding-conjunctival-uvaf-to-dataset/</guid>
       <description># required packagesrequire(tidyverse)require(broom)require(missMDA)require(FactoMineR)require(moments)require(Hmisc)require(corrplot)IntroductionUpon inspection of the current data set being used, we realised that there was a variable missing. The variable was a total meausure of conjunctival ultraviolet fluorescence (UVAF). This was included in the original NI Eye Study and therefore, we decided to introduce the variable to this study.
 Methods and Results1. Load phenotype dataphen.data.uvaf &amp;lt;- read.csv(&amp;#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database_120815_data_dictionary-2.csv&amp;#39;)head(phen.</description>
@@ -28,7 +28,7 @@
       <title>Pearson&#39;s correlations on imputed data set</title>
       <link>/posts/pearson-s-correlations-on-imputed-data-set/</link>
       <pubDate>Wed, 09 May 2018 00:00:00 +0000</pubDate>
-      <author>your@email.com (Your Name)</author>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
       <guid>/posts/pearson-s-correlations-on-imputed-data-set/</guid>
       <description># required packagesrequire(corrplot)require(missMDA)require(FactoMineR)library(Hmisc)IntroductionPrior to performing principal component analyses, bivariate correlations need to be performed between variables to determine any underlying relationships. This is because PCA indentifies components that may better explain relationships or variability among variables that are related. If none of the variables are correlated, it would be futile to perform a PCA.
 Methods and Results1. Load dataphen.data.age &amp;lt;- read.csv(&amp;#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv&amp;#39;)phen.</description>
@@ -38,7 +38,7 @@
       <title>MIPCA of Phenotypic Data without LogMAR-with-PH values</title>
       <link>/posts/mipca-of-phenotypic-data-without-logmar-with-ph-values/</link>
       <pubDate>Sat, 05 May 2018 00:00:00 +0000</pubDate>
-      <author>your@email.com (Your Name)</author>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
       <guid>/posts/mipca-of-phenotypic-data-without-logmar-with-ph-values/</guid>
       <description># required packagesrequire(tidyverse)require(broom)require(missMDA)require(FactoMineR)require(moments)require(Hmisc)require(corrplot)IntroductionAfter adding in additional variables, which included logMAR and base-out prism test values, the variable factor plots indicated that there was a large uncertainty around the imputed values of the logMAR with pinhole correction values. Therefore, the right and left pinhole correction variables (LVA and RVA with PH).
 Methods and Results1. Subset quantitative variables excluding LVA and RVA with PH variables.</description>
@@ -48,7 +48,7 @@
       <title>Multiple PCA Imputation of Quantitative Phenotypic Data  - updated</title>
       <link>/posts/multiple-pca-imputation-of-quantitative-phenotypic-data-updated/</link>
       <pubDate>Fri, 04 May 2018 00:00:00 +0000</pubDate>
-      <author>your@email.com (Your Name)</author>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
       <guid>/posts/multiple-pca-imputation-of-quantitative-phenotypic-data-updated/</guid>
       <description>IntroductionMultiple imputation with PCA performed on larger data set.
 Methods and Results1. Load dataphen.data.age &amp;lt;- read.csv(&amp;#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv&amp;#39;)#include logMAR and base-out prism test values phen.data.adults&amp;lt;-phen.data.age[phen.data.age$Age.excel&amp;gt;17,]quant.variables&amp;lt;- c(&amp;quot;Logmar.VA.Right&amp;quot;, &amp;quot;RVA.with.PH&amp;quot;, &amp;quot;Logmar.VA.Left&amp;quot;, &amp;quot;LVA.with.PH&amp;quot;, &amp;quot;R.Sph..pre.dilate.&amp;quot;, &amp;quot;R.Cyl..pre.dilate.&amp;quot;,&amp;quot;R.Axis..pre.dilate.&amp;quot;, &amp;quot;L.Sph..pre.dilate.&amp;quot;, &amp;quot;L.Cyl..pre.dilate.&amp;quot;, &amp;quot;L.Axis..pre.dilate.&amp;quot;,&amp;quot;R.K.value.H&amp;quot;, &amp;quot;R.K.Value.H.Axis&amp;quot;, &amp;quot;R.K.value.V&amp;quot;, &amp;quot;R.K.value.V.Axis&amp;quot;, &amp;quot;L.K.value.H&amp;quot;,&amp;quot;L.K.value.H.Axis&amp;quot;, &amp;quot;L.K.value.V&amp;quot;, &amp;quot;L.K.value.V.Axis&amp;quot;, &amp;quot;R.Pachimetry&amp;quot;, &amp;quot;L.Pachimetry&amp;quot;, &amp;quot;R.Axial.Length&amp;quot;,&amp;quot;L.Axial.Length&amp;quot;, &amp;quot;AC.Depth.R&amp;quot;, &amp;quot;AC.Depth.L&amp;quot;, &amp;quot;R.IOP.mmHg&amp;quot;, &amp;quot;L.IOP.mmHg&amp;quot;, &amp;quot;CDR.RE&amp;quot;, &amp;quot;CDR.LE&amp;quot;)quant.data.adults&amp;lt;- phen.data.adults[quant.variables]summary(quant.data.adults)## Logmar.VA.Right RVA.with.PH Logmar.VA.Left ## Min. :-0.30000 Min. :-0.2400 Min. :-0.</description>
@@ -58,7 +58,7 @@
       <title>Multiple PCA Imputation of Phenotypic Data</title>
       <link>/posts/multiple-pca-imputation-of-phenotypic-data/</link>
       <pubDate>Sun, 29 Apr 2018 00:00:00 +0000</pubDate>
-      <author>your@email.com (Your Name)</author>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
       <guid>/posts/multiple-pca-imputation-of-phenotypic-data/</guid>
       <description>IntroductionMultiple imputation using PCA is an effective method for imputing an incomplete data set with missing at random (MAR) data. It takes into account the variability of the data and the uncertainty of the predicted values. By doing so, the resulting imputed data set has integrity and is filled with values that will be valuable in subsequent statistical analyses. This is unlike other standard methods of imputation, like using mean or regression imputation, which is single dimensional and may skew results of further analyses.</description>
     </item>
@@ -67,7 +67,7 @@
       <title>Example of data imputation with missMDA</title>
       <link>/posts/example-of-data-impuation-with-missmda/</link>
       <pubDate>Mon, 23 Apr 2018 00:00:00 +0000</pubDate>
-      <author>your@email.com (Your Name)</author>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
       <guid>/posts/example-of-data-impuation-with-missmda/</guid>
       <description>IntroductionThis entry will show the results of a single imputation using the missMDA package. The missMDA package imputes quantitative variables using principal component analysis (PCA).
 Methods and Resultsload dataphen.data.age &amp;lt;- read.csv(&amp;#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv&amp;#39;)phen.data.adults&amp;lt;-phen.data.age[phen.data.age$Age.excel&amp;gt;17,]quant.variables&amp;lt;- c(&amp;quot;R.K.value.H&amp;quot;, &amp;quot;R.K.Value.H.Axis&amp;quot;, &amp;quot;R.K.value.V&amp;quot;, &amp;quot;R.K.value.V.Axis&amp;quot;, &amp;quot;L.K.value.H&amp;quot;,&amp;quot;L.K.value.H.Axis&amp;quot;, &amp;quot;L.K.value.V&amp;quot;, &amp;quot;L.K.value.V.Axis&amp;quot;, &amp;quot;R.Pachimetry&amp;quot;, &amp;quot;L.Pachimetry&amp;quot;, &amp;quot;R.Axial.Length&amp;quot;,&amp;quot;L.Axial.Length&amp;quot;, &amp;quot;AC.Depth.R&amp;quot;, &amp;quot;AC.Depth.L&amp;quot;, &amp;quot;R.IOP.mmHg&amp;quot;, &amp;quot;L.IOP.mmHg&amp;quot;, &amp;quot;CDR.RE&amp;quot;, &amp;quot;CDR.LE&amp;quot;)quant.data.adults&amp;lt;- phen.data.adults[quant.variables]install relevant packagesinstall.packages(&amp;#39;missMDA&amp;#39;, dependencies = TRUE, repos = &amp;quot;http://cran.us.r-project.org&amp;quot;)## Installing package into &amp;#39;C:/Users/Martha/Documents/R/win-library/3.</description>
@@ -77,7 +77,7 @@ Methods and Resultsload dataphen.data.age &amp;lt;- read.csv(&amp;#39;C:/User
       <title>Understanding PCA </title>
       <link>/posts/understanding-pca/</link>
       <pubDate>Mon, 23 Apr 2018 00:00:00 +0000</pubDate>
-      <author>your@email.com (Your Name)</author>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
       <guid>/posts/understanding-pca/</guid>
       <description>IntroductionPrincipal component analysis (PCA) is one of the analysis techniques that I will be performing on my data. For the phenotypic dataset, it will be used to impute missing values to obtain a complete dataset. Later on, PCA will be performed to determine principal components of the endophenotypes to identify any latent phenotypes.
 http://setosa.io/ev/principal-component-analysis/

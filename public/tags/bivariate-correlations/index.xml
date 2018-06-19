@@ -6,8 +6,8 @@
     <description>Recent content in Bivariate Correlations on Electronic Lab Notebook</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <managingEditor>your@email.com (Your Name)</managingEditor>
-    <webMaster>your@email.com (Your Name)</webMaster>
+    <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
+    <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
     <lastBuildDate>Thu, 10 May 2018 00:00:00 +0000</lastBuildDate>
     
@@ -18,7 +18,7 @@
       <title>Adding Conjunctival UVAF to dataset </title>
       <link>/posts/adding-conjunctival-uvaf-to-dataset/</link>
       <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
-      <author>your@email.com (Your Name)</author>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
       <guid>/posts/adding-conjunctival-uvaf-to-dataset/</guid>
       <description># required packagesrequire(tidyverse)require(broom)require(missMDA)require(FactoMineR)require(moments)require(Hmisc)require(corrplot)IntroductionUpon inspection of the current data set being used, we realised that there was a variable missing. The variable was a total meausure of conjunctival ultraviolet fluorescence (UVAF). This was included in the original NI Eye Study and therefore, we decided to introduce the variable to this study.
 Methods and Results1. Load phenotype dataphen.data.uvaf &amp;lt;- read.csv(&amp;#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database_120815_data_dictionary-2.csv&amp;#39;)head(phen.</description>
@@ -28,7 +28,7 @@
       <title>Pearson&#39;s correlations on imputed data set</title>
       <link>/posts/pearson-s-correlations-on-imputed-data-set/</link>
       <pubDate>Wed, 09 May 2018 00:00:00 +0000</pubDate>
-      <author>your@email.com (Your Name)</author>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
       <guid>/posts/pearson-s-correlations-on-imputed-data-set/</guid>
       <description># required packagesrequire(corrplot)require(missMDA)require(FactoMineR)library(Hmisc)IntroductionPrior to performing principal component analyses, bivariate correlations need to be performed between variables to determine any underlying relationships. This is because PCA indentifies components that may better explain relationships or variability among variables that are related. If none of the variables are correlated, it would be futile to perform a PCA.
 Methods and Results1. Load dataphen.data.age &amp;lt;- read.csv(&amp;#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv&amp;#39;)phen.</description>
