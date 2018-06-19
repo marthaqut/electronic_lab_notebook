@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Coding on Electronic Lab Notebook</title>
+    <link>/categories/coding/</link>
+    <description>Recent content in Coding on Electronic Lab Notebook</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
+    <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
+    <copyright>(c) 2018 -- All rights reserved.</copyright>
+    <lastBuildDate>Thu, 17 May 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/coding/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>PCA of Phenotypic Data </title>
+      <link>/posts/pca-of-phenotypic-data/</link>
+      <pubDate>Thu, 17 May 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/pca-of-phenotypic-data/</guid>
+      <description># required packagesrequire(tidyverse)require(broom)require(missMDA)require(FactoMineR)require(moments)require(Hmisc)require(corrplot)IntroductionThe results of the Pearson correlations between the phenotypic variables, indicate that there were several correlated variables, that were not due to being left and right values of the same variable. For example, the keratometry measurements were negatively correlated with axial length. These relationships suggest that there is an underlying component, or a latent phenotype, that may better explain these variables.</description>
+    </item>
+    
+    <item>
+      <title>Adding Conjunctival UVAF to dataset </title>
+      <link>/posts/adding-conjunctival-uvaf-to-dataset/</link>
+      <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/adding-conjunctival-uvaf-to-dataset/</guid>
+      <description># required packagesrequire(tidyverse)require(broom)require(missMDA)require(FactoMineR)require(moments)require(Hmisc)require(corrplot)IntroductionUpon inspection of the current data set being used, we realised that there was a variable missing. The variable was a total meausure of conjunctival ultraviolet fluorescence (UVAF). This was included in the original NI Eye Study and therefore, we decided to introduce the variable to this study.
+Methods and Results1. Load phenotype dataphen.data.uvaf &amp;lt;- read.csv(&amp;#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database_120815_data_dictionary-2.csv&amp;#39;)head(phen.</description>
+    </item>
+    
+    <item>
+      <title>Pearson&#39;s correlations on imputed data set</title>
+      <link>/posts/pearson-s-correlations-on-imputed-data-set/</link>
+      <pubDate>Wed, 09 May 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/pearson-s-correlations-on-imputed-data-set/</guid>
+      <description># required packagesrequire(corrplot)require(missMDA)require(FactoMineR)library(Hmisc)IntroductionPrior to performing principal component analyses, bivariate correlations need to be performed between variables to determine any underlying relationships.
+Methods and ResultsLoad dataphen.data.age &amp;lt;- read.csv(&amp;#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv&amp;#39;)phen.data.adults&amp;lt;-phen.data.age[phen.data.age$Age.excel&amp;gt;17,]quant.variables&amp;lt;- c(&amp;quot;Logmar.VA.Right&amp;quot;, &amp;quot;Logmar.VA.Left&amp;quot;, &amp;quot;R.Sph..pre.dilate.&amp;quot;, &amp;quot;R.Cyl..pre.dilate.&amp;quot;,&amp;quot;R.Axis..pre.dilate.&amp;quot;, &amp;quot;L.Sph..pre.dilate.&amp;quot;, &amp;quot;L.Cyl..pre.dilate.&amp;quot;, &amp;quot;L.Axis..pre.dilate.&amp;quot;,&amp;quot;R.K.value.H&amp;quot;, &amp;quot;R.K.Value.H.Axis&amp;quot;, &amp;quot;R.K.value.V&amp;quot;, &amp;quot;R.K.value.V.Axis&amp;quot;, &amp;quot;L.K.value.H&amp;quot;,&amp;quot;L.K.value.H.Axis&amp;quot;, &amp;quot;L.K.value.V&amp;quot;, &amp;quot;L.K.value.V.Axis&amp;quot;, &amp;quot;R.Pachimetry&amp;quot;, &amp;quot;L.Pachimetry&amp;quot;, &amp;quot;R.Axial.Length&amp;quot;,&amp;quot;L.Axial.Length&amp;quot;, &amp;quot;AC.Depth.R&amp;quot;, &amp;quot;AC.Depth.L&amp;quot;, &amp;quot;R.IOP.mmHg&amp;quot;, &amp;quot;L.IOP.mmHg&amp;quot;, &amp;quot;CDR.RE&amp;quot;, &amp;quot;CDR.LE&amp;quot;)quant.data.adults&amp;lt;- phen.data.adults[quant.variables]ocular_data &amp;lt;- quant.data.adultsocular_data &amp;lt;- as.</description>
+    </item>
+    
+    <item>
+      <title>MIPCA of Phenotypic Data without LogMAR-with-PH values</title>
+      <link>/posts/mipca-of-phenotypic-data-without-logmar-with-ph-values/</link>
+      <pubDate>Sat, 05 May 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/mipca-of-phenotypic-data-without-logmar-with-ph-values/</guid>
+      <description># required packagesrequire(tidyverse)require(broom)require(missMDA)require(FactoMineR)require(moments)require(Hmisc)require(corrplot)IntroductionAfter adding in additional variables, which included logMAR and base-out prism test values, the variable factor plots indicated that there was a large uncertainty around the imputed values of the logMAR with pinhole correction values. Therefore, the right and left pinhole correction variables (LVA and RVA with PH).
+Methods and Results1. Subset quantitative variables excluding LVA and RVA with PH variables.</description>
+    </item>
+    
+    <item>
+      <title>Multiple PCA Imputation of Quantitative Phenotypic Data  - updated</title>
+      <link>/posts/multiple-pca-imputation-of-quantitative-phenotypic-data-updated/</link>
+      <pubDate>Fri, 04 May 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/multiple-pca-imputation-of-quantitative-phenotypic-data-updated/</guid>
+      <description>Methods and Resultsphen.data.age &amp;lt;- read.csv(&amp;#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv&amp;#39;)#include logMAR and base-out prism test values phen.data.adults&amp;lt;-phen.data.age[phen.data.age$Age.excel&amp;gt;17,]quant.variables&amp;lt;- c(&amp;quot;Logmar.VA.Right&amp;quot;, &amp;quot;RVA.with.PH&amp;quot;, &amp;quot;Logmar.VA.Left&amp;quot;, &amp;quot;LVA.with.PH&amp;quot;, &amp;quot;R.Sph..pre.dilate.&amp;quot;, &amp;quot;R.Cyl..pre.dilate.&amp;quot;,&amp;quot;R.Axis..pre.dilate.&amp;quot;, &amp;quot;L.Sph..pre.dilate.&amp;quot;, &amp;quot;L.Cyl..pre.dilate.&amp;quot;, &amp;quot;L.Axis..pre.dilate.&amp;quot;,&amp;quot;R.K.value.H&amp;quot;, &amp;quot;R.K.Value.H.Axis&amp;quot;, &amp;quot;R.K.value.V&amp;quot;, &amp;quot;R.K.value.V.Axis&amp;quot;, &amp;quot;L.K.value.H&amp;quot;,&amp;quot;L.K.value.H.Axis&amp;quot;, &amp;quot;L.K.value.V&amp;quot;, &amp;quot;L.K.value.V.Axis&amp;quot;, &amp;quot;R.Pachimetry&amp;quot;, &amp;quot;L.Pachimetry&amp;quot;, &amp;quot;R.Axial.Length&amp;quot;,&amp;quot;L.Axial.Length&amp;quot;, &amp;quot;AC.Depth.R&amp;quot;, &amp;quot;AC.Depth.L&amp;quot;, &amp;quot;R.IOP.mmHg&amp;quot;, &amp;quot;L.IOP.mmHg&amp;quot;, &amp;quot;CDR.RE&amp;quot;, &amp;quot;CDR.LE&amp;quot;)quant.data.adults&amp;lt;- phen.data.adults[quant.variables]summary(quant.data.adults)## Logmar.VA.Right RVA.with.PH Logmar.VA.Left ## Min. :-0.30000 Min. :-0.2400 Min. :-0.30000 ## 1st Qu.:-0.08000 1st Qu.:-0.0600 1st Qu.:-0.10000 ## Median : 0.02000 Median : 0.</description>
+    </item>
+    
+    <item>
+      <title>Multiple PCA Imputation of Phenotypic Data</title>
+      <link>/posts/multiple-pca-imputation-of-phenotypic-data/</link>
+      <pubDate>Sun, 29 Apr 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/multiple-pca-imputation-of-phenotypic-data/</guid>
+      <description>Methods and Resultsload dataphen.data.age &amp;lt;- read.csv(&amp;#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv&amp;#39;)phen.data.adults&amp;lt;-phen.data.age[phen.data.age$Age.excel&amp;gt;17,]quant.variables&amp;lt;- c(&amp;quot;R.K.value.H&amp;quot;, &amp;quot;R.K.Value.H.Axis&amp;quot;, &amp;quot;R.K.value.V&amp;quot;, &amp;quot;R.K.value.V.Axis&amp;quot;, &amp;quot;L.K.value.H&amp;quot;,&amp;quot;L.K.value.H.Axis&amp;quot;, &amp;quot;L.K.value.V&amp;quot;, &amp;quot;L.K.value.V.Axis&amp;quot;, &amp;quot;R.Pachimetry&amp;quot;, &amp;quot;L.Pachimetry&amp;quot;, &amp;quot;R.Axial.Length&amp;quot;,&amp;quot;L.Axial.Length&amp;quot;, &amp;quot;AC.Depth.R&amp;quot;, &amp;quot;AC.Depth.L&amp;quot;, &amp;quot;R.IOP.mmHg&amp;quot;, &amp;quot;L.IOP.mmHg&amp;quot;, &amp;quot;CDR.RE&amp;quot;, &amp;quot;CDR.LE&amp;quot;)quant.data.adults&amp;lt;- phen.data.adults[quant.variables]#export subset of data write.csv(quant.data.adults, file = &amp;quot;quant.data.adults.csv&amp;quot;)duplicate data setocular_data &amp;lt;-quant.data.adultsConvert to double matrix to ensure that all data is ‘numeric’ocular_data &amp;lt;- as.matrix(ocular_data)Perform imputationrequire(missMDA)## Loading required package: missMDArequire(FactoMineR)## Loading required package: FactoMineRnbdim = estim_ncpPCA(ocular_data, method = &amp;#39;EM&amp;#39;, method.</description>
+    </item>
+    
+    <item>
+      <title>Example of data imputation with missMDA</title>
+      <link>/posts/example-of-data-impuation-with-missmda/</link>
+      <pubDate>Mon, 23 Apr 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/example-of-data-impuation-with-missmda/</guid>
+      <description>IntroductionThis entry will show the results of a single imputation using the missMDA package. The missMDA package imputes quantitative variables using principal component analysis (PCA).
+Methods and Resultsload dataphen.data.age &amp;lt;- read.csv(&amp;#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv&amp;#39;)phen.data.adults&amp;lt;-phen.data.age[phen.data.age$Age.excel&amp;gt;17,]quant.variables&amp;lt;- c(&amp;quot;R.K.value.H&amp;quot;, &amp;quot;R.K.Value.H.Axis&amp;quot;, &amp;quot;R.K.value.V&amp;quot;, &amp;quot;R.K.value.V.Axis&amp;quot;, &amp;quot;L.K.value.H&amp;quot;,&amp;quot;L.K.value.H.Axis&amp;quot;, &amp;quot;L.K.value.V&amp;quot;, &amp;quot;L.K.value.V.Axis&amp;quot;, &amp;quot;R.Pachimetry&amp;quot;, &amp;quot;L.Pachimetry&amp;quot;, &amp;quot;R.Axial.Length&amp;quot;,&amp;quot;L.Axial.Length&amp;quot;, &amp;quot;AC.Depth.R&amp;quot;, &amp;quot;AC.Depth.L&amp;quot;, &amp;quot;R.IOP.mmHg&amp;quot;, &amp;quot;L.IOP.mmHg&amp;quot;, &amp;quot;CDR.RE&amp;quot;, &amp;quot;CDR.LE&amp;quot;)quant.data.adults&amp;lt;- phen.data.adults[quant.variables]install relevant packagesinstall.packages(&amp;#39;missMDA&amp;#39;, dependencies = TRUE, repos = &amp;quot;http://cran.us.r-project.org&amp;quot;)## Installing package into &amp;#39;C:/Users/Martha/Documents/R/win-library/3.</description>
+    </item>
+    
+    <item>
+      <title>Subsetting relevant phenotypic data</title>
+      <link>/posts/subsetting-relevant-phenotypic-data/</link>
+      <pubDate>Sat, 21 Apr 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/subsetting-relevant-phenotypic-data/</guid>
+      <description>IntroductionThe original dataset that was used for descriptive statistics in previous entries contained data for all 801 individuals. However, the ethics approval for this study only allows for adult data to be included in the study. All data for minor individuals must therefore be removed. Additionally, relevant quantitative variables must be selected from the bigger phenotypic dataset since not all quantitative measurements are endophenotypes.
+AimRemove data for minor individuals and subset relevant quantitative measures.</description>
+    </item>
+    
+    <item>
+      <title>Finding outliers in quantitative data</title>
+      <link>/posts/finding-outliers-in-quantitative-data/</link>
+      <pubDate>Mon, 16 Apr 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/finding-outliers-in-quantitative-data/</guid>
+      <description>IntroductionFinding outliers in a dataset help identify any non-sense data that may not be obvious from the histograms. If they are not non-sense, they may be present due to measurement variability or it may indicate an error. Regardless, it is important to identify outliers as they can significantly affect the results of subsequent statistical analyses and it may be necessary to exclude them from the dataset prior to data imputation.</description>
+    </item>
+    
+    <item>
+      <title>Plotting histograms for quantitative phenotypic data</title>
+      <link>/posts/plotting-histograms-for-quantitative-phenotypic-data/</link>
+      <pubDate>Tue, 10 Apr 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/plotting-histograms-for-quantitative-phenotypic-data/</guid>
+      <description>IntroductionHistograms show the frequency distribution of continuous data. It can also be used to inspect whether the data is normally distributed, skewed, and indicate the presence of outliers or non-sense data. The continuous data is split into intervals called bins, and the frequency of scores that fit within each bin is recorded and plotted. Since the data is continuous, histograms are plotted with no spaces in between each bar. (https://statistics.</description>
+    </item>
+    
+    <item>
+      <title>Cleaning phenotypic data</title>
+      <link>/posts/cleaning-phenotypic-data/</link>
+      <pubDate>Thu, 05 Apr 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/cleaning-phenotypic-data/</guid>
+      <description>IntroductionThe phenotypic data collected from the eye examinations in 2008 were collated in a single excel file. The file contains data from all 801 study participants, including their demographic, environmental, and quantitative phenotypic data. There are also comments on clinical observations. Prior to analysing the phenotypic data, it is important to identify any missing or non-sense data so as not to interfere with the analyses or its results.
+AimTo identify missing and non-sense data from the phenotypic dataset.</description>
+    </item>
+    
+  </channel>
+</rss>

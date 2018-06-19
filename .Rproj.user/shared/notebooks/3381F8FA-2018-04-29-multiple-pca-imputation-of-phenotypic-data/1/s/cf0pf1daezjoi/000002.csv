@@ -1,8 +1,0 @@
-"0","phen.data.age <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv')"
-"0","phen.data.adults<-phen.data.age[phen.data.age$Age.excel>17,]"
-"0","quant.variables<- c(""R.K.value.H"", ""R.K.Value.H.Axis"", ""R.K.value.V"", ""R.K.value.V.Axis"", ""L.K.value.H"","
-"0","                    ""L.K.value.H.Axis"", ""L.K.value.V"", ""L.K.value.V.Axis"", ""R.Pachimetry"", ""L.Pachimetry"", ""R.Axial.Length"","
-"0","                    ""L.Axial.Length"", ""AC.Depth.R"", ""AC.Depth.L"", ""R.IOP.mmHg"", ""L.IOP.mmHg"", ""CDR.RE"", ""CDR.LE"")"
-"0","quant.data.adults<- phen.data.adults[quant.variables]"
-"0","#export subset of data "
-"0","write.csv(quant.data.adults, file = ""quant.data.adults.csv"")"

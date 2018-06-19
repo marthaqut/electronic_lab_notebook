@@ -1,0 +1,322 @@
+---
+title: Cleaning phenotypic data
+author: Martha Aquino
+date: '2018-04-05'
+slug: cleaning-phenotypic-data
+categories:
+  - Coding
+tags:
+  - R
+  - Data Cleaning
+---
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The phenotypic data collected from the eye examinations in 2008 were collated in a single excel file. The file contains data from all 801 study participants, including their demographic, environmental, and quantitative phenotypic data. There are also comments on clinical observations. Prior to analysing the phenotypic data, it is important to identify any missing or non-sense data so as not to interfere with the analyses or its results.</p>
+</div>
+<div id="aim" class="section level2">
+<h2>Aim</h2>
+<p>To identify missing and non-sense data from the phenotypic dataset.</p>
+</div>
+<div id="methods-and-results" class="section level2">
+<h2>Methods and Results</h2>
+<ol style="list-style-type: decimal">
+<li>Create new R Project and set the working directory to a local folder</li>
+<li>Create new R script</li>
+<li>Load phenotypic data (NIES_master_database) into R</li>
+</ol>
+<pre class="r"><code>phen.data &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database.csv&#39;)</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>Data cleaning step</li>
+</ol>
+<ol style="list-style-type: lower-alpha">
+<li><pre><code>Exploration of how much missing data – run summary(); will give box plot values </code></pre></li>
+</ol>
+<pre class="r"><code>#summary() will give number of missing data for each variable
+summary &lt;- summary(phen.data)
+
+#produce the table of results as a .csv file
+write.table(summary, file=&quot;C:/Users/Martha/Documents/Honours/Project/honours.project/summary.table.3.csv&quot;)
+
+#results 
+summary</code></pre>
+<pre><code>##       UUID            LAB_ID          PID            SID     
+##  Min.   :110150   Min.   :1001          :391           :391  
+##  1st Qu.:310050   1st Qu.:1181   10050  :  1   10012610:  1  
+##  Median :327190   Median :2509   10071  :  1   10014214:  1  
+##  Mean   :323827   Mean   :3644   10121  :  1   10014215:  1  
+##  3rd Qu.:400396   3rd Qu.:6858   10280  :  1   10014216:  1  
+##  Max.   :400805   Max.   :7000   10291  :  1   10014218:  1  
+##                   NA&#39;s   :449    (Other):405   (Other) :405  
+##  Ped_ID_.BK_no.      NIES       NIES_GWAS      Miles_coreped   
+##  Min.   :   2   ES_001 :  1   Min.   :0.0000   Min.   :0.0000  
+##  1st Qu.: 812   ES_002 :  1   1st Qu.:0.0000   1st Qu.:0.0000  
+##  Median :1921   ES_003 :  1   Median :0.0000   Median :1.0000  
+##  Mean   :2239   ES_004 :  1   Mean   :0.1498   Mean   :0.5468  
+##  3rd Qu.:3449   ES_005 :  1   3rd Qu.:0.0000   3rd Qu.:1.0000  
+##  Max.   :7080   ES_006 :  1   Max.   :1.0000   Max.   :1.0000  
+##  NA&#39;s   :288    (Other):795                                    
+##     NIES_DNA         DNA_Box      DNA_Postition    Gender   
+##  Min.   :0.0000   Min.   :1.000          :566   Female:443  
+##  1st Qu.:0.0000   1st Qu.:1.000   A1     :  4   Male  :358  
+##  Median :0.0000   Median :2.000   A2     :  4               
+##  Mean   :0.2934   Mean   :2.315   A4     :  4               
+##  3rd Qu.:1.0000   3rd Qu.:3.000   A5     :  4               
+##  Max.   :1.0000   Max.   :4.000   A6     :  4               
+##                   NA&#39;s   :566     (Other):215               
+##          DOB      Current.height  Current.weight     Smoker       
+##  11/12/1995:  2   Min.   :127.0   Min.   : 31.00   Mode :logical  
+##  12/03/1965:  2   1st Qu.:162.4   1st Qu.: 65.00   FALSE:359      
+##  15/11/1990:  2   Median :170.0   Median : 75.00   TRUE :442      
+##  18/04/1958:  2   Mean   :169.7   Mean   : 76.84                  
+##  19/01/1971:  2   3rd Qu.:177.6   3rd Qu.: 86.00                  
+##  19/12/1995:  2   Max.   :195.0   Max.   :140.00                  
+##  (Other)   :789   NA&#39;s   :137     NA&#39;s   :163                     
+##  Glaucoma.medications               Eye.Colour  Logmar.VA.Right   
+##          :769         Brown              :249   Min.   :-0.30000  
+##  Xalatan :  6         Blue               :242   1st Qu.:-0.10000  
+##  Timoptol:  3         Hazel / Light Brown: 85   Median : 0.02000  
+##  xalatan :  3         Green              : 81   Mean   : 0.06266  
+##  Xalacom :  2                            : 64   3rd Qu.: 0.12000  
+##  Alphagan:  1         Hazel              : 33   Max.   : 2.00000  
+##  (Other) : 17         (Other)            : 47   NA&#39;s   :3         
+##   RVA.with.PH       Logmar.VA.Left      LVA.with.PH     
+##  Min.   :-0.24000   Min.   :-0.30000   Min.   :-0.2600  
+##  1st Qu.:-0.08000   1st Qu.:-0.10000   1st Qu.:-0.0800  
+##  Median : 0.02000   Median : 0.02000   Median : 0.0400  
+##  Mean   : 0.04614   Mean   : 0.05989   Mean   : 0.0529  
+##  3rd Qu.: 0.10000   3rd Qu.: 0.12000   3rd Qu.: 0.1000  
+##  Max.   : 2.00000   Max.   : 1.70000   Max.   : 1.0600  
+##  NA&#39;s   :210        NA&#39;s   :6          NA&#39;s   :214      
+##  R.Sph..pre.dilate. R.Cyl..pre.dilate. R.Axis..pre.dilate.
+##  Min.   :-8.0000    Min.   :-11.0000   Min.   :  0.00     
+##  1st Qu.: 0.0000    1st Qu.: -0.7500   1st Qu.: 25.00     
+##  Median : 0.5000    Median : -0.5000   Median : 85.00     
+##  Mean   : 0.5411    Mean   : -0.6389   Mean   : 80.22     
+##  3rd Qu.: 1.2500    3rd Qu.: -0.2500   3rd Qu.:119.75     
+##  Max.   : 8.5000    Max.   :  0.0000   Max.   :180.00     
+##  NA&#39;s   :11         NA&#39;s   :11         NA&#39;s   :11         
+##  L.Sph..pre.dilate. L.Cyl..pre.dilate. L.Axis..pre.dilate.  IPDprecyclo   
+##  Min.   :-9.5000    Min.   :-9.7500    Min.   :  0.00      Min.   : 2.00  
+##  1st Qu.: 0.0000    1st Qu.:-0.7500    1st Qu.: 12.50      1st Qu.:57.50  
+##  Median : 0.5000    Median :-0.5000    Median : 70.00      Median :59.50  
+##  Mean   : 0.5781    Mean   :-0.6403    Mean   : 71.96      Mean   :56.36  
+##  3rd Qu.: 1.2500    3rd Qu.:-0.2500    3rd Qu.:112.00      3rd Qu.:61.50  
+##  Max.   : 8.0000    Max.   : 0.0000    Max.   :180.00      Max.   :69.00  
+##  NA&#39;s   :10         NA&#39;s   :10         NA&#39;s   :10          NA&#39;s   :787    
+##      R.Sph            R.Cyl             R.Axis           L.Sph       
+##  Min.   :0.2500   Min.   :-1.0000   Min.   :  0.00   Min.   :0.2500  
+##  1st Qu.:0.2500   1st Qu.:-0.6875   1st Qu.: 50.25   1st Qu.:0.3125  
+##  Median :0.3750   Median :-0.3750   Median : 86.00   Median :0.5000  
+##  Mean   :0.5000   Mean   :-0.4583   Mean   : 71.50   Mean   :0.5417  
+##  3rd Qu.:0.6875   3rd Qu.:-0.2500   3rd Qu.: 97.75   3rd Qu.:0.6875  
+##  Max.   :1.0000   Max.   : 0.0000   Max.   :117.00   Max.   :1.0000  
+##  NA&#39;s   :795      NA&#39;s   :795       NA&#39;s   :795      NA&#39;s   :795     
+##      L.Cyl             L.Axis        IPDpostcyclo       Glasses   
+##  Min.   :-1.0000   Min.   : 36.00   Min.   : 0.0000         :  3  
+##  1st Qu.:-0.6875   1st Qu.: 78.75   1st Qu.: 0.0000   c CL&#39;s:  2  
+##  Median :-0.3750   Median :112.00   Median : 0.0000   c gls :234  
+##  Mean   :-0.5000   Mean   :100.67   Mean   : 0.9776   cCl&#39;s :  1  
+##  3rd Qu.:-0.2500   3rd Qu.:125.00   3rd Qu.: 0.0000   cCL&#39;s :  1  
+##  Max.   :-0.2500   Max.   :147.00   Max.   :64.0000   s gls :560  
+##  NA&#39;s   :795       NA&#39;s   :795      NA&#39;s   :489                   
+##     R.Sph.gl         R.Cyl.gl        R.Axis.gl        Add         
+##  Min.   :-0.500   Min.   :-2.000   Min.   : 15.00   Mode:logical  
+##  1st Qu.: 0.250   1st Qu.:-1.375   1st Qu.: 67.50   NA&#39;s:801      
+##  Median : 1.000   Median :-0.750   Median :120.00                 
+##  Mean   : 2.250   Mean   :-1.167   Mean   : 90.67                 
+##  3rd Qu.: 3.625   3rd Qu.:-0.750   3rd Qu.:128.50                 
+##  Max.   : 6.250   Max.   :-0.750   Max.   :137.00                 
+##  NA&#39;s   :798      NA&#39;s   :798      NA&#39;s   :798                    
+##     L.Sph.gl          L.Cyl.gl         L.Axis.gl       R.K.value.H   
+##  Min.   :-0.2500   Min.   :-1.0000   Min.   : 41.00   Min.   :36.00  
+##  1st Qu.: 0.1250   1st Qu.:-0.8750   1st Qu.: 54.50   1st Qu.:42.00  
+##  Median : 0.5000   Median :-0.7500   Median : 68.00   Median :43.00  
+##  Mean   : 0.6667   Mean   :-0.6667   Mean   : 91.33   Mean   :42.94  
+##  3rd Qu.: 1.1250   3rd Qu.:-0.5000   3rd Qu.:116.50   3rd Qu.:44.00  
+##  Max.   : 1.7500   Max.   :-0.2500   Max.   :165.00   Max.   :48.25  
+##  NA&#39;s   :798       NA&#39;s   :798       NA&#39;s   :798      NA&#39;s   :17     
+##  R.K.Value.H.Axis  R.K.value.V    R.K.value.V.Axis  L.K.value.H   
+##  Min.   :  0.0    Min.   :37.00   Min.   :  1.00   Min.   :32.75  
+##  1st Qu.: 42.0    1st Qu.:42.75   1st Qu.: 61.00   1st Qu.:42.00  
+##  Median : 92.0    Median :43.75   Median : 89.00   Median :43.00  
+##  Mean   : 93.5    Mean   :43.77   Mean   : 90.69   Mean   :42.94  
+##  3rd Qu.:155.0    3rd Qu.:44.75   3rd Qu.:126.25   3rd Qu.:44.00  
+##  Max.   :180.0    Max.   :55.00   Max.   :189.00   Max.   :47.25  
+##  NA&#39;s   :17       NA&#39;s   :17      NA&#39;s   :17       NA&#39;s   :16     
+##  L.K.value.H.Axis  L.K.value.V    L.K.value.V.Axis Cover.Test.D  
+##  Min.   :  0.00   Min.   :39.00   Min.   :  0.00   Mode:logical  
+##  1st Qu.: 26.00   1st Qu.:42.75   1st Qu.: 65.00   NA&#39;s:801      
+##  Median : 89.00   Median :43.75   Median : 90.00                 
+##  Mean   : 88.33   Mean   :43.84   Mean   : 92.25                 
+##  3rd Qu.:147.00   3rd Qu.:44.75   3rd Qu.:121.00                 
+##  Max.   :180.00   Max.   :52.00   Max.   :180.00                 
+##  NA&#39;s   :16       NA&#39;s   :16      NA&#39;s   :16                     
+##    Lang.score              Ocular.Motility      IOP.time    R.Pachimetry  
+##  Min.   : -99.0                    :726             : 17   Min.   :428.0  
+##  1st Qu.: 550.0   CT N &amp; D Straight:  6    0/01/1900:784   1st Qu.:527.0  
+##  Median : 550.0   lang 0/3         :  6                    Median :546.0  
+##  Mean   : 560.3   Lang 0/3         :  3                    Mean   :546.4  
+##  3rd Qu.: 550.0   LANG 0/3         :  2                    3rd Qu.:570.0  
+##  Max.   :1600.0   ? CN IV palsy    :  1                    Max.   :656.0  
+##  NA&#39;s   :98       (Other)          : 57                    NA&#39;s   :15     
+##   L.Pachimetry   R.Axial.Length  L.Axial.Length    AC.Depth.R   
+##  Min.   :424.0   Min.   :20.95   Min.   :21.29   Min.   :2.090  
+##  1st Qu.:526.0   1st Qu.:22.90   1st Qu.:22.87   1st Qu.:3.060  
+##  Median :547.0   Median :23.49   Median :23.46   Median :3.320  
+##  Mean   :546.7   Mean   :23.56   Mean   :23.53   Mean   :3.327  
+##  3rd Qu.:569.0   3rd Qu.:24.09   3rd Qu.:24.10   3rd Qu.:3.560  
+##  Max.   :658.0   Max.   :27.66   Max.   :34.43   Max.   :4.950  
+##  NA&#39;s   :17      NA&#39;s   :16      NA&#39;s   :16      NA&#39;s   :14     
+##    AC.Depth.L      R.IOP.mmHg      L.IOP.mmHg           Anterior.segment
+##  Min.   :2.000   Min.   : 6.00   Min.   : 8.00   NAD OU         :271    
+##  1st Qu.:3.045   1st Qu.:14.00   1st Qu.:14.00   NAD            :174    
+##  Median :3.290   Median :16.00   Median :16.00   IOL OU         : 20    
+##  Mean   :3.314   Mean   :15.89   Mean   :16.06   pterygium OU   : 20    
+##  3rd Qu.:3.560   3rd Qu.:18.00   3rd Qu.:18.00                  : 18    
+##  Max.   :5.130   Max.   :28.00   Max.   :33.00   pseudophakia OU: 13    
+##  NA&#39;s   :14      NA&#39;s   :3       NA&#39;s   :4       (Other)        :285    
+##  Pterygium       Disc.size.RE Disc.size.LE     CDR.RE     
+##  Mode :logical     : 41         : 43       Min.   :0.000  
+##  FALSE:684       L : 82       L : 82       1st Qu.:0.300  
+##  TRUE :117       M :493       M :495       Median :0.400  
+##                  NR:112       NR:109       Mean   :0.402  
+##                  S : 73       s :  1       3rd Qu.:0.500  
+##                               S : 71       Max.   :0.990  
+##                                            NA&#39;s   :21     
+##      CDR.LE         FDT.MD_RE         FDT.MD_LE         FDT.PSD_RE    
+##  Min.   :0.0000   Min.   :-17.790   Min.   :-17.120   Min.   :-3.070  
+##  1st Qu.:0.3000   1st Qu.: -2.240   1st Qu.: -1.855   1st Qu.: 2.540  
+##  Median :0.4000   Median :  0.000   Median : -0.220   Median : 3.100  
+##  Mean   :0.3988   Mean   : -1.020   Mean   : -1.094   Mean   : 3.566  
+##  3rd Qu.:0.5000   3rd Qu.:  1.657   3rd Qu.:  1.660   3rd Qu.: 4.000  
+##  Max.   :0.9000   Max.   :  6.480   Max.   :  5.200   Max.   :12.030  
+##  NA&#39;s   :19       NA&#39;s   :693       NA&#39;s   :694       NA&#39;s   :696     
+##    FDT.PSD_LE                        Comments   R.L.handed
+##  Min.   : 2.010                          :534     : 26    
+##  1st Qu.: 2.638   LANG 0/3               : 13   \\:  1    
+##  Median : 3.020   Fields OK.             :  2   L : 56    
+##  Mean   : 3.663   LANG 0/3.              :  2   NR: 95    
+##  3rd Qu.: 3.940   No diabetic retinopathy:  2   R :623    
+##  Max.   :14.720   No K&#39;s                 :  2             
+##  NA&#39;s   :697      (Other)                :246             
+##  R.L.eye.dominance                                        Other.disease
+##    :787                                                          :731  
+##  LE:  2            PPA OU                                        :  3  
+##  RE: 12            Glaucoma                                      :  2  
+##                    -                                             :  1  
+##                    ??glaucoma suspect but fields ok. See comments:  1  
+##                    1 drusen for each eye                         :  1  
+##                    (Other)                                       : 62  
+##  UV.questionnaire_NIES.code UV.questionnaire_First.name Maiden.name   
+##  Min.   :  1.0              Mode:logical                Mode:logical  
+##  1st Qu.:199.5              NA&#39;s:801                    NA&#39;s:801      
+##  Median :398.0                                                        
+##  Mean   :398.3                                                        
+##  3rd Qu.:598.5                                                        
+##  Max.   :805.0                                                        
+##  NA&#39;s   :10                                                           
+##  UV.questionnaire_Surname UV.questionnaire_Age UV.questionnaire_Sex
+##  Mode:logical             Min.   : 7.00         : 10               
+##  NA&#39;s:801                 1st Qu.:41.00        ,:  1               
+##                           Median :53.00        F:434               
+##                           Mean   :52.39        M:356               
+##                           3rd Qu.:65.00                            
+##                           Max.   :89.00                            
+##                           NA&#39;s   :13                               
+##  Lived.in.Norfolk.Island   Location.   From.age.in.years
+##  Min.   : 0.00                  :126   Min.   : 0.000   
+##  1st Qu.:12.00           NZ     :118   1st Qu.: 0.000   
+##  Median :26.00           Sydney : 69   Median : 0.000   
+##  Mean   :27.52           AUS    : 65   Mean   : 8.367   
+##  3rd Qu.:40.00           NSW    : 44   3rd Qu.:16.000   
+##  Max.   :89.00           QLD    : 21   Max.   :61.000   
+##  NA&#39;s   :32              (Other):358   NA&#39;s   :131      
+##  Duration.outside.Norfolk.Island  Hair.colour                 Burns.Tans 
+##  Min.   : 0.00                   Brown  :493   burns then tans     :462  
+##  1st Qu.:10.00                   Black  :122   never burns but tans:162  
+##  Median :23.00                   Blonde :115   burns not tan       :110  
+##  Mean   :25.39                   Red    : 25   don&#39;t know          : 24  
+##  3rd Qu.:39.00                   NR     : 18                       : 18  
+##  Max.   :84.00                          : 14   not applicable      : 12  
+##  NA&#39;s   :112                     (Other): 14   (Other)             : 13  
+##            Sunburn.and.pain               Time.outside
+##  2-10 times        :412                         : 17  
+##  never             :135     1/2 of the day      :288  
+##  once              : 95     cannot judge        : 47  
+##  more than 10 times: 94     greater than 3/4 day:162  
+##  don&#39;t know        : 45     less than 1/4day    :276  
+##                    : 15     none                :  9  
+##  (Other)           :  5     u                   :  2  
+##        Outdoors.and.hats    Outdoors.and.sunglasses
+##                 : 15                    : 15       
+##  1/2 of the time:116     1/2 of the time: 85       
+##  always         :147     always         :218       
+##  can&#39;t judge    : 14     can&#39;t judge    : 11       
+##  never          :107     never          :146       
+##  seldom         :168     seldom         :161       
+##  usually        :234     usually        :165       
+##   Winter..Indoors.and.Outdoors                At.school  
+##                 : 16                               : 21  
+##  1/2 and 1/2    :424           don&#39;t know          : 53  
+##  don&#39;t know     : 12           neither             :376  
+##  mostly indoors :186           yes, both           :133  
+##  mostly outdoors:163           yes, hat only       :101  
+##                                yes, sunglasses only:117  
+##                                                          
+##     Feel.colder.than.people     Arc.Welding  If.yes..eye.protection
+##                 : 16                  : 18             :616        
+##  1/2 of the time: 82        dont know: 23   dont know:  8        
+##  always         : 32        No        :562   No        : 62        
+##  cannot judge   : 69        Yes       :198   y         :  2        
+##  never          :221                         Yes       :113        
+##  seldom         :280                                               
+##  usually        :101                                               
+##  If.yes..flash.burn.                 Reason.for.sunglasses
+##            :615      glare                      :380      
+##  dont know:  9                                 :175      
+##  No        :126      driving                    : 75      
+##  Yes       : 51      protection from eye disease: 56      
+##                      medical requirement        : 26      
+##                      fashion                    : 20      
+##                      (Other)                    : 69      
+##            Do.not.wear.sunglasses
+##                       :442       
+##  Inconvenient         : 98       
+##  Prescription glasses&quot;: 83       
+##  Not necessary        : 72       
+##  Uncomfortable&quot;       : 45       
+##  Decrease vision      : 32       
+##  (Other)              : 29</code></pre>
+<ol start="2" style="list-style-type: lower-alpha">
+<li><pre><code>Presence of outliers and non-sense data and plotting histograms</code></pre></li>
+</ol>
+<pre class="r"><code>#plot histogram of a variable 
+hist(phen.data$Current.height)</code></pre>
+<p><img src="/posts/2018-04-05-cleaning-phenotypic-data_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>#produce boxplot statistics which will identify outliers
+outliers.height &lt;- boxplot.stats(phen.data$Current.height)</code></pre>
+<pre class="r"><code>#show boxplot stats 
+outliers.height</code></pre>
+<pre><code>## $stats
+## [1] 141.00 162.25 170.00 177.75 195.00
+## 
+## $n
+## [1] 664
+## 
+## $conf
+## [1] 169.0496 170.9504
+## 
+## $out
+## [1] 138 130 127</code></pre>
+<ol start="4" style="list-style-type: lower-alpha">
+<li>Check that there are no individuals that only have one or two phenotypes (systematic missing data)</li>
+</ol>
+</div>
+<div id="discussion" class="section level2">
+<h2>Discussion</h2>
+<p>This exercise shows basic summaries of the phenotypic data collected from the eye examinations. The results of the ‘summary’ function includes the means and medians of quantitative data and freqencies of qualitative data. In addition, it also shows the number of cells that are empty (‘NA’) for each variable. This is important for the data imputation step that will follow.</p>
+<p>The histogram plots and the box plot statistics were aimed to determine whether there were any non-sense data, which will also need to be removed. The histograms and boxplot stats are yet to be completed for all quantitative variables. Step (d) will be performed to identify any individuals that have systematic missing data, which will be removed for subsequent analysis.</p>
+</div>

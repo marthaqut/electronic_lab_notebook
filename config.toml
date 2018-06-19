@@ -43,8 +43,8 @@ enableEmoji = true
   category = "categories"
 
 [author]
-  name = "Martha Aquino"
-  github = "marthaqut"
-  email = "eunise.aquino@connect.qut.edu.au"
+  name = "Your Name"
+  github = "github"
+  email = "your@email.com"
   gaid = "Your Google Analytics ID"
   twitter = "twitterID"

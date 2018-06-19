@@ -1,5 +1,0 @@
-"0","phen.data.age <- read.csv('Data/NIES_master_database-age.csv')
-"
-"2","cannot open file 'Data/NIES_master_database-age.csv': No such file or directory"
-"2","Error in file(file, ""rt"") : cannot open the connection
-"
