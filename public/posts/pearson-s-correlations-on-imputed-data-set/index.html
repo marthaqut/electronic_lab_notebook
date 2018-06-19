@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <title>Pearson&#39;s correlations on imputed data set</title>
   <meta name="description" content="Pearson&#39;s correlations on imputed data set">
-  <meta name="author" content="Martha Aquino">
+  <meta name="author" content="Your Name">
   
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
@@ -518,12 +518,12 @@ require(FactoMineR)
 library(Hmisc)</code></pre>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>Prior to performing principal component analyses, bivariate correlations need to be performed between variables to determine any underlying relationships.</p>
+<p>Prior to performing principal component analyses, bivariate correlations need to be performed between variables to determine any underlying relationships. This is because PCA indentifies components that may better explain relationships or variability among variables that are related. If none of the variables are correlated, it would be futile to perform a PCA.</p>
 </div>
 <div id="methods-and-results" class="section level1">
 <h1>Methods and Results</h1>
-<div id="load-data" class="section level3">
-<h3>Load data</h3>
+<div id="load-data" class="section level2">
+<h2>1. Load data</h2>
 <pre class="r"><code>phen.data.age &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv&#39;)
 phen.data.adults&lt;-phen.data.age[phen.data.age$Age.excel&gt;17,]
 quant.variables&lt;- c(&quot;Logmar.VA.Right&quot;, &quot;Logmar.VA.Left&quot;, &quot;R.Sph..pre.dilate.&quot;, &quot;R.Cyl..pre.dilate.&quot;,
@@ -535,8 +535,8 @@ quant.data.adults&lt;- phen.data.adults[quant.variables]
 ocular_data &lt;- quant.data.adults
 ocular_data &lt;- as.matrix(ocular_data)</code></pre>
 </div>
-<div id="perform-imputation" class="section level3">
-<h3>Perform imputation</h3>
+<div id="perform-imputation" class="section level2">
+<h2>2. Perform imputation</h2>
 <pre class="r"><code>nbdim = estim_ncpPCA(ocular_data, method = &#39;EM&#39;, method.cv=&quot;Kfold&quot;)</code></pre>
 <pre><code>## 
   |                                                                       
@@ -745,10 +745,10 @@ ocular_data &lt;- as.matrix(ocular_data)</code></pre>
 ## 
 ## $criterion
 ##        0        1        2        3        4        5 
-## 795686.8 797395.9 794644.9 794546.1 787716.7 777656.2</code></pre>
+## 810867.1 812754.7 807844.4 810153.7 802944.9 790850.0</code></pre>
 <pre class="r"><code>res.comp = MIPCA(ocular_data, ncp = nbdim$ncp, nboot = 1000)
 imputed_phen_data&lt;-res.comp$res.imputePCA
-head(imputed_phen_data) # don&#39;t show large data sets, good idea to just use head()</code></pre>
+head(imputed_phen_data)</code></pre>
 <pre><code>##   Logmar.VA.Right Logmar.VA.Left R.Sph..pre.dilate. R.Cyl..pre.dilate.
 ## 1            0.02          -0.04               0.25               0.00
 ## 2            0.10           0.16               0.00              -0.75
@@ -793,7 +793,7 @@ head(imputed_phen_data) # don&#39;t show large data sets, good idea to just use 
 ## 6       2.94       3.04         18         20    0.6    0.6</code></pre>
 </div>
 <div id="perform-pearsons-correlation" class="section level2">
-<h2>1. Perform Pearson’s correlation</h2>
+<h2>3. Perform Pearson’s correlation</h2>
 <pre class="r"><code>pearson_imputed_data_2&lt;-rcorr(imputed_phen_data, type=&quot;pearson&quot;)
 pearson_coeff_2&lt;-rcorr(imputed_phen_data, type=&quot;pearson&quot;)$r #extract pearson correlation coefficients
 pearson_pval_2&lt;-rcorr(imputed_phen_data, type=&quot;pearson&quot;)$P #extract p-values of correlations
@@ -1278,7 +1278,7 @@ pearson_phen_data_F</code></pre>
 ## CDR.LE               3.570726e-03  0.000000e+00            NA</code></pre>
 </div>
 <div id="plot-significant-results-from-correlation" class="section level2">
-<h2>2. Plot significant results from correlation</h2>
+<h2>4. Plot significant results from correlation</h2>
 <pre class="r"><code>title &lt;- &quot;Pearson correlation of imputed phenotypic data&quot;
 corrplot.mixed(pearson_coeff_2, p.mat=pearson_pval_2, sig.level = 0.05, insig=&quot;blank&quot;, tl.pos = &#39;lt&#39;,
                tl.col=&quot;black&quot;, tl.cex=0.60, mar=c(0,0,1,1), number.cex = 0.65, title=title)</code></pre>
@@ -1287,6 +1287,7 @@ corrplot.mixed(pearson_coeff_2, p.mat=pearson_pval_2, sig.level = 0.05, insig=&q
 </div>
 <div id="discussion" class="section level1">
 <h1>Discussion</h1>
+<p>The correlation plots show very strong relationships between the left and right measurements for the same test, as expected. It is also evident that negative correlations exist between axial length and corneal curvature (keratometry), while there are positive correlations between axial length and anterior chamber depth, and corneal thickness and intraocular pressure. These relationships are expected as they overlap in function. Interestingly, there are very weak negative correlations between corneal curvature (keratometry / K-values) and cup-to-disc ratio. This has been reported in other studies (<a href="https://www.nature.com/articles/eye201098.pdf?origin=ppub" class="uri">https://www.nature.com/articles/eye201098.pdf?origin=ppub</a>), although the biological reason for this relationship is not well-established. There is also a very weak positive correlaton between the intraocular pressure for left eye, but not right, measurements and cup-to-disc ratio measurements for both eyes. And weak negative correlations between the anterior chamber depth for the right eye, but not left, and cup-to-disc ratio for both eyes.</p>
 </div>
 
       </div>
@@ -1302,18 +1303,18 @@ corrplot.mixed(pearson_coeff_2, p.mat=pearson_pval_2, sig.level = 0.05, insig=&q
       <div class="pure-menu pure-menu-horizontal">
         <ul>
           
-          <li class="pure-menu-item" id="foot-name">© Martha Aquino</li>
+          <li class="pure-menu-item" id="foot-name">© Your Name</li>
           
 
           
           <li class="pure-menu-item">
-            <a href="mailto:eunise.aquino@connect.qut.edu.au" class="pure-menu-link">Email</a>
+            <a href="mailto:your@email.com" class="pure-menu-link">Email</a>
           </li>
           
 
           
           <li class="pure-menu-item">
-            <a href="https://github.com/marthaqut" class="pure-menu-link">GitHub</a>
+            <a href="https://github.com/github" class="pure-menu-link">GitHub</a>
           </li>
           
 

@@ -28,8 +28,8 @@ require(corrplot)</code></pre>
 </div>
 <div id="methods-and-results" class="section level1">
 <h1>Methods and Results</h1>
-<div id="load-data" class="section level2">
-<h2>1. Load data</h2>
+<div id="load-and-generate-initial-data-incl.-subsetting-and-mipca" class="section level2">
+<h2>1. Load and generate initial data (incl. subsetting and mipca)</h2>
 <pre class="r"><code>phen.data.uvaf &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database_120815_data_dictionary-2.csv&#39;)
 summary.uvaf &lt;- summary(phen.data.uvaf)
 quant.data_uvaf &lt;- c(&quot;R.Logmar.VA&quot;, &quot;RVA.with.PH&quot;, &quot;L.Logmar.VA&quot;, &quot;LVA.with.PH&quot;, 
@@ -256,23 +256,22 @@ nbdim = estim_ncpPCA(ocular_data_uvaf, method = &#39;EM&#39;, method.cv=&quot;Kf
 ## 827407.7 829593.9 824966.6 826207.3 817653.0 798909.9</code></pre>
 <pre class="r"><code>res.comp = MIPCA(ocular_data_uvaf, ncp = nbdim$ncp, nboot = 1000)
 imputed_phen_data_uvaf&lt;-res.comp$res.imputePCA</code></pre>
+</div>
+<div id="force-data-into-data-frame" class="section level2">
+<h2>2. Force data into data frame</h2>
 <pre class="r"><code>data.imputed.phen&lt;-as.data.frame(imputed_phen_data_uvaf)
 data(&quot;data.imputed.phen&quot;)</code></pre>
 <pre><code>## Warning in data(&quot;data.imputed.phen&quot;): data set &#39;data.imputed.phen&#39; not
 ## found</code></pre>
-<pre class="r"><code>res.pca.phen&lt;-PCA(imputed_phen_data_uvaf, ncp = 9, graph = FALSE)
-eig.val.phen&lt;-res.pca.phen$eig
-barplot(eig.val.phen[, 2], 
-        names.arg = 1:nrow(eig.val.phen), 
-        main = &quot;Variances Explained by PCs (%)&quot;,
-        xlab = &quot;Principal Components&quot;,
-        ylab = &quot;Percentage of variances&quot;,
-        col =&quot;steelblue&quot;)
-lines(x = 1:nrow(eig.val.phen), eig.val.phen[, 2], 
-      type = &quot;b&quot;, pch = 19, col = &quot;red&quot;)</code></pre>
-<p><img src="/posts/2018-05-17-pca-of-phenotypic-data_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
-<pre class="r"><code>eigen.imputed&lt;-res.pca.phen$eig
-eigen.imputed</code></pre>
+</div>
+<div id="perform-pca" class="section level2">
+<h2>3. Perform PCA</h2>
+<pre class="r"><code>res.pca.phen&lt;-PCA(imputed_phen_data_uvaf, ncp = 9, graph = FALSE)</code></pre>
+</div>
+<div id="extract-eigenvalues-and-variable-contribution-values" class="section level2">
+<h2>4. Extract eigenvalues and variable contribution values</h2>
+<pre class="r"><code>eig.val.phen&lt;-res.pca.phen$eig
+eig.val.phen</code></pre>
 <pre><code>##         eigenvalue percentage of variance
 ## comp 1  4.46445605             16.5350224
 ## comp 2  3.03462767             11.2393617
@@ -329,7 +328,22 @@ eigen.imputed</code></pre>
 ## comp 25                          99.70131
 ## comp 26                          99.87819
 ## comp 27                         100.00000</code></pre>
-<pre class="r"><code>res.pca.phen$var</code></pre>
+</div>
+<div id="produce-screeplot" class="section level2">
+<h2>5. Produce screeplot</h2>
+<pre class="r"><code>barplot(eig.val.phen[, 2], 
+        names.arg = 1:nrow(eig.val.phen), 
+        main = &quot;Variances Explained by PCs (%)&quot;,
+        xlab = &quot;Principal Components&quot;,
+        ylab = &quot;Percentage of variances&quot;,
+        col =&quot;steelblue&quot;)
+lines(x = 1:nrow(eig.val.phen), eig.val.phen[, 2], 
+      type = &quot;b&quot;, pch = 19, col = &quot;red&quot;)</code></pre>
+<p><img src="/posts/2018-05-17-pca-of-phenotypic-data_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="view-variable-results-from-pca" class="section level2">
+<h2>6. View variable results from PCA</h2>
+<pre class="r"><code>head(res.pca.phen$var)</code></pre>
 <pre><code>## $coord
 ##                             Dim.1        Dim.2        Dim.3        Dim.4
 ## R.Logmar.VA          0.0544464200 -0.114937900  0.540407138  0.183366000
@@ -674,7 +688,13 @@ eigen.imputed</code></pre>
 ## L.CDR               4.926829e-02
 ## totaluvafmm         4.945788e+00</code></pre>
 </div>
+<div id="view-individual-results-from-pca" class="section level2">
+<h2>7. View individual results from PCA</h2>
+<pre class="r"><code>head(res.pca.phen$indiv)</code></pre>
+<pre><code>## NULL</code></pre>
+</div>
 </div>
 <div id="discussion" class="section level1">
 <h1>Discussion</h1>
+<p>The PCA identified nine principal components with an eigenvalue of &gt;1. These principal components have an additive contribution to variance of about 73%, with the first principal component contributing about 16%. These nine principal components will be carried forward to the heritability analyses (aim 2) along with the 27 phenotypic variables to determine which variables and components are highly heritable. By using principal components for the subsequent aims (heritability analysis and GWAS), important pleiotropic variants may be found.</p>
 </div>

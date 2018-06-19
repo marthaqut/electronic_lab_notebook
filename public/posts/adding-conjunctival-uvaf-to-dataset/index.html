@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <title>Adding Conjunctival UVAF to dataset </title>
   <meta name="description" content="Adding Conjunctival UVAF to dataset ">
-  <meta name="author" content="Martha Aquino">
+  <meta name="author" content="Your Name">
   
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
@@ -1684,8 +1684,11 @@ summary_stats_imputed_uvaf</code></pre>
 <div id="correlation-analysis" class="section level2">
 <h2>10. Correlation analysis</h2>
 <pre class="r"><code>pearson_imputed_data_uvaf&lt;-rcorr(imputed_phen_data_uvaf, type=&quot;pearson&quot;)
+#extract correlation coefficients
 pearson_coeff_uvaf&lt;-rcorr(imputed_phen_data_uvaf, type=&quot;pearson&quot;)$r
+#extract p-values for correlations
 pearson_pval_uvaf&lt;-rcorr(imputed_phen_data_uvaf, type=&quot;pearson&quot;)$P
+#bind coefficients and p-values
 pearson_phen_data_uvaf&lt;-rbind(pearson_coeff_uvaf, pearson_pval_uvaf)
 head(pearson_phen_data_uvaf)</code></pre>
 <pre><code>##                     R.Logmar.VA L.Logmar.VA R.Sph..pre.dilate.
@@ -1779,18 +1782,18 @@ corrplot.mixed(pearson_coeff_uvaf, p.mat=pearson_pval_uvaf, sig.level = 0.05, in
       <div class="pure-menu pure-menu-horizontal">
         <ul>
           
-          <li class="pure-menu-item" id="foot-name">© Martha Aquino</li>
+          <li class="pure-menu-item" id="foot-name">© Your Name</li>
           
 
           
           <li class="pure-menu-item">
-            <a href="mailto:eunise.aquino@connect.qut.edu.au" class="pure-menu-link">Email</a>
+            <a href="mailto:your@email.com" class="pure-menu-link">Email</a>
           </li>
           
 
           
           <li class="pure-menu-item">
-            <a href="https://github.com/marthaqut" class="pure-menu-link">GitHub</a>
+            <a href="https://github.com/github" class="pure-menu-link">GitHub</a>
           </li>
           
 

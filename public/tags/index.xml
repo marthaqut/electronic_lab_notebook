@@ -9,143 +9,98 @@
     <managingEditor>your@email.com (Your Name)</managingEditor>
     <webMaster>your@email.com (Your Name)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Wed, 28 Mar 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 10 May 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Analysis</title>
-      <link>/tags/analysis/</link>
-      <pubDate>Wed, 28 Mar 2018 00:00:00 +0000</pubDate>
+      <title>Bivariate Correlations</title>
+      <link>/tags/bivariate-correlations/</link>
+      <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
       <author>your@email.com (Your Name)</author>
-      <guid>/tags/analysis/</guid>
+      <guid>/tags/bivariate-correlations/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Authorea</title>
-      <link>/tags/authorea/</link>
-      <pubDate>Wed, 07 Feb 2018 00:00:00 +0000</pubDate>
+      <title>Data Cleaning</title>
+      <link>/tags/data-cleaning/</link>
+      <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
       <author>your@email.com (Your Name)</author>
-      <guid>/tags/authorea/</guid>
+      <guid>/tags/data-cleaning/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Blogdown</title>
-      <link>/tags/blogdown/</link>
-      <pubDate>Wed, 04 Apr 2018 00:00:00 +0000</pubDate>
+      <title>Genomic Data</title>
+      <link>/tags/genomic-data/</link>
+      <pubDate>Wed, 13 Jun 2018 00:00:00 +0000</pubDate>
       <author>your@email.com (Your Name)</author>
-      <guid>/tags/blogdown/</guid>
+      <guid>/tags/genomic-data/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Fun</title>
-      <link>/tags/fun/</link>
-      <pubDate>Wed, 04 Apr 2018 00:00:00 +0000</pubDate>
+      <title>Imputation</title>
+      <link>/tags/imputation/</link>
+      <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
       <author>your@email.com (Your Name)</author>
-      <guid>/tags/fun/</guid>
+      <guid>/tags/imputation/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Hugo</title>
-      <link>/tags/hugo/</link>
-      <pubDate>Wed, 04 Apr 2018 00:00:00 +0000</pubDate>
+      <title>Linux</title>
+      <link>/tags/linux/</link>
+      <pubDate>Wed, 13 Jun 2018 00:00:00 +0000</pubDate>
       <author>your@email.com (Your Name)</author>
-      <guid>/tags/hugo/</guid>
+      <guid>/tags/linux/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Literature</title>
-      <link>/tags/literature/</link>
-      <pubDate>Sun, 11 Feb 2018 00:00:00 +0000</pubDate>
+      <title>Ocular Biometry</title>
+      <link>/tags/ocular-biometry/</link>
+      <pubDate>Thu, 17 May 2018 00:00:00 +0000</pubDate>
       <author>your@email.com (Your Name)</author>
-      <guid>/tags/literature/</guid>
+      <guid>/tags/ocular-biometry/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Python</title>
-      <link>/tags/python/</link>
-      <pubDate>Tue, 27 Mar 2018 00:00:00 +0000</pubDate>
+      <title>Pca</title>
+      <link>/tags/pca/</link>
+      <pubDate>Thu, 17 May 2018 00:00:00 +0000</pubDate>
       <author>your@email.com (Your Name)</author>
-      <guid>/tags/python/</guid>
+      <guid>/tags/pca/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Plink</title>
+      <link>/tags/plink/</link>
+      <pubDate>Wed, 13 Jun 2018 00:00:00 +0000</pubDate>
+      <author>your@email.com (Your Name)</author>
+      <guid>/tags/plink/</guid>
       <description></description>
     </item>
     
     <item>
       <title>R</title>
       <link>/tags/r/</link>
-      <pubDate>Wed, 04 Apr 2018 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 17 May 2018 00:00:00 +0000</pubDate>
       <author>your@email.com (Your Name)</author>
       <guid>/tags/r/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>R Packages</title>
-      <link>/tags/r-packages/</link>
-      <pubDate>Wed, 04 Apr 2018 00:00:00 +0000</pubDate>
-      <author>your@email.com (Your Name)</author>
-      <guid>/tags/r-packages/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Reading</title>
       <link>/tags/reading/</link>
-      <pubDate>Sun, 11 Feb 2018 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 20 Apr 2018 00:00:00 +0000</pubDate>
       <author>your@email.com (Your Name)</author>
       <guid>/tags/reading/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Regression</title>
-      <link>/tags/regression/</link>
-      <pubDate>Wed, 28 Mar 2018 00:00:00 +0000</pubDate>
-      <author>your@email.com (Your Name)</author>
-      <guid>/tags/regression/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Reticulate</title>
-      <link>/tags/reticulate/</link>
-      <pubDate>Tue, 27 Mar 2018 00:00:00 +0000</pubDate>
-      <author>your@email.com (Your Name)</author>
-      <guid>/tags/reticulate/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Rmarkdown</title>
-      <link>/tags/rmarkdown/</link>
-      <pubDate>Wed, 04 Apr 2018 00:00:00 +0000</pubDate>
-      <author>your@email.com (Your Name)</author>
-      <guid>/tags/rmarkdown/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>To Do List</title>
-      <link>/tags/to-do-list/</link>
-      <pubDate>Tue, 03 Apr 2018 00:00:00 +0000</pubDate>
-      <author>your@email.com (Your Name)</author>
-      <guid>/tags/to-do-list/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Writing</title>
-      <link>/tags/writing/</link>
-      <pubDate>Wed, 07 Feb 2018 00:00:00 +0000</pubDate>
-      <author>your@email.com (Your Name)</author>
-      <guid>/tags/writing/</guid>
       <description></description>
     </item>
     

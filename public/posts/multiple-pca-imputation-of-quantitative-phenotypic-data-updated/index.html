@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <title>Multiple PCA Imputation of Quantitative Phenotypic Data  - updated</title>
   <meta name="description" content="Multiple PCA Imputation of Quantitative Phenotypic Data  - updated">
-  <meta name="author" content="Martha Aquino">
+  <meta name="author" content="Your Name">
   
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
@@ -511,8 +511,14 @@ based on dark.css by Ivan Sagalaev
       </div>
 
       <div class="post-content">
-        <div id="methods-and-results" class="section level2">
-<h2>Methods and Results</h2>
+        <div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Multiple imputation with PCA performed on larger data set.</p>
+</div>
+<div id="methods-and-results" class="section level1">
+<h1>Methods and Results</h1>
+<div id="load-data" class="section level2">
+<h2>1. Load data</h2>
 <pre class="r"><code>phen.data.age &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv&#39;)
 
 #include logMAR and base-out prism test values 
@@ -560,9 +566,9 @@ summary(quant.data.adults)</code></pre>
 ##  Min.   :  1.00   Min.   :32.75   Min.   :  0.0    Min.   :39.00  
 ##  1st Qu.: 62.00   1st Qu.:42.00   1st Qu.: 24.0    1st Qu.:42.81  
 ##  Median : 89.00   Median :43.00   Median : 88.5    Median :43.75  
-##  Mean   : 91.18   Mean   :42.97   Mean   : 87.8    Mean   :43.87  
+##  Mean   : 91.19   Mean   :42.97   Mean   : 87.8    Mean   :43.87  
 ##  3rd Qu.:127.00   3rd Qu.:44.00   3rd Qu.:147.0    3rd Qu.:44.75  
-##  Max.   :180.00   Max.   :47.25   Max.   :180.0    Max.   :52.00  
+##  Max.   :189.00   Max.   :47.25   Max.   :180.0    Max.   :52.00  
 ##  NA&#39;s   :16       NA&#39;s   :15      NA&#39;s   :15       NA&#39;s   :15     
 ##  L.K.value.V.Axis  R.Pachimetry    L.Pachimetry   R.Axial.Length 
 ##  Min.   :  0.00   Min.   :428.0   Min.   :424.0   Min.   :20.95  
@@ -588,17 +594,145 @@ summary(quant.data.adults)</code></pre>
 ##  3rd Qu.:18.00   3rd Qu.:0.5000   3rd Qu.:0.5000  
 ##  Max.   :33.00   Max.   :0.9900   Max.   :0.9000  
 ##  NA&#39;s   :3       NA&#39;s   :19       NA&#39;s   :17</code></pre>
-<ol start="2" style="list-style-type: decimal">
-<li>duplicate data set</li>
-</ol>
+</div>
+<div id="subset-relevant-data-quantitative-only-including-logmar-and-prism-test-values-and-excluding-information-from-minors" class="section level2">
+<h2>2. Subset relevant data (quantitative only, including logMAR and prism test values, and excluding information from minors)</h2>
+<pre class="r"><code>phen.data.adults&lt;-phen.data.age[phen.data.age$Age.excel&gt;17,]
+quant.variables&lt;- c(&quot;Logmar.VA.Right&quot;, &quot;RVA.with.PH&quot;, &quot;Logmar.VA.Left&quot;, &quot;LVA.with.PH&quot;, &quot;R.Sph..pre.dilate.&quot;, &quot;R.Cyl..pre.dilate.&quot;,
+                    &quot;R.Axis..pre.dilate.&quot;, &quot;L.Sph..pre.dilate.&quot;, &quot;L.Cyl..pre.dilate.&quot;, &quot;L.Axis..pre.dilate.&quot;,
+                    &quot;R.K.value.H&quot;, &quot;R.K.Value.H.Axis&quot;, &quot;R.K.value.V&quot;, &quot;R.K.value.V.Axis&quot;, &quot;L.K.value.H&quot;,
+                    &quot;L.K.value.H.Axis&quot;, &quot;L.K.value.V&quot;, &quot;L.K.value.V.Axis&quot;, &quot;R.Pachimetry&quot;, &quot;L.Pachimetry&quot;, &quot;R.Axial.Length&quot;,
+                    &quot;L.Axial.Length&quot;, &quot;AC.Depth.R&quot;, &quot;AC.Depth.L&quot;, &quot;R.IOP.mmHg&quot;, &quot;L.IOP.mmHg&quot;, &quot;CDR.RE&quot;, &quot;CDR.LE&quot;)
+quant.data.adults&lt;- phen.data.adults[quant.variables]
+head(quant.data.adults)</code></pre>
+<pre><code>##   Logmar.VA.Right RVA.with.PH Logmar.VA.Left LVA.with.PH
+## 1            0.02        0.02          -0.04       -0.04
+## 2            0.10        0.10           0.16        0.10
+## 3            0.00        0.00           0.00        0.00
+## 4            0.30        0.10           0.08        0.08
+## 5            0.00        0.00          -0.10       -0.10
+## 6            0.24        0.16           0.36        0.14
+##   R.Sph..pre.dilate. R.Cyl..pre.dilate. R.Axis..pre.dilate.
+## 1               0.25               0.00                   0
+## 2               0.00              -0.75                  28
+## 3               1.25              -1.25                 148
+## 4               1.25              -0.25                  97
+## 5               1.25              -0.25                  37
+## 6               4.00              -0.50                  46
+##   L.Sph..pre.dilate. L.Cyl..pre.dilate. L.Axis..pre.dilate. R.K.value.H
+## 1               0.25              -0.50                  79       42.00
+## 2              -0.50              -0.25                 164       41.25
+## 3               1.25              -0.25                  24          NA
+## 4               1.50              -0.50                  81       44.75
+## 5               1.25              -0.75                 164       44.75
+## 6               3.75              -0.75                 180       42.00
+##   R.K.Value.H.Axis R.K.value.V R.K.value.V.Axis L.K.value.H
+## 1                2       43.00               92       42.50
+## 2                7       42.25               97       41.50
+## 3               NA          NA               NA          NA
+## 4                5       45.00               95       45.00
+## 5                0       44.75               90       44.25
+## 6                8       43.25               98       42.25
+##   L.K.value.H.Axis L.K.value.V L.K.value.V.Axis R.Pachimetry L.Pachimetry
+## 1                5       43.50               95          532          554
+## 2              168       42.00               78          608          612
+## 3               NA          NA               NA          507          510
+## 4               60       45.25              150          560          559
+## 5              178       44.75               88          556          562
+## 6              177       43.25               87          498          501
+##   R.Axial.Length L.Axial.Length AC.Depth.R AC.Depth.L R.IOP.mmHg
+## 1          24.31          24.10       3.09       3.03         14
+## 2          25.02          25.21       3.38       3.92         16
+## 3          22.78          22.80       3.40       3.45         26
+## 4          23.02          22.98       3.00       2.85         14
+## 5          21.75          22.04       2.60       2.53         22
+## 6          23.06          23.17       2.94       3.04         18
+##   L.IOP.mmHg CDR.RE CDR.LE
+## 1         14    0.9    0.9
+## 2         15    0.9    0.7
+## 3         22    0.7    0.7
+## 4         14    0.2    0.2
+## 5         21    0.3    0.3
+## 6         20    0.6    0.6</code></pre>
+</div>
+<div id="view-summary-statistics-of-data-subset" class="section level2">
+<h2>3. View summary statistics of data subset</h2>
+<pre class="r"><code>summary(quant.data.adults)</code></pre>
+<pre><code>##  Logmar.VA.Right     RVA.with.PH      Logmar.VA.Left    
+##  Min.   :-0.30000   Min.   :-0.2400   Min.   :-0.30000  
+##  1st Qu.:-0.08000   1st Qu.:-0.0600   1st Qu.:-0.10000  
+##  Median : 0.02000   Median : 0.0400   Median : 0.02000  
+##  Mean   : 0.06608   Mean   : 0.0492   Mean   : 0.06359  
+##  3rd Qu.: 0.14000   3rd Qu.: 0.1000   3rd Qu.: 0.13000  
+##  Max.   : 2.00000   Max.   : 2.0000   Max.   : 1.70000  
+##  NA&#39;s   :3          NA&#39;s   :200       NA&#39;s   :6         
+##   LVA.with.PH       R.Sph..pre.dilate. R.Cyl..pre.dilate.
+##  Min.   :-0.26000   Min.   :-8.0000    Min.   :-11.0000  
+##  1st Qu.:-0.08000   1st Qu.: 0.0000    1st Qu.: -0.7500  
+##  Median : 0.04000   Median : 0.5000    Median : -0.5000  
+##  Mean   : 0.05562   Mean   : 0.5455    Mean   : -0.6497  
+##  3rd Qu.: 0.10000   3rd Qu.: 1.2500    3rd Qu.: -0.2500  
+##  Max.   : 1.06000   Max.   : 8.5000    Max.   :  0.0000  
+##  NA&#39;s   :204        NA&#39;s   :10         NA&#39;s   :10        
+##  R.Axis..pre.dilate. L.Sph..pre.dilate. L.Cyl..pre.dilate.
+##  Min.   :  0.00      Min.   :-9.5000    Min.   :-9.7500   
+##  1st Qu.: 25.50      1st Qu.: 0.0000    1st Qu.:-0.7500   
+##  Median : 85.00      Median : 0.5000    Median :-0.5000   
+##  Mean   : 80.23      Mean   : 0.5887    Mean   :-0.6522   
+##  3rd Qu.:119.00      3rd Qu.: 1.2500    3rd Qu.:-0.2500   
+##  Max.   :180.00      Max.   : 8.0000    Max.   : 0.0000   
+##  NA&#39;s   :10          NA&#39;s   :9          NA&#39;s   :9         
+##  L.Axis..pre.dilate.  R.K.value.H    R.K.Value.H.Axis  R.K.value.V   
+##  Min.   :  0.00      Min.   :36.00   Min.   :  0.00   Min.   :37.00  
+##  1st Qu.: 13.00      1st Qu.:42.00   1st Qu.: 42.00   1st Qu.:42.75  
+##  Median : 70.00      Median :43.00   Median : 91.00   Median :43.75  
+##  Mean   : 72.25      Mean   :42.97   Mean   : 93.74   Mean   :43.80  
+##  3rd Qu.:113.00      3rd Qu.:44.00   3rd Qu.:156.00   3rd Qu.:45.00  
+##  Max.   :180.00      Max.   :48.25   Max.   :180.00   Max.   :55.00  
+##  NA&#39;s   :9           NA&#39;s   :16      NA&#39;s   :16       NA&#39;s   :16     
+##  R.K.value.V.Axis  L.K.value.H    L.K.value.H.Axis  L.K.value.V   
+##  Min.   :  1.00   Min.   :32.75   Min.   :  0.0    Min.   :39.00  
+##  1st Qu.: 62.00   1st Qu.:42.00   1st Qu.: 24.0    1st Qu.:42.81  
+##  Median : 89.00   Median :43.00   Median : 88.5    Median :43.75  
+##  Mean   : 91.19   Mean   :42.97   Mean   : 87.8    Mean   :43.87  
+##  3rd Qu.:127.00   3rd Qu.:44.00   3rd Qu.:147.0    3rd Qu.:44.75  
+##  Max.   :189.00   Max.   :47.25   Max.   :180.0    Max.   :52.00  
+##  NA&#39;s   :16       NA&#39;s   :15      NA&#39;s   :15       NA&#39;s   :15     
+##  L.K.value.V.Axis  R.Pachimetry    L.Pachimetry   R.Axial.Length 
+##  Min.   :  0.00   Min.   :428.0   Min.   :424.0   Min.   :20.95  
+##  1st Qu.: 65.25   1st Qu.:527.0   1st Qu.:526.0   1st Qu.:22.90  
+##  Median : 90.00   Median :546.0   Median :547.0   Median :23.50  
+##  Mean   : 92.22   Mean   :546.2   Mean   :546.3   Mean   :23.56  
+##  3rd Qu.:119.75   3rd Qu.:570.0   3rd Qu.:568.0   3rd Qu.:24.09  
+##  Max.   :180.00   Max.   :656.0   Max.   :658.0   Max.   :27.66  
+##  NA&#39;s   :15       NA&#39;s   :14      NA&#39;s   :16      NA&#39;s   :13     
+##  L.Axial.Length    AC.Depth.R      AC.Depth.L      R.IOP.mmHg   
+##  Min.   :21.29   Min.   :2.090   Min.   :2.000   Min.   : 6.00  
+##  1st Qu.:22.87   1st Qu.:3.058   1st Qu.:3.040   1st Qu.:14.00  
+##  Median :23.46   Median :3.310   Median :3.280   Median :16.00  
+##  Mean   :23.54   Mean   :3.320   Mean   :3.306   Mean   :15.88  
+##  3rd Qu.:24.11   3rd Qu.:3.550   3rd Qu.:3.553   3rd Qu.:18.00  
+##  Max.   :34.43   Max.   :4.950   Max.   :5.130   Max.   :28.00  
+##  NA&#39;s   :13      NA&#39;s   :13      NA&#39;s   :13      NA&#39;s   :2      
+##    L.IOP.mmHg        CDR.RE           CDR.LE      
+##  Min.   : 8.00   Min.   :0.0000   Min.   :0.0000  
+##  1st Qu.:14.00   1st Qu.:0.3000   1st Qu.:0.3000  
+##  Median :16.00   Median :0.4000   Median :0.4000  
+##  Mean   :16.06   Mean   :0.4057   Mean   :0.4022  
+##  3rd Qu.:18.00   3rd Qu.:0.5000   3rd Qu.:0.5000  
+##  Max.   :33.00   Max.   :0.9900   Max.   :0.9000  
+##  NA&#39;s   :3       NA&#39;s   :19       NA&#39;s   :17</code></pre>
+</div>
+<div id="duplicate-data-set" class="section level2">
+<h2>4. Duplicate data set</h2>
 <pre class="r"><code>ocular_data &lt;- quant.data.adults</code></pre>
-<ol start="3" style="list-style-type: decimal">
-<li>Convert to double matrix to ensure that all data is ‘numeric’</li>
-</ol>
+</div>
+<div id="convert-to-double-matrix-to-ensure-that-all-data-is-numeric" class="section level2">
+<h2>5. Convert to double matrix to ensure that all data is ‘numeric’</h2>
 <pre class="r"><code>ocular_data &lt;- as.matrix(ocular_data)</code></pre>
-<ol start="4" style="list-style-type: decimal">
-<li>Perform imputation</li>
-</ol>
+</div>
+<div id="perform-imputation" class="section level2">
+<h2>6.Perform imputation</h2>
 <pre class="r"><code>require(missMDA)</code></pre>
 <pre><code>## Loading required package: missMDA</code></pre>
 <pre class="r"><code>require(FactoMineR)</code></pre>
@@ -811,16 +945,22 @@ summary(quant.data.adults)</code></pre>
 ## 
 ## $criterion
 ##        0        1        2        3        4        5 
-## 801729.3 804632.4 799982.2 802808.0 792605.3 783816.9</code></pre>
+## 795754.6 797499.3 793740.9 795657.1 782813.8 769001.8</code></pre>
 <pre class="r"><code>res.comp = MIPCA(ocular_data, ncp = nbdim$ncp, nboot = 1000)
-png(&#39;indiv_supp_plot.png&#39;, width = 3200, height = 3200, res = 150)
+
+res.comp$ncp</code></pre>
+<pre><code>## NULL</code></pre>
+</div>
+<div id="plot-individuals-plot-to-view-uncertainty-of-predicted-values" class="section level2">
+<h2>7. Plot individuals plot to view uncertainty of predicted values</h2>
+<pre class="r"><code>png(&#39;indiv_supp_plot.png&#39;, width = 3200, height = 3200, res = 150)
 plot.MIPCA(res.comp, choice = &quot;ind.supp&quot;) 
 dev.off()</code></pre>
 <pre><code>## png 
 ##   2</code></pre>
-<ol start="5" style="list-style-type: decimal">
-<li>Plot variable factor plot</li>
-</ol>
+</div>
+<div id="plot-variable-factor-plot" class="section level2">
+<h2>8. Plot variable factor plot</h2>
 <pre class="r"><code>png(&#39;var_factor_plot.png&#39;, width = 3200, height = 3200, res = 150)
 plot.MIPCA(res.comp, choice = &quot;var&quot;) 
 dev.off()</code></pre>
@@ -831,6 +971,7 @@ dev.off()</code></pre>
 <h2>Discussion</h2>
 <p>From the variable factor plot, it is apparent that the logMAR with pinhole correction values (RVA and LVA with PH) have a large spread, much more scattered than all the other variables. This indicates a relatively large uncertainty for the imputed values for those variables. From the summary statistics, these variables have around 200 missing values, whereas all other variables only have up to 16 missing values. For this reason, we have decided to exclude these variables from subsequent analyses.</p>
 <p>Note: this multiple PCA found five components.</p>
+</div>
 </div>
 
       </div>
@@ -846,18 +987,18 @@ dev.off()</code></pre>
       <div class="pure-menu pure-menu-horizontal">
         <ul>
           
-          <li class="pure-menu-item" id="foot-name">© Martha Aquino</li>
+          <li class="pure-menu-item" id="foot-name">© Your Name</li>
           
 
           
           <li class="pure-menu-item">
-            <a href="mailto:eunise.aquino@connect.qut.edu.au" class="pure-menu-link">Email</a>
+            <a href="mailto:your@email.com" class="pure-menu-link">Email</a>
           </li>
           
 
           
           <li class="pure-menu-item">
-            <a href="https://github.com/marthaqut" class="pure-menu-link">GitHub</a>
+            <a href="https://github.com/github" class="pure-menu-link">GitHub</a>
           </li>
           
 

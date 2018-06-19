@@ -9,20 +9,31 @@
     <managingEditor>your@email.com (Your Name)</managingEditor>
     <webMaster>your@email.com (Your Name)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Sun, 11 Feb 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 23 Apr 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/categories/reading/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Summary of a fantastic paper</title>
-      <link>/posts/summary-of-a-fantastic-review-paper/</link>
-      <pubDate>Sun, 11 Feb 2018 00:00:00 +0000</pubDate>
+      <title>Understanding PCA </title>
+      <link>/posts/understanding-pca/</link>
+      <pubDate>Mon, 23 Apr 2018 00:00:00 +0000</pubDate>
       <author>your@email.com (Your Name)</author>
-      <guid>/posts/summary-of-a-fantastic-review-paper/</guid>
-      <description>Let’s pretend that you’ve read a great manuscript/article and you want to document some of your thoughts, you can easily do this as an entry in your lab notebook. You can make it simple to track down such entries by adding them to say a ‘Writing’ category.
-You can bullet point your notes using Markdown:
- really good point in the second paragraph of the discussion Figure 3 was very informative interesting results, might be worth checking if data set is available  These can be numbered as well:</description>
+      <guid>/posts/understanding-pca/</guid>
+      <description>IntroductionPrincipal component analysis (PCA) is one of the analysis techniques that I will be performing on my data. For the phenotypic dataset, it will be used to impute missing values to obtain a complete dataset. Later on, PCA will be performed to determine principal components of the endophenotypes to identify any latent phenotypes.
+http://setosa.io/ev/principal-component-analysis/
+https://georgemdallas.wordpress.com/2013/10/30/principal-component-analysis-4-dummies-eigenvectors-eigenvalues-and-dimension-reduction/
+</description>
+    </item>
+    
+    <item>
+      <title>Understanding ocular biometric measurements</title>
+      <link>/posts/understanding-oculab-biometric-measurements/</link>
+      <pubDate>Fri, 20 Apr 2018 00:00:00 +0000</pubDate>
+      <author>your@email.com (Your Name)</author>
+      <guid>/posts/understanding-oculab-biometric-measurements/</guid>
+      <description>IntroductionThe histograms and outliers have not revealed any non-sense data - in a statistical sense. However, the data that was collected from the eye examinations as part of the NIES in 2008 was not accompanied with a comprehensive glossary. In order to understand the measurements, and determine whether some values are outside of the possible measurable outcomes, compiling a glossary would be useful.
+Keratometry - measure of corneal radius of curvature</description>
     </item>
     
   </channel>

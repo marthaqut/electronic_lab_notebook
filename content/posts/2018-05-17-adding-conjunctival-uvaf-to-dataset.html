@@ -1190,8 +1190,11 @@ summary_stats_imputed_uvaf</code></pre>
 <div id="correlation-analysis" class="section level2">
 <h2>10. Correlation analysis</h2>
 <pre class="r"><code>pearson_imputed_data_uvaf&lt;-rcorr(imputed_phen_data_uvaf, type=&quot;pearson&quot;)
+#extract correlation coefficients
 pearson_coeff_uvaf&lt;-rcorr(imputed_phen_data_uvaf, type=&quot;pearson&quot;)$r
+#extract p-values for correlations
 pearson_pval_uvaf&lt;-rcorr(imputed_phen_data_uvaf, type=&quot;pearson&quot;)$P
+#bind coefficients and p-values
 pearson_phen_data_uvaf&lt;-rbind(pearson_coeff_uvaf, pearson_pval_uvaf)
 head(pearson_phen_data_uvaf)</code></pre>
 <pre><code>##                     R.Logmar.VA L.Logmar.VA R.Sph..pre.dilate.

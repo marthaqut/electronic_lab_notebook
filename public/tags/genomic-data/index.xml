@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Genomic Data on Electronic Lab Notebook</title>
+    <link>/tags/genomic-data/</link>
+    <description>Recent content in Genomic Data on Electronic Lab Notebook</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <managingEditor>your@email.com (Your Name)</managingEditor>
+    <webMaster>your@email.com (Your Name)</webMaster>
+    <copyright>(c) 2018 -- All rights reserved.</copyright>
+    <lastBuildDate>Wed, 13 Jun 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/genomic-data/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Getting started with PLINK</title>
+      <link>/posts/getting-started-with-plink/</link>
+      <pubDate>Wed, 13 Jun 2018 00:00:00 +0000</pubDate>
+      <author>your@email.com (Your Name)</author>
+      <guid>/posts/getting-started-with-plink/</guid>
+      <description>IntroductionAfter cleaning the phenotypic data and performing PCA, the first part of Aim 1 is completed. The second part will involve cleaing and performing PCA on the genomic data. The genomic data is currently in two separate files as they were generated using two different methods (SNP-array and WGS) for different studies. 506 individuals have SNP-array data, and 108 have WGS data, although not all of these individuals were part of the NIES.</description>
+    </item>
+    
+  </channel>
+</rss>
