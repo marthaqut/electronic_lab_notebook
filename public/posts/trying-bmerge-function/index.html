@@ -3,8 +3,8 @@
 <head>
   
   <meta charset="utf-8">
-  <title>Genomic Data</title>
-  <meta name="description" content="Genomic Data">
+  <title>Trying bmerge function</title>
+  <meta name="description" content="Trying bmerge function">
   <meta name="author" content="Martha Aquino">
   
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -420,8 +420,6 @@ based on dark.css by Ivan Sagalaev
 
   
   
-  <link href="/tags/genomic-data/index.xml" rel="alternate" type="application/rss+xml" title="Electronic Lab Notebook Feed" />
-  
 
   <meta name="generator" content="Hugo 0.40.3" />
 
@@ -487,47 +485,77 @@ based on dark.css by Ivan Sagalaev
 </div>
 
 
-
 <div class="pure-g">
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
   <div class="pure-u-11-12 pure-u-md-2-3">
-    <div class="post-content">
-      <p class="posts-name">Genomic Data:</p>
+    <div class="post">
 
-      <ul class="posts">
+      <div class="post-title">
+        <p class="footnote">
+        <time class="">06-15-2018</time>
         
         
+        |
         
-        <li>
-          
-          <a class="post-list" href="/posts/trying-bmerge-function/">Trying bmerge function</a>
+        
+        tags: [ <a href="/tags/genomic-data">Genomic Data</a> <a href="/tags/linux">Linux</a> <a href="/tags/plink">PLINK</a> ]
+        
 
-          <p class="footnote">
-          <time datetime="06-15-2018">
-            06-15-2018
-          </time>
-          </p>
-        </li>
         
+        categories: [<a href="/categories/coding">Coding</a> <a href="/categories/experiments">Experiments</a> ]
         
-        
-        <li>
-          
-          <a class="post-list" href="/posts/getting-started-with-plink/">Getting started with PLINK</a>
 
-          <p class="footnote">
-          <time datetime="06-13-2018">
-            06-13-2018
-          </time>
-          </p>
-        </li>
         
-        
-      </ul>
+        </p>
+        <h1>Trying bmerge function</h1>
+      </div>
+
+      <div class="post-content">
+        <div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Since the genomic data is in two separate files, they need to be merged to create a unified data set that should contain genome-wide SNP coverage for over 600 NI individuals. Eventually, only the data for the individuals that were part of the NIES will be retained, which should include data for about 300 individuals. The merge will be performed on PLINK using the ‘bmerge’ function. To try this, I will be using a small subset of data to familiarise myself with the function and its output.</p>
+</div>
+<div id="methods" class="section level1">
+<h1>Methods</h1>
+<div id="subset-wgs-data" class="section level2">
+<h2>1. Subset WGS data</h2>
+<p>plink1.9 –bfile NI_wgs_merged_snps –chr 1 –make-bed –out plink_output/NI_subset_wgs #subset SNPs from Chromosome 1 only</p>
+</div>
+<div id="subset-snp-array-data" class="section level2">
+<h2>2. Subset SNP-array data</h2>
+<p>plink1.9 –bfile NImerged.impute2.chrAllX.2014-Oct-02 –chr 1 –make-bed –out plink_output/NI_subset_snp</p>
+</div>
+<div id="merge-two-subsets" class="section level2">
+<h2>3. Merge two subsets</h2>
+<p>plink 1.9 –bfile plink_output/NI_subset_wgs –bmerge plink_output/NI_subset_snp.bed plink_output/NI_subset_snp.bim plink_output/NI_subset_snp.fam –make-bed –out plink_output/subset_merge_test</p>
+</div>
+</div>
+<div id="results" class="section level1">
+<h1>Results</h1>
+<p>The merge function failed. The output indicated that there are 2,046,146 variants in Chr 1 from the SNP-array set and 739,988 variants in Chr 1 from the WGS set. There were 1,597,265 variants that were new (uncommon) and 448,881 variants in the base dataset (common in both sets). Multiple-position warnings were flagged for 448,864 variants and the error was produced by 483 variants with 3+ alleles present. Suggestions for the error are that they may be a result of strand inconsistencies or real multi-allelic variants. Both can be tested for and resolved.</p>
+</div>
+
+      </div>
+      
+      <div class="post-content">
+        <div id="disqus_thread"></div>
+<script>
+(function() {
+var d = document, s = d.createElement('script');
+s.src = 'https://http-martha-labbook-netlify-com.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      </div>
+      
     </div>
   </div>
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
 </div>
+
 
 <div class="footer pure-g">
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
@@ -606,4 +634,6 @@ based on dark.css by Ivan Sagalaev
 
 </body>
 </html>
+
+
 

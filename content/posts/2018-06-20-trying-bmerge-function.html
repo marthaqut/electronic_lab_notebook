@@ -1,0 +1,39 @@
+---
+title: Trying bmerge function
+author: Martha Aquino
+date: '2018-06-15'
+slug: trying-bmerge-function
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Genomic Data
+  - Linux
+  - PLINK
+---
+
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Since the genomic data is in two separate files, they need to be merged to create a unified data set that should contain genome-wide SNP coverage for over 600 NI individuals. Eventually, only the data for the individuals that were part of the NIES will be retained, which should include data for about 300 individuals. The merge will be performed on PLINK using the ‘bmerge’ function. To try this, I will be using a small subset of data to familiarise myself with the function and its output.</p>
+</div>
+<div id="methods" class="section level1">
+<h1>Methods</h1>
+<div id="subset-wgs-data" class="section level2">
+<h2>1. Subset WGS data</h2>
+<p>plink1.9 –bfile NI_wgs_merged_snps –chr 1 –make-bed –out plink_output/NI_subset_wgs #subset SNPs from Chromosome 1 only</p>
+</div>
+<div id="subset-snp-array-data" class="section level2">
+<h2>2. Subset SNP-array data</h2>
+<p>plink1.9 –bfile NImerged.impute2.chrAllX.2014-Oct-02 –chr 1 –make-bed –out plink_output/NI_subset_snp</p>
+</div>
+<div id="merge-two-subsets" class="section level2">
+<h2>3. Merge two subsets</h2>
+<p>plink 1.9 –bfile plink_output/NI_subset_wgs –bmerge plink_output/NI_subset_snp.bed plink_output/NI_subset_snp.bim plink_output/NI_subset_snp.fam –make-bed –out plink_output/subset_merge_test</p>
+</div>
+</div>
+<div id="results" class="section level1">
+<h1>Results</h1>
+<p>The merge function failed. The output indicated that there are 2,046,146 variants in Chr 1 from the SNP-array set and 739,988 variants in Chr 1 from the WGS set. There were 1,597,265 variants that were new (uncommon) and 448,881 variants in the base dataset (common in both sets). Multiple-position warnings were flagged for 448,864 variants and the error was produced by 483 variants with 3+ alleles present. Suggestions for the error are that they may be a result of strand inconsistencies or real multi-allelic variants. Both can be tested for and resolved.</p>
+</div>

@@ -9,10 +9,19 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Thu, 17 May 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 15 Jun 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/categories/experiments/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Trying bmerge function</title>
+      <link>/posts/trying-bmerge-function/</link>
+      <pubDate>Fri, 15 Jun 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/trying-bmerge-function/</guid>
+      <description>IntroductionSince the genomic data is in two separate files, they need to be merged to create a unified data set that should contain genome-wide SNP coverage for over 600 NI individuals. Eventually, only the data for the individuals that were part of the NIES will be retained, which should include data for about 300 individuals. The merge will be performed on PLINK using the ‘bmerge’ function. To try this, I will be using a small subset of data to familiarise myself with the function and its output.</description>
+    </item>
     
     <item>
       <title>PCA of Phenotypic Data </title>
