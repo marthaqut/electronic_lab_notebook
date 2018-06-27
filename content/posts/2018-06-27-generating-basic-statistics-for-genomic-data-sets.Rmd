@@ -1,0 +1,86 @@
+---
+title: Generating basic statistics for genomic data sets
+author: Martha Aquino
+date: '2018-06-27'
+slug: generating-basic-statistics-for-genomic-data-sets
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Genomic Data
+  - Linux
+  - PLINK
+---
+
+#Introduction
+In preparation for merging the two sets of genomic data, some basic statistics must first be generated. These will include allele frequencies, genotyping rates, missingness, and hardy-weinberg equilibrium tests. 
+
+#Methods
+##1.Generate allele frequencies for both files
+```{bash, eval = FALSE}
+
+plink1.9 --bfile NI_wgs_merged_snps --freq --out plink_output/wgs_allele_freq
+
+plink1.9 --bfile NImerged.impute2.chrAllX-2014-Oct-02 --freq --out plink_output/snp_allele_freq
+
+```
+
+###View head of output
+```{r}
+
+```
+
+##2.Plot histograms of allele frequency distributions in both files 
+```{r}
+
+```
+
+
+##3.Generate missingness statistics
+```{bash, eval = FALSE}
+
+plink1.9 --bfile NI_wgs_merged_snps --missing --out plink_output/wgs_missing
+
+plink1.9 --bfile NImerged.impute2.chrAllX-2014-Oct-02 --missing --out plink_output/snp_missing
+```
+
+##4.Generate hardy-weinberg test statistics
+```{bash, eval = FALSE}
+plink1.9 --bfile NI_wgs_merged_snps --missing --out plink_output/wgs_hardy
+
+plink1.9 --bfile NImerged.impute2.chrAllX-2014-Oct-02 --hardy --out plink_output/snp_hardy
+```
+
+##5.Filter out variants based on HWE p-value
+```{bash, eval = FALSE}
+plink1.9 --bfile NI_wgs_merged_snps --hwe 1.8e-7 --make-bed --out plink_output/wgs_hwe_filter
+
+plink1.9 --bfile NImerged.impute2.chrAllX-2014-Oct-02 --hwe 1.8e-7 --make-bed --out plink_output/snp_hwe_filter
+```
+###Note: new bed, bim, fam files created. 
+
+##6.Try merging to find variants with 3+ alleles
+```{bash, eval = FALSE}
+plink1.9 --bfile plink_output/wgs_hwe_filter --bmerge plink_output/snp_hwe_filter.bed plink_output/snp_hwe_filter.bim plink_output/snp_hwe_filter.fam --make-bed --out plink_output/trial_merge
+```
+
+###Failed merge generated a file that has a list of variant IDs that have 3+ alleles. This can be used to exlude these variants from each file and the merge can be attempted again. Note: 6528 variants were found to have multiple alleles. 
+##7.Exclude variants with 3+ alleles from both files 
+```{bash, eval = FALSE}
+plink1.9 --bfile plink_output/wgs_hwe_filter --exclude plink_output/trial_merge-merge.missnp --make-bed --out plink_output/wgs_exclude_out
+
+plink1.9 --bfile plink_output/snp_hwe_filter --exclude plink_output/trial_merge-merge.missnp --make-bed --out plink_output/snp_exclude_out
+
+```
+
+###Output from exclude: WGS = 9,288,730 variants remain (from 9,295,158); SNP = 27,303,763 variants remain (from 27,310,391). Note: new bed, bim, fam files created. 
+
+##8.Try merge again with new binary files (multi-allelic variants excluded)
+```{bash, eval = FALSE}
+plink1.9 --bfile plink_output/wgs_exclude_out --bmerge plink_output/snp_exclude_out.bed plink_output/snp_exclude_out.bim plink_output/snp_exclude_out.fam --make-bed --out plink_output/var_out_merge
+```
+
+###Input: 9,288,730 variants loaded from WGS_exclude_out; 27,303,763 variants loaded from SNP_excluded_out
+###5,787,699 variants are common in both, 21,516,064 variants are new
+###Warnings: 5,731,755 variants with multiple-positions; 69,831 variants with same-positions
+###Output: Total genotyping rate is 77.35%; 30,804,794 variants and 614 individuals pass filters and QC 
