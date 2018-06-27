@@ -566,6 +566,11 @@ plink1.9 --bfile plink_output/snp_hwe_filter --exclude plink_output/trial_merge-
 <pre class="bash"><code>plink1.9 --bfile plink_output/wgs_exclude_out --bmerge plink_output/snp_exclude_out.bed plink_output/snp_exclude_out.bim plink_output/snp_exclude_out.fam --make-bed --out plink_output/var_out_merge</code></pre>
 <p>Input: 9,288,730 variants loaded from WGS_exclude_out; 27,303,763 variants loaded from SNP_excluded_out 5,787,699 variants are common in both, 21,516,064 variants are new Warnings: 5,731,755 variants with multiple-positions; 69,831 variants with same-positions Output: Total genotyping rate is 77.35%; 30,804,794 variants and 614 individuals pass filters and QC</p>
 </div>
+<div id="generate-allele-frequency-statistics-for-merged-data-set" class="section level2">
+<h2>9.Generate allele frequency statistics for merged data set</h2>
+<pre class="bash"><code>plink1.9 --bfile plink_ouput/var_out_merge --freq --out plink_output/merged_allele_freq</code></pre>
+<p>Output: 30,804,794 variants loaded, genotyping rate is 77.35%. I thought only common variants across both sets will be retained for the merge?</p>
+</div>
 </div>
 
       </div>

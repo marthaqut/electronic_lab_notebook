@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Bash on Electronic Lab Notebook</title>
+    <link>/tags/bash/</link>
+    <description>Recent content in Bash on Electronic Lab Notebook</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
+    <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
+    <copyright>(c) 2018 -- All rights reserved.</copyright>
+    <lastBuildDate>Wed, 27 Jun 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/bash/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Visualising allele frequency distributions</title>
+      <link>/posts/visualising-allele-frequency-distributions/</link>
+      <pubDate>Wed, 27 Jun 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/visualising-allele-frequency-distributions/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
