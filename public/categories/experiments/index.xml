@@ -9,10 +9,20 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Wed, 27 Jun 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 03 Jul 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/categories/experiments/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Extracting common variants from both data sets</title>
+      <link>/posts/extracting-common-variants-from-both-data-sets/</link>
+      <pubDate>Tue, 03 Jul 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/extracting-common-variants-from-both-data-sets/</guid>
+      <description>IntroductionThe merged data set did not produce the expected output. I expected that the merging would only retain data from common variants between both genomic data sets. To resolve this, I need to compare the two data sets and extract the list of common variant IDs and use this to extract the relevant data.
+MethodsLoad .bim files for both data sets</description>
+    </item>
     
     <item>
       <title>Generating basic statistics for genomic data sets</title>
@@ -22,15 +32,6 @@
       <guid>/posts/generating-basic-statistics-for-genomic-data-sets/</guid>
       <description>IntroductionIn preparation for merging the two sets of genomic data, some basic statistics must first be generated. These will include allele frequencies, genotyping rates, missingness, and hardy-weinberg equilibrium tests.
 Methods1.Generate allele frequencies for both filesplink1.9 --bfile NI_wgs_merged_snps --freq --out plink_output/wgs_allele_freqplink1.9 --bfile NImerged.impute2.chrAllX-2014-Oct-02 --freq --out plink_output/snp_allele_freqView head of output2.Plot histograms of allele frequency distributions in both files3.Generate missingness statisticsplink1.</description>
-    </item>
-    
-    <item>
-      <title>Visualising allele frequency distributions</title>
-      <link>/posts/visualising-allele-frequency-distributions/</link>
-      <pubDate>Wed, 27 Jun 2018 00:00:00 +0000</pubDate>
-      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
-      <guid>/posts/visualising-allele-frequency-distributions/</guid>
-      <description></description>
     </item>
     
     <item>

@@ -9,18 +9,19 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Wed, 27 Jun 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 03 Jul 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/r/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Visualising allele frequency distributions</title>
-      <link>/posts/visualising-allele-frequency-distributions/</link>
-      <pubDate>Wed, 27 Jun 2018 00:00:00 +0000</pubDate>
+      <title>Extracting common variants from both data sets</title>
+      <link>/posts/extracting-common-variants-from-both-data-sets/</link>
+      <pubDate>Tue, 03 Jul 2018 00:00:00 +0000</pubDate>
       <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
-      <guid>/posts/visualising-allele-frequency-distributions/</guid>
-      <description></description>
+      <guid>/posts/extracting-common-variants-from-both-data-sets/</guid>
+      <description>IntroductionThe merged data set did not produce the expected output. I expected that the merging would only retain data from common variants between both genomic data sets. To resolve this, I need to compare the two data sets and extract the list of common variant IDs and use this to extract the relevant data.
+MethodsLoad .bim files for both data sets</description>
     </item>
     
     <item>
