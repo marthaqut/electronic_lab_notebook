@@ -21,7 +21,8 @@
       <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
       <guid>/posts/extracting-common-variants-from-both-data-sets/</guid>
       <description>IntroductionThe merged data set did not produce the expected output. I expected that the merging would only retain data from common variants between both genomic data sets. To resolve this, I need to compare the two data sets and extract the list of common variant IDs and use this to extract the relevant data.
-MethodsLoad .bim files for both data sets</description>
+Methods1.Load .bim files for both data sets
+wgs_bim_data &amp;lt;- read.table(&amp;#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NI_wgs_merged_snps.bim&amp;#39;, header = F)head(wgs_bim_data)## V1 V2 V3 V4 V5 V6## 1 1 1:11075 0 11075 A G## 2 1 rs546169444 0 14464 T A## 3 1 rs2691315 0 15820 T G## 4 1 rs375964566 0 15922 G A## 5 1 rs112448831 0 15956 A G## 6 1 rs372319358 0 16068 C Tsnp_bim_data &amp;lt;- read.</description>
     </item>
     
     <item>

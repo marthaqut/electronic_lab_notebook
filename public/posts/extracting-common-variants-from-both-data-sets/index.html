@@ -517,9 +517,49 @@ based on dark.css by Ivan Sagalaev
 </div>
 <div id="methods" class="section level1">
 <h1>Methods</h1>
-<ol style="list-style-type: decimal">
-<li>Load .bim files for both data sets</li>
-</ol>
+<p>1.Load .bim files for both data sets</p>
+<pre class="r"><code>wgs_bim_data &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NI_wgs_merged_snps.bim&#39;, header = F)
+
+head(wgs_bim_data)</code></pre>
+<pre><code>##   V1          V2 V3    V4 V5 V6
+## 1  1     1:11075  0 11075  A  G
+## 2  1 rs546169444  0 14464  T  A
+## 3  1   rs2691315  0 15820  T  G
+## 4  1 rs375964566  0 15922  G  A
+## 5  1 rs112448831  0 15956  A  G
+## 6  1 rs372319358  0 16068  C  T</code></pre>
+<pre class="r"><code>snp_bim_data &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NImerged.impute2.chrAllX.2014-Oct-02.bim&#39;, header = F)
+
+head(snp_bim_data)</code></pre>
+<pre><code>##   V1          V2 V3    V4 V5 V6
+## 1  1  rs58108140  0 10583  A  G
+## 2  1 rs189107123  0 10611  G  C
+## 3  1 rs180734498  0 13302  T  C
+## 4  1 rs144762171  0 13327  C  G
+## 5  1 rs151276478  0 13980  C  T
+## 6  1 rs140337953  0 30923  G  T</code></pre>
+<p>2.Merge files to obtain list of common variants</p>
+<pre class="r"><code>merged_bim_data &lt;- merge(wgs_bim_data, snp_bim_data, by = &#39;V2&#39;)
+
+head(merged_bim_data)</code></pre>
+<pre><code>##           V2 V1.x V3.x      V4.x V5.x V6.x V1.y V3.y      V4.y V5.y V6.y
+## 1  rs1000000   12    0 126406434    A    G   12    0 126890980    A    G
+## 2 rs10000003    4    0  56695481    A    G    4    0  57561647    A    G
+## 3 rs10000005    4    0  84240405    G    A    4    0  85161558    G    A
+## 4 rs10000006    4    0 107905227    C    T    4    0 108826383    C    T
+## 5 rs10000010    4    0  21617051    C    T    4    0  21618674    T    C
+## 6 rs10000012    4    0   1363537    G    C    4    0   1357325    G    C</code></pre>
+<p>3.Extract list of common variant IDs</p>
+<pre class="r"><code>merged_rsID &lt;- merged_bim_data$V2
+
+head(merged_rsID)</code></pre>
+<pre><code>## [1] rs1000000  rs10000003 rs10000005 rs10000006 rs10000010 rs10000012
+## 9343280 Levels: 1:100002796 1:100003411 1:100003413 1:100003414 ... rs9999998</code></pre>
+<p>4.Export list to a .txt file</p>
+<pre class="r"><code>write.table(merged_rsID, file = &#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_rsID.txt&#39;, sep = &quot;\t&quot;, row.names = F, col.names = F)</code></pre>
+<p>5.Extract data based on list of IDs</p>
+<pre class="bash"><code>plink1.9 --bfile plink_output/var_out_merge --extract merged_rsID.txt --make-bed --out plink_output/merged_common_data</code></pre>
+<p>Last line of code in PLINK produces an error message - Error: No variants remaining after –extract. I’ve tried changing separators from tab to spaces and removing column and row names to match the format of the files. PLINK manual suggests that the ‘extract’ function will accept a text file with a list of variant IDs. Recurring error may be a formatting issue or the commands in PLINK may be in the wrong order or missing a step.</p>
 </div>
 
       </div>
