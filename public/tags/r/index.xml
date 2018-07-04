@@ -9,10 +9,22 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Tue, 03 Jul 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 04 Jul 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/r/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Generating basic statistics for merged data set</title>
+      <link>/posts/generating-basic-statistics-for-merged-data-set/</link>
+      <pubDate>Wed, 04 Jul 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/generating-basic-statistics-for-merged-data-set/</guid>
+      <description>IntroductionError when extracting common variant IDs needs to be resolved.
+After successfully exporting the list of common IDs, the relevant genomic data will need to be extracted and basic statistics will need to be generated.
+Methods and resultsI believe the error in PLINK when extracting data is due to the formatting of the IDs in the text file.
+1.Try removing quotation marks from the list of IDs</description>
+    </item>
     
     <item>
       <title>Extracting common variants from both data sets</title>

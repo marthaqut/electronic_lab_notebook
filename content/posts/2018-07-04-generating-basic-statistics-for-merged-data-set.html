@@ -1,0 +1,54 @@
+---
+title: Generating basic statistics for merged data set
+author: Martha Aquino
+date: '2018-07-04'
+slug: generating-basic-statistics-for-merged-data-set
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Genomic Data
+  - Linux
+  - PLINK
+  - R
+---
+
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Error when extracting common variant IDs needs to be resolved.</p>
+<p>After successfully exporting the list of common IDs, the relevant genomic data will need to be extracted and basic statistics will need to be generated.</p>
+</div>
+<div id="methods-and-results" class="section level1">
+<h1>Methods and results</h1>
+<p>I believe the error in PLINK when extracting data is due to the formatting of the IDs in the text file.</p>
+<p>1.Try removing quotation marks from the list of IDs</p>
+<pre class="r"><code>write.table(merged_rsID, file = &#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_rsID.txt&#39;, row.names = F, col.names = F, quote = F)</code></pre>
+<p>2.Check that the quotation marks were removed</p>
+<pre class="bash"><code>head merged_rsID.txt</code></pre>
+<p>3.Use exported ID list to extract data</p>
+<pre class="bash"><code>plink1.9 --bfile plink_output/var_out_merge --extract merged_rsID.txt --make-bed --out plink_output/common_id_merge</code></pre>
+<p>Note: var_out_merge is the file set that contains 30million+ variants and had the variants with 3+ alleles removed</p>
+<p>This was successful, and the output indicates that new file set contains 5,789,188 variants with 614 individuals.</p>
+<p>4.Find allele frequency for new file set.</p>
+<pre class="bash"><code>plink1.9 --bfile plink_output/common_id_merge --freq --out plink_output/merged_allele_freq</code></pre>
+<p>Output: genotyping rate is 97.02%.</p>
+<div id="visualise-allele-frequency-distributions." class="section level3">
+<h3>Visualise allele frequency distributions.</h3>
+<p>5.Load allele frequency files for the original file sets</p>
+<pre class="r"><code>wgs_allele_freq &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/wgs_allele_freq.frq&#39;, header = T)
+
+snp_allele_freq &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/snp_allele_freq.frq&#39;, header = T)</code></pre>
+<p>6.Generate histograms</p>
+<pre class="r"><code>hist(wgs_allele_freq$MAF, main = &quot;Allele Frequency Distributions of WGS Data&quot;, xlab = &quot;Minor Allele Frequency&quot;, xlim = c(0.0, 0.5), col = &quot;darkseagreen1&quot;)</code></pre>
+<p><img src="/posts/2018-07-04-generating-basic-statistics-for-merged-data-set_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>hist(snp_allele_freq$MAF, main = &quot;Allele Frequency Distribution of SNP Data&quot;, xlab = &quot;Minor Allele Frequency&quot;, xlim = c(0.0, 0.5), col = &quot;cadetblue1&quot;)</code></pre>
+<p><img src="/posts/2018-07-04-generating-basic-statistics-for-merged-data-set_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>7.Load allele frequency file for merged data set</p>
+<pre class="r"><code>merged_allele_freq &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_allele_freq.frq&#39;, header = T)</code></pre>
+<p>8.Generate histogram for allele freq distributions</p>
+<pre class="r"><code>hist(merged_allele_freq$MAF, main = &quot;Allele Frequency Distributions of Merged Data&quot;, xlab = &quot;Minor Allele Frequency&quot;, xlim = c(0.0, 0.5), col = &quot;lightpink&quot;)</code></pre>
+<p><img src="/posts/2018-07-04-generating-basic-statistics-for-merged-data-set_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
+</div>

@@ -20,34 +20,34 @@ The merged data set did not produce the expected output. I expected that the mer
 
 #Methods
 1.Load .bim files for both data sets 
-```{r}
+```{r, cache=TRUE}
 wgs_bim_data <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NI_wgs_merged_snps.bim', header = F)
 
 head(wgs_bim_data)
 ```
 
-```{r}
+```{r, cache=TRUE}
 snp_bim_data <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NImerged.impute2.chrAllX.2014-Oct-02.bim', header = F)
 
 head(snp_bim_data)
 ```
 
 2.Merge files to obtain list of common variants 
-```{r}
+```{r, cache=TRUE}
 merged_bim_data <- merge(wgs_bim_data, snp_bim_data, by = 'V2')
 
 head(merged_bim_data)
 ```
 
 3.Extract list of common variant IDs
-```{r}
+```{r, cache=TRUE}
 merged_rsID <- merged_bim_data$V2
 
 head(merged_rsID)
 ```
 
 4.Export list to a .txt file 
-```{r}
+```{r, eval=FALSE}
 write.table(merged_rsID, file = 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_rsID.txt', sep = "\t", row.names = F, col.names = F)
 ```
 
@@ -57,3 +57,4 @@ plink1.9 --bfile plink_output/var_out_merge --extract merged_rsID.txt --make-bed
 ```
 
 Last line of code in PLINK produces an error message - Error: No variants remaining after --extract. I've tried changing separators from tab to spaces and removing column and row names to match the format of the files. PLINK manual suggests that the 'extract' function will accept a text file with a list of variant IDs. Recurring error may be a formatting issue or the commands in PLINK may be in the wrong order or missing a step. 
+
