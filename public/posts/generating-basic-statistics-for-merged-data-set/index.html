@@ -530,22 +530,24 @@ based on dark.css by Ivan Sagalaev
 <p>4.Find allele frequency for new file set.</p>
 <pre class="bash"><code>plink1.9 --bfile plink_output/common_id_merge --freq --out plink_output/merged_allele_freq</code></pre>
 <p>Output: genotyping rate is 97.02%.</p>
+<p>5.Generate missingness stats</p>
+<pre class="bash"><code>plink1.9 --bfile plink_output/common_id_merge --missing --out plink_output/merged_missing</code></pre>
 <div id="visualise-allele-frequency-distributions." class="section level3">
 <h3>Visualise allele frequency distributions.</h3>
-<p>5.Load allele frequency files for the original file sets</p>
+<p>6.Load allele frequency files for the original file sets</p>
 <pre class="r"><code>wgs_allele_freq &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/wgs_allele_freq.frq&#39;, header = T)
 
 snp_allele_freq &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/snp_allele_freq.frq&#39;, header = T)</code></pre>
-<p>6.Generate histograms</p>
+<p>7.Generate histograms</p>
 <pre class="r"><code>hist(wgs_allele_freq$MAF, main = &quot;Allele Frequency Distributions of WGS Data&quot;, xlab = &quot;Minor Allele Frequency&quot;, xlim = c(0.0, 0.5), col = &quot;darkseagreen1&quot;)</code></pre>
-<p><img src="/posts/2018-07-04-generating-basic-statistics-for-merged-data-set_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<pre class="r"><code>hist(snp_allele_freq$MAF, main = &quot;Allele Frequency Distribution of SNP Data&quot;, xlab = &quot;Minor Allele Frequency&quot;, xlim = c(0.0, 0.5), col = &quot;cadetblue1&quot;)</code></pre>
 <p><img src="/posts/2018-07-04-generating-basic-statistics-for-merged-data-set_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
-<p>7.Load allele frequency file for merged data set</p>
+<pre class="r"><code>hist(snp_allele_freq$MAF, main = &quot;Allele Frequency Distribution of SNP Data&quot;, xlab = &quot;Minor Allele Frequency&quot;, xlim = c(0.0, 0.5), col = &quot;cadetblue1&quot;)</code></pre>
+<p><img src="/posts/2018-07-04-generating-basic-statistics-for-merged-data-set_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>8.Load allele frequency file for merged data set</p>
 <pre class="r"><code>merged_allele_freq &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_allele_freq.frq&#39;, header = T)</code></pre>
-<p>8.Generate histogram for allele freq distributions</p>
+<p>9.Generate histogram for allele freq distributions</p>
 <pre class="r"><code>hist(merged_allele_freq$MAF, main = &quot;Allele Frequency Distributions of Merged Data&quot;, xlab = &quot;Minor Allele Frequency&quot;, xlim = c(0.0, 0.5), col = &quot;lightpink&quot;)</code></pre>
-<p><img src="/posts/2018-07-04-generating-basic-statistics-for-merged-data-set_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="/posts/2018-07-04-generating-basic-statistics-for-merged-data-set_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 </div>
 
