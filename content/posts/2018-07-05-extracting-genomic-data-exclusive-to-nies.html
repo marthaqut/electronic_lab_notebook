@@ -95,5 +95,20 @@ head(nies_geno_id)</code></pre>
 <p>This extracted data is the final data set that will be used for subsequent analyses. The phenotypic data will also be restricted to these individuals only.</p>
 <p>8.Generate allele frequency statistic for the NIES only genomic data</p>
 <pre class="bash"><code>plink1.9 --bfile plink_output/nies_only_geno --freq --out plink_output/nies_allele_freq</code></pre>
-<p>9.Visualise allele frequency distributions in this data set.</p>
+<p>9.Load allele frequency file from PLINK</p>
+<pre class="r"><code>nies_only_geno &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/nies_allele_freq.frq&#39;, header = T)
+head(nies_only_geno)</code></pre>
+<pre><code>##   CHR         SNP A1 A2     MAF NCHROBS
+## 1   1  rs62637813  C  G 0.00000      50
+## 2   1 rs141149254  A  G 0.00000      22
+## 3   1   rs2462492  T  C 0.07143      14
+## 4   1  rs76735897  G  A 0.37500       8
+## 5   1  rs77573425  C  G 0.37500       8
+## 6   1  rs28850140  A  G 0.00000      32</code></pre>
+<p>10.Visualise allele frequency distributions in this data set.</p>
+<pre class="r"><code>hist(nies_only_geno$MAF, main = &quot;Allele Frequency Distributions of Genomic Data for NIES&quot;, xlab = &quot;Minor Allele Frequency&quot;, xlim = c(0.0, 0.5), col = &quot;plum&quot;)</code></pre>
+<p><img src="/posts/2018-07-05-extracting-genomic-data-exclusive-to-nies_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>11.Generate missingness statistics for NIES only data set</p>
+<pre class="bash"><code>plink1.9 --bfile plink_output/nies_only_geno --missing --out plink_output/nies_missing</code></pre>
+<p>This exercise concludes the cleaning step for the genomic data. I have extracted the relevant information by including only the common variants across both WGS and SNP-array data sets, and only including NIES individuals. This has resulted in a final data set that includes 5,789,188 variants and 362 individuals. More detailed analysis of basic statistics generated at different points will follow.</p>
 </div>

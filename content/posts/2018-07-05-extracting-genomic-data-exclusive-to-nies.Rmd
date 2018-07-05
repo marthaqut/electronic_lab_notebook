@@ -76,12 +76,19 @@ This extracted data is the final data set that will be used for subsequent analy
 plink1.9 --bfile plink_output/nies_only_geno --freq --out plink_output/nies_allele_freq
 ```
 
-9.Visualise allele frequency distributions in this data set. 
+9.Load allele frequency file from PLINK 
+```{r}
+nies_only_geno <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/nies_allele_freq.frq', header = T)
+head(nies_only_geno)
+```
+
+
+10.Visualise allele frequency distributions in this data set. 
 ```{r}
 hist(nies_only_geno$MAF, main = "Allele Frequency Distributions of Genomic Data for NIES", xlab = "Minor Allele Frequency", xlim = c(0.0, 0.5), col = "plum")
 ```
 
-10.Generate missingness statistics for NIES only data set
+11.Generate missingness statistics for NIES only data set
 ```{bash, eval=FALSE}
 plink1.9 --bfile plink_output/nies_only_geno --missing --out plink_output/nies_missing
 ```
