@@ -3,8 +3,8 @@
 <head>
   
   <meta charset="utf-8">
-  <title>Posts</title>
-  <meta name="description" content="Posts">
+  <title>Extracting genomic data exclusive to NIES</title>
+  <meta name="description" content="Extracting genomic data exclusive to NIES">
   <meta name="author" content="Martha Aquino">
   
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -420,8 +420,6 @@ based on dark.css by Ivan Sagalaev
 
   
   
-  <link href="/posts/index.xml" rel="alternate" type="application/rss+xml" title="Electronic Lab Notebook Feed" />
-  
 
   <meta name="generator" content="Hugo 0.40.3" />
 
@@ -487,268 +485,135 @@ based on dark.css by Ivan Sagalaev
 </div>
 
 
-
 <div class="pure-g">
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
   <div class="pure-u-11-12 pure-u-md-2-3">
-    <div class="post-content">
-      <p class="posts-name">Posts:</p>
+    <div class="post">
 
-      <ul class="posts">
+      <div class="post-title">
+        <p class="footnote">
+        <time class="">07-05-2018</time>
         
         
+        |
         
-        <li>
-          
-          <a class="post-list" href="/posts/extracting-genomic-data-exclusive-to-nies/">Extracting genomic data exclusive to NIES</a>
+        
+        tags: [ <a href="/tags/genomic-data">Genomic Data</a> <a href="/tags/data-cleaning">Data Cleaning</a> <a href="/tags/linux">Linux</a> <a href="/tags/plink">PLINK</a> <a href="/tags/r">R</a> ]
+        
 
-          <p class="footnote">
-          <time datetime="07-05-2018">
-            07-05-2018
-          </time>
-          </p>
-        </li>
         
+        categories: [<a href="/categories/coding">Coding</a> <a href="/categories/experiments">Experiments</a> ]
         
-        
-        <li>
-          
-          <a class="post-list" href="/posts/generating-basic-statistics-for-merged-data-set/">Generating basic statistics for merged data set</a>
 
-          <p class="footnote">
-          <time datetime="07-04-2018">
-            07-04-2018
-          </time>
-          </p>
-        </li>
         
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/extracting-common-variants-from-both-data-sets/">Extracting common variants from both data sets</a>
+        </p>
+        <h1>Extracting genomic data exclusive to NIES</h1>
+      </div>
 
-          <p class="footnote">
-          <time datetime="07-03-2018">
-            07-03-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/generating-basic-statistics-for-genomic-data-sets/">Generating basic statistics for genomic data sets</a>
+      <div class="post-content">
+        <div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>After extracting data for the common variants, the last cleaning step is to extract genomic data for NIES individuals only. Unique identifiers are used for individuals and a unique list of UUIDs need to be identified to extract the relevant data.</p>
+</div>
+<div id="methods-and-results" class="section level1">
+<h1>Methods and Results</h1>
+<ol style="list-style-type: decimal">
+<li>Load .fam file from the merged data set. (.fam file contains UUIDs of individuals with genomic data)</li>
+</ol>
+<pre class="r"><code>merged_fam_data &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/common_id_merge.fam&#39;, header = F)
 
-          <p class="footnote">
-          <time datetime="06-27-2018">
-            06-27-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/trying-bmerge-function/">Trying bmerge function</a>
+head(merged_fam_data)</code></pre>
+<pre><code>##   V1     V2   V3     V4 V5 V6
+## 1  1 110050  764 368910  1 -9
+## 2  1 110110 2621 400796  1 -9
+## 3  1 110130 2994   2330  1 -9
+## 4  1 110150    0      0  2 -9
+## 5  1 110160 2070   2071  1 -9
+## 6  1 110320 4462   6317  1 -9</code></pre>
+<p>2.Load .csv file that contains UUIDs of NIES individuals that provided DNA samples, either from NIES, NIHS, or both.</p>
+<pre class="r"><code>nies_with_dna &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_with_dna.csv&#39;, header = T)
 
-          <p class="footnote">
-          <time datetime="06-15-2018">
-            06-15-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/getting-started-with-plink/">Getting started with PLINK</a>
+head(nies_with_dna)</code></pre>
+<pre><code>##     UUID IN_NIES   NIES DNA_NIES DNA_NIHS
+## 1 110150     Yes ES_715       NA        1
+## 2 110160     Yes ES_695       NA        1
+## 3 110460     Yes ES_006       NA        1
+## 4 110490     Yes ES_591       NA        1
+## 5 110500     Yes ES_555       NA        1
+## 6 110590     Yes ES_686       NA        1</code></pre>
+<p>Note: prior to loading this data, the original ID file contained UUIDs for ALL NIES and/or NIHS individuals. I selected the UUIDs for NIES individuals only, and then filtered ONLY for individuals that provided DNA. I.e. there were 801 individuals in the NIES, of which 632 individuals provided DNA, so I only obtained the UUIDs for the 632 individuals.</p>
+<p>3.Assign column names/labels to data from the .fam file. This is important so that the two lists can be easily merged.</p>
+<pre class="r"><code>colnames(merged_fam_data) &lt;- c(&quot;Fam ID&quot;, &quot;UUID&quot;, &quot;Pat ID&quot;, &quot;Mat ID&quot;, &quot;Sex&quot;, &quot;Affection&quot;)
 
-          <p class="footnote">
-          <time datetime="06-13-2018">
-            06-13-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/pca-of-phenotypic-data/">PCA of Phenotypic Data </a>
+head(merged_fam_data)</code></pre>
+<pre><code>##   Fam ID   UUID Pat ID Mat ID Sex Affection
+## 1      1 110050    764 368910   1        -9
+## 2      1 110110   2621 400796   1        -9
+## 3      1 110130   2994   2330   1        -9
+## 4      1 110150      0      0   2        -9
+## 5      1 110160   2070   2071   1        -9
+## 6      1 110320   4462   6317   1        -9</code></pre>
+<p>4.Merge two lists to obtain unique UUIDs.</p>
+<pre class="r"><code>nies_with_geno &lt;- merge(nies_with_dna, merged_fam_data, by=&quot;UUID&quot;)
 
-          <p class="footnote">
-          <time datetime="05-17-2018">
-            05-17-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/adding-conjunctival-uvaf-to-dataset/">Adding Conjunctival UVAF to dataset </a>
+head(nies_with_geno)</code></pre>
+<pre><code>##     UUID IN_NIES   NIES DNA_NIES DNA_NIHS Fam ID Pat ID Mat ID Sex
+## 1 110150     Yes ES_715       NA        1      1      0      0   2
+## 2 110160     Yes ES_695       NA        1      1   2070   2071   1
+## 3 110500     Yes ES_555       NA        1      1   3185 400162   2
+## 4 110650     Yes ES_225       NA        1      1 400226 362911   2
+## 5 110820     Yes ES_629       NA        1      1 400184   1910   2
+## 6 111280     Yes ES_257        1        1      1    933     59   2
+##   Affection
+## 1        -9
+## 2        -9
+## 3        -9
+## 4        -9
+## 5        -9
+## 6        -9</code></pre>
+<p>The output from this step indicates that there is an overlap of 362 individuals, suggesting that there are 362 individuals within the NIES with both phenotypic and genomic data.</p>
+<p>5.Extract Family IDs and UUIDs only because PLINK requires both to extract data based on indiv IDs</p>
+<pre class="r"><code>nies_geno_id &lt;- cbind(nies_with_geno$`Fam ID`, nies_with_geno$UUID)
+head(nies_geno_id)</code></pre>
+<pre><code>##      [,1]   [,2]
+## [1,]    1 110150
+## [2,]    1 110160
+## [3,]    1 110500
+## [4,]    1 110650
+## [5,]    1 110820
+## [6,]    1 111280</code></pre>
+<p>6.Export to .txt file for use in PLINK</p>
+<pre class="r"><code>write.table(nies_geno_id, &#39;C:/Users/Martha/Documents/Honours/Project/honours.project/nies_geno_id.txt&#39;, col.names = F, row.names = F)</code></pre>
+<p>7.Extract relevant genomic data in PLINK</p>
+<pre class="bash"><code>plink1.9 --bfile plink_output/common_id_merge --keep nies_geno_id.txt --make-bed --out plink_output/nies_only_geno</code></pre>
+<p>This last line in PLINK extracted the genomic data (5, 789,188 variants) for the 362 NIES individuals. The total genotyping rate for this data set is 96.38%.</p>
+<p>This extracted data is the final data set that will be used for subsequent analyses. The phenotypic data will also be restricted to these individuals only.</p>
+<p>8.Generate allele frequency statistic for the NIES only genomic data</p>
+<pre class="bash"><code>plink1.9 --bfile plink_output/nies_only_geno --freq --out plink_output/nies_allele_freq</code></pre>
+<p>9.Visualise allele frequency distributions in this data set.</p>
+</div>
 
-          <p class="footnote">
-          <time datetime="05-10-2018">
-            05-10-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/pearson-s-correlations-on-imputed-data-set/">Pearson&#39;s correlations on imputed data set</a>
+      </div>
+      
+      <div class="post-content">
+        <div id="disqus_thread"></div>
+<script>
+(function() {
+var d = document, s = d.createElement('script');
+s.src = 'https://http-martha-labbook-netlify-com.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 
-          <p class="footnote">
-          <time datetime="05-09-2018">
-            05-09-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/mipca-of-phenotypic-data-without-logmar-with-ph-values/">MIPCA of Phenotypic Data without LogMAR-with-PH values</a>
-
-          <p class="footnote">
-          <time datetime="05-05-2018">
-            05-05-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/multiple-pca-imputation-of-quantitative-phenotypic-data-updated/">Multiple PCA Imputation of Quantitative Phenotypic Data  - updated</a>
-
-          <p class="footnote">
-          <time datetime="05-04-2018">
-            05-04-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/multiple-pca-imputation-of-phenotypic-data/">Multiple PCA Imputation of Phenotypic Data</a>
-
-          <p class="footnote">
-          <time datetime="04-29-2018">
-            04-29-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/example-of-data-impuation-with-missmda/">Example of data imputation with missMDA</a>
-
-          <p class="footnote">
-          <time datetime="04-23-2018">
-            04-23-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/understanding-pca/">Understanding PCA </a>
-
-          <p class="footnote">
-          <time datetime="04-23-2018">
-            04-23-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/subsetting-relevant-phenotypic-data/">Subsetting relevant phenotypic data</a>
-
-          <p class="footnote">
-          <time datetime="04-21-2018">
-            04-21-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/understanding-oculab-biometric-measurements/">Understanding ocular biometric measurements</a>
-
-          <p class="footnote">
-          <time datetime="04-20-2018">
-            04-20-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/finding-outliers-in-quantitative-data/">Finding outliers in quantitative data</a>
-
-          <p class="footnote">
-          <time datetime="04-16-2018">
-            04-16-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/plotting-histograms-for-quantitative-phenotypic-data/">Plotting histograms for quantitative phenotypic data</a>
-
-          <p class="footnote">
-          <time datetime="04-10-2018">
-            04-10-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/cleaning-phenotypic-data/">Cleaning phenotypic data</a>
-
-          <p class="footnote">
-          <time datetime="04-05-2018">
-            04-05-2018
-          </time>
-          </p>
-        </li>
-        
-        
-      </ul>
+      </div>
+      
     </div>
   </div>
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
 </div>
+
 
 <div class="footer pure-g">
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
@@ -827,4 +692,6 @@ based on dark.css by Ivan Sagalaev
 
 </body>
 </html>
+
+
 

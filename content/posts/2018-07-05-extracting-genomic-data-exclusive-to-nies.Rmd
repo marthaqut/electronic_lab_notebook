@@ -1,0 +1,89 @@
+---
+title: Extracting genomic data exclusive to NIES
+author: Martha Aquino
+date: '2018-07-05'
+slug: extracting-genomic-data-exclusive-to-nies
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Genomic Data
+  - Data Cleaning
+  - Linux
+  - PLINK
+  - R
+---
+
+#Introduction
+After extracting data for the common variants, the last cleaning step is to extract genomic data for NIES individuals only. Unique identifiers are used for individuals and a unique list of UUIDs need to be identified to extract the relevant data.
+
+#Methods and Results
+1. Load .fam file from the merged data set. (.fam file contains UUIDs of individuals with genomic data)
+```{r}
+merged_fam_data <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/common_id_merge.fam', header = F)
+
+head(merged_fam_data)
+```
+
+2.Load .csv file that contains UUIDs of NIES individuals that provided DNA samples, either from NIES, NIHS, or both. 
+```{r}
+nies_with_dna <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_with_dna.csv', header = T)
+
+head(nies_with_dna)
+```
+
+Note: prior to loading this data, the original ID file contained UUIDs for ALL NIES and/or NIHS individuals. I selected the UUIDs for NIES individuals only, and then filtered ONLY for individuals that provided DNA. I.e. there were 801 individuals in the NIES, of which 632 individuals provided DNA, so I only obtained the UUIDs for the 632 individuals.
+
+3.Assign column names/labels to data from the .fam file. This is important so that the two lists can be easily merged. 
+```{r}
+colnames(merged_fam_data) <- c("Fam ID", "UUID", "Pat ID", "Mat ID", "Sex", "Affection")
+
+head(merged_fam_data)
+```
+
+4.Merge two lists to obtain unique UUIDs. 
+```{r}
+nies_with_geno <- merge(nies_with_dna, merged_fam_data, by="UUID")
+
+head(nies_with_geno)
+```
+
+The output from this step indicates that there is an overlap of 362 individuals, suggesting that there are 362 individuals within the NIES with both phenotypic and genomic data.
+
+5.Extract Family IDs and UUIDs only because PLINK requires both to extract data based on indiv IDs
+```{r}
+nies_geno_id <- cbind(nies_with_geno$`Fam ID`, nies_with_geno$UUID)
+head(nies_geno_id)
+```
+
+6.Export to .txt file for use in PLINK
+```{r, eval=FALSE}
+write.table(nies_geno_id, 'C:/Users/Martha/Documents/Honours/Project/honours.project/nies_geno_id.txt', col.names = F, row.names = F)
+
+```
+
+7.Extract relevant genomic data in PLINK
+```{bash, eval=FALSE}
+plink1.9 --bfile plink_output/common_id_merge --keep nies_geno_id.txt --make-bed --out plink_output/nies_only_geno
+```
+
+This last line in PLINK extracted the genomic data (5, 789,188 variants) for the 362 NIES individuals. The total genotyping rate for this data set is 96.38%. 
+
+This extracted data is the final data set that will be used for subsequent analyses. The phenotypic data will also be restricted to these individuals only. 
+
+8.Generate allele frequency statistic for the NIES only genomic data 
+```{bash, eval=FALSE}
+plink1.9 --bfile plink_output/nies_only_geno --freq --out plink_output/nies_allele_freq
+```
+
+9.Visualise allele frequency distributions in this data set. 
+```{r}
+hist(nies_only_geno$MAF, main = "Allele Frequency Distributions of Genomic Data for NIES", xlab = "Minor Allele Frequency", xlim = c(0.0, 0.5), col = "plum")
+```
+
+10.Generate missingness statistics for NIES only data set
+```{bash, eval=FALSE}
+plink1.9 --bfile plink_output/nies_only_geno --missing --out plink_output/nies_missing
+```
+
+This exercise concludes the cleaning step for the genomic data. I have extracted the relevant information by including only the common variants across both WGS and SNP-array data sets, and only including NIES individuals. This has resulted in a final data set that includes 5,789,188 variants and 362 individuals. More detailed analysis of basic statistics generated at different points will follow. 

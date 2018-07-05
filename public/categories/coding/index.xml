@@ -9,10 +9,20 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Wed, 04 Jul 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 05 Jul 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/categories/coding/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Extracting genomic data exclusive to NIES</title>
+      <link>/posts/extracting-genomic-data-exclusive-to-nies/</link>
+      <pubDate>Thu, 05 Jul 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/extracting-genomic-data-exclusive-to-nies/</guid>
+      <description>IntroductionAfter extracting data for the common variants, the last cleaning step is to extract genomic data for NIES individuals only. Unique identifiers are used for individuals and a unique list of UUIDs need to be identified to extract the relevant data.
+Methods and ResultsLoad .fam file from the merged data set. (.fam file contains UUIDs of individuals with genomic data)merged_fam_data &amp;lt;- read.table(&amp;#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/common_id_merge.fam&amp;#39;, header = F)head(merged_fam_data)## V1 V2 V3 V4 V5 V6## 1 1 110050 764 368910 1 -9## 2 1 110110 2621 400796 1 -9## 3 1 110130 2994 2330 1 -9## 4 1 110150 0 0 2 -9## 5 1 110160 2070 2071 1 -9## 6 1 110320 4462 6317 1 -92.</description>
+    </item>
     
     <item>
       <title>Generating basic statistics for merged data set</title>
