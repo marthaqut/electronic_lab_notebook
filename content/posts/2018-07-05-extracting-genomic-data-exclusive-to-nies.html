@@ -111,4 +111,5 @@ head(nies_only_geno)</code></pre>
 <p>11.Generate missingness statistics for NIES only data set</p>
 <pre class="bash"><code>plink1.9 --bfile plink_output/nies_only_geno --missing --out plink_output/nies_missing</code></pre>
 <p>This exercise concludes the cleaning step for the genomic data. I have extracted the relevant information by including only the common variants across both WGS and SNP-array data sets, and only including NIES individuals. This has resulted in a final data set that includes 5,789,188 variants and 362 individuals. More detailed analysis of basic statistics generated at different points will follow.</p>
+<p>Note: 362 individuals was more than I expected. I thought that of the NIES individuals, 238 had SNP-array data and 86 had WGS data, which is a total of 324, including overlaps. After exclusion of these overlaps, I was expecting 301 individuals.</p>
 </div>

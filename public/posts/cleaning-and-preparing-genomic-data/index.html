@@ -3,8 +3,8 @@
 <head>
   
   <meta charset="utf-8">
-  <title>Genomic Data</title>
-  <meta name="description" content="Genomic Data">
+  <title>Cleaning and preparing genomic data </title>
+  <meta name="description" content="Cleaning and preparing genomic data ">
   <meta name="author" content="Martha Aquino">
   
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -420,8 +420,6 @@ based on dark.css by Ivan Sagalaev
 
   
   
-  <link href="/tags/genomic-data/index.xml" rel="alternate" type="application/rss+xml" title="Electronic Lab Notebook Feed" />
-  
 
   <meta name="generator" content="Hugo 0.40.3" />
 
@@ -487,125 +485,126 @@ based on dark.css by Ivan Sagalaev
 </div>
 
 
-
 <div class="pure-g">
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
   <div class="pure-u-11-12 pure-u-md-2-3">
-    <div class="post-content">
-      <p class="posts-name">Genomic Data:</p>
+    <div class="post">
 
-      <ul class="posts">
+      <div class="post-title">
+        <p class="footnote">
+        <time class="">07-24-2018</time>
         
         
+        |
         
-        <li>
-          
-          <a class="post-list" href="/posts/merging-genomic-data-sets/">Merging genomic data sets</a>
+        
+        tags: [ <a href="/tags/data-cleaning">Data Cleaning</a> <a href="/tags/genomic-data">Genomic Data</a> <a href="/tags/linux">Linux</a> <a href="/tags/plink">PLINK</a> <a href="/tags/r">R</a> ]
+        
 
-          <p class="footnote">
-          <time datetime="07-25-2018">
-            07-25-2018
-          </time>
-          </p>
-        </li>
         
+        categories: [<a href="/categories/coding">Coding</a> <a href="/categories/experiments">Experiments</a> ]
         
-        
-        <li>
-          
-          <a class="post-list" href="/posts/cleaning-and-preparing-genomic-data/">Cleaning and preparing genomic data </a>
 
-          <p class="footnote">
-          <time datetime="07-24-2018">
-            07-24-2018
-          </time>
-          </p>
-        </li>
         
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/extracting-genomic-data-exclusive-to-nies/">Extracting genomic data exclusive to NIES</a>
+        </p>
+        <h1>Cleaning and preparing genomic data </h1>
+      </div>
 
-          <p class="footnote">
-          <time datetime="07-05-2018">
-            07-05-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/generating-basic-statistics-for-merged-data-set/">Generating basic statistics for merged data set</a>
+      <div class="post-content">
+        <div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>After performing basic stats and QC on the genomic data sets, merging, and subsetting the data for NIES individuals, a few issues came to my attention. Firstly, from the histograms of the distribution of allele frequencies from the whole genome sequencing data, it became evident that the data had been filtered to exlude SNPs with MAF &lt; 0.05. Thus any rare variants that I need for GWAS was excluded. Second, the IDs in the whole genome sequencing data were not UUIDs. Instead they were IDs that were generated and used in the lab. This means that the merging and subsetting I performed did not include any WGS data and most likely included individuals that may not have been part of the NIES. I have since received the unfiltered WGS data and an updated spreadsheet of study individuals and will re-do the cleaning and prep steps for the genomic data prior to performing PCA.</p>
+</div>
+<div id="methods" class="section level1">
+<h1>Methods</h1>
+<div id="discard-all-outputs-from-plink-and-old-wgs-file-sets." class="section level3">
+<h3>1. Discard all outputs from PLINK and old WGS file sets.</h3>
+</div>
+<div id="download-new-wgs-file-set" class="section level3">
+<h3>2. Download new WGS file set</h3>
+</div>
+<div id="find-allele-frequencies-in-snp-and-wgs-file-sets" class="section level3">
+<h3>3. Find allele frequencies in SNP and WGS file sets</h3>
+<pre class="bash"><code>plink1.9 --bfile NI_wgs_merged_snps --freq --out plink_output/wgs_allele_freq</code></pre>
+<p>Output: - 19,208,586 variants - 108 individuals (58 males, 50 females) - 108 founders - 2,739,848 variants with heterozygous haploid genotype present (warning) - genotyping rate is 99.68%</p>
+<pre class="bash"><code>plink1.9 --bfile NImerged.impute2.chrAllX.2014-Oct-02 --freq --out plink_output/snp_allele_freq</code></pre>
+<p>Output: - 27,310,409 variants - 506 individuals (247 males, 259 females) - 45 founders present - genotyping rate is 98.65%</p>
+</div>
+<div id="generate-histogram-for-allele-frequency-distributions-for-wgs-data." class="section level3">
+<h3>4. Generate histogram for allele frequency distributions for WGS data.</h3>
+<pre class="r"><code>wgs_allele_freq &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/wgs_allele_freq.frq&#39;, header = T)
 
-          <p class="footnote">
-          <time datetime="07-04-2018">
-            07-04-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/extracting-common-variants-from-both-data-sets/">Extracting common variants from both data sets</a>
+hist(wgs_allele_freq$MAF, main = &quot;Allele Frequency Distributions of WGS Data&quot;, xlab = &quot;Minor Allele Frequency&quot;, xlim = c(0.0, 0.5), col = &quot;darkseagreen1&quot;)</code></pre>
+<p><img src="/posts/2018-07-24-cleaning-and-preparing-genomic-data_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="generate-histogram-for-allele-frequency-distributions-for-snp-data." class="section level3">
+<h3>5. Generate histogram for allele frequency distributions for SNP data.</h3>
+<pre class="r"><code>snp_allele_freq &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/snp_allele_freq.frq&#39;, header = T)
 
-          <p class="footnote">
-          <time datetime="07-03-2018">
-            07-03-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/generating-basic-statistics-for-genomic-data-sets/">Generating basic statistics for genomic data sets</a>
+hist(snp_allele_freq$MAF, main = &quot;Allele Frequency Distribution of SNP Data&quot;, xlab = &quot;Minor Allele Frequency&quot;, xlim = c(0.0, 0.5), col = &quot;cadetblue1&quot;)</code></pre>
+<p><img src="/posts/2018-07-24-cleaning-and-preparing-genomic-data_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="find-missingness-for-both-data-sets" class="section level3">
+<h3>6. Find missingness for both data sets</h3>
+<pre class="bash"><code>plink1.9 --bfile NI_wgs_merged_snps --missing --out plink_output/wgs_missing
 
-          <p class="footnote">
-          <time datetime="06-27-2018">
-            06-27-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/trying-bmerge-function/">Trying bmerge function</a>
+plink1.9 --bfile NImerged.impute2.chrAllX.2014-Oct-02 --missing --out plink_output/snp_missing</code></pre>
+</div>
+<div id="generate-hardy-weinberg-test-statistics" class="section level3">
+<h3>7. Generate Hardy-Weinberg test statistics</h3>
+<pre class="bash"><code>plink1.9 --bfile NI_wgs_merged_snps --hardy --out plink_output/wgs_hardy
 
-          <p class="footnote">
-          <time datetime="06-15-2018">
-            06-15-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/getting-started-with-plink/">Getting started with PLINK</a>
+plink1.9 --bfile NImerged.impute2.chrAllX.2014-Oct-02 --hardy --out plink_output/snp_hardy</code></pre>
+</div>
+<div id="filter-out-variants-based-on-hwe-p-value" class="section level3">
+<h3>8. Filter out variants based on HWE p-value</h3>
+<pre class="bash"><code>plink1.9 --bfile NI_wgs_merged_snps --hwe 1.8e-7 --make-bed --out plink_output/wgs_hwe_filter</code></pre>
+<p>Output: - Warning: hwe observation counts vary by more than 10% - 305,519 variants removed - 18,903,067 variants remain</p>
+<pre class="bash"><code>plink1.9 --bfile NImerged.impute2.chrAllX.2014-Oct-02 --hwe 1.8e-7 --make-bed --out plink_output/snp_hwe_filter</code></pre>
+<p>Output: - Warning: hwe observation counts vary by more than 10% - 18 variants removed - 27,310,391 variants remain</p>
+<p>NOTE: Filtering out based on HWE test created new file sets.</p>
+</div>
+<div id="merge-data-sets-to-identify-variants-with-3-alleles" class="section level3">
+<h3>9. Merge data sets to identify variants with 3+ alleles</h3>
+<pre class="bash"><code>plink1.9 --bfile plink_output/wgs_hwe_filter --bmerge plink_output/snp_hwe_filter.bed plink_output/snp_hwe_filter.bim plink_output/snp_hwe_filter.fam --make-bed --out plink_output/trial_merge</code></pre>
+<p>Output: - 18,903,067 variants loaded from WGS data, 27,310,391 variants loaded from SNP data - 17,865,008 variants are uncommon - 9,445,383 variants are common in both file sets - 9,362,232 variants have multiple position warnings - 11,641 variants have 3+ allele and caused merge error</p>
+</div>
+<div id="exclude-variants-with-3-alleles-from-both-file-sets" class="section level3">
+<h3>10. Exclude variants with 3+ alleles from both file sets</h3>
+<pre class="bash"><code>plink1.9 --bfile plink_output/wgs_hwe_filter --exclude plink_output/trial_merge-merge.missnp --make-bed --out plink_output/wgs_exclude</code></pre>
+<p>Output (WGS): - 18,891,435 variants remain after excluding variants with 3+ alleles - genotyping rate is 99.69%</p>
+<pre class="bash"><code>plink1.9 --bfile plink_output/snp_hwe_filter --exclude plink_output/trial_merge-merge.missnp --make-bed --out plink_output/snp_exclude</code></pre>
+<p>Output (SNP): - 27,298,645 variants remain after excluding variants with 3+ alleles - genotyping rate is 98.65%</p>
+<p>NOTE: This step creates a new file set for WGS and SNP data</p>
+</div>
+<div id="re-try-file-merge" class="section level3">
+<h3>11. Re-try file merge</h3>
+<pre class="bash"><code>plink1.9 --bfile plink_output/wgs_exclude --bmerge plink_output/snp_exclude.bed plink_output/snp_exclude.bim plink_output/snp_exclude.fam --make-bed --out plink_output/var_out_merge</code></pre>
+<p>This merge failed. 16GB of RAM on my laptop is not adequate for this function.</p>
+</div>
+</div>
 
-          <p class="footnote">
-          <time datetime="06-13-2018">
-            06-13-2018
-          </time>
-          </p>
-        </li>
-        
-        
-      </ul>
+      </div>
+      
+      <div class="post-content">
+        <div id="disqus_thread"></div>
+<script>
+(function() {
+var d = document, s = d.createElement('script');
+s.src = 'https://http-martha-labbook-netlify-com.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      </div>
+      
     </div>
   </div>
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
 </div>
+
 
 <div class="footer pure-g">
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
@@ -684,4 +683,6 @@ based on dark.css by Ivan Sagalaev
 
 </body>
 </html>
+
+
 

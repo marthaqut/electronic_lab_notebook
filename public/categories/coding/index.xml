@@ -9,10 +9,28 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Thu, 05 Jul 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 25 Jul 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/categories/coding/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Merging genomic data sets</title>
+      <link>/posts/merging-genomic-data-sets/</link>
+      <pubDate>Wed, 25 Jul 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/merging-genomic-data-sets/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Cleaning and preparing genomic data </title>
+      <link>/posts/cleaning-and-preparing-genomic-data/</link>
+      <pubDate>Tue, 24 Jul 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/cleaning-and-preparing-genomic-data/</guid>
+      <description>IntroductionAfter performing basic stats and QC on the genomic data sets, merging, and subsetting the data for NIES individuals, a few issues came to my attention. Firstly, from the histograms of the distribution of allele frequencies from the whole genome sequencing data, it became evident that the data had been filtered to exlude SNPs with MAF &amp;lt; 0.05. Thus any rare variants that I need for GWAS was excluded. Second, the IDs in the whole genome sequencing data were not UUIDs.</description>
+    </item>
     
     <item>
       <title>Extracting genomic data exclusive to NIES</title>

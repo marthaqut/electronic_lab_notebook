@@ -1,0 +1,51 @@
+---
+title: Merging genomic data sets
+author: Martha Aquino
+date: '2018-07-25'
+slug: merging-genomic-data-sets
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Data Cleaning
+  - Genomic Data
+  - Linux
+  - PLINK
+---
+
+#Introduction
+Merging the two genomic data sets caused an error because my laptop has inadequate RAM to perform the merge in a single command. Therefore, I will split the data and merge them by chromosome and stitch these together to create a unified merged file set. 
+
+#Method
+
+###1. Use 'for' loop to split SNP data by chromosome
+```{bash, eval = FALSE}
+for i in {1..23}
+  do plink1.9 --bfile plink_output/snp_exclude --chr $i --make-bed --out merged_chr_data/snp_chr$i
+done
+```
+
+###2. Repeat 'for' loop to split WGS data by chromosome
+```{bash, eval = FALSE}
+for i in {1..23}
+  do plink1.9 --bfile plink_output/wgs_exclude --chr $i --make-bed --out merged_chr_data/wgs_chr$i
+done
+```
+
+###3. Merge SNP and WGS data by chromosome 
+```{bash, eval = FALSE}
+for i in {1..23}
+  do plink1.9 --bfile merged_chr_data/wgs_chr$i --bmerge merged_chr_data/snp_chr$i.bed merged_chr_data/snp_chr$i.bim merged_chr_data/snp_chr$i.fam --make-bed --out merged_chr_data/merged_chr$i 
+done
+```
+
+#Results 
+
+I took note of the number of variants and genotyping rates that resulted from splitting and merging the data sets. 
+
+```{r}
+chr_var_merge <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/variant_chr_split.csv', header = T)
+
+chr_var_merge
+```
+
