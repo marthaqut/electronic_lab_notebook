@@ -20,7 +20,8 @@
       <pubDate>Wed, 25 Jul 2018 00:00:00 +0000</pubDate>
       <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
       <guid>/posts/merging-genomic-data-sets/</guid>
-      <description></description>
+      <description>IntroductionMerging the two genomic data sets caused an error because my laptop has inadequate RAM to perform the merge in a single command. Therefore, I will split the data and merge them by chromosome and stitch these together to create a unified merged file set.
+Method1. Use ‘for’ loop to split SNP data by chromosomefor i in {1..23}do plink1.9 --bfile plink_output/snp_exclude --chr $i --make-bed --out merged_chr_data/snp_chr$idone2.</description>
     </item>
     
     <item>

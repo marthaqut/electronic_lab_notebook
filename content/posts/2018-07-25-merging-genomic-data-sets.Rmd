@@ -39,6 +39,25 @@ for i in {1..23}
 done
 ```
 
+###5. Create .txt file with the file names of all the merged file sets
+For example: 
+merged_chr_data/merged_chr2.bed merged_chr_data/merged_chr2.bim  merged_chr_data/merged_chr2.fam
+merged_chr_data/merged_chr3.bed merged_chr_data/merged_chr3.bim  merged_chr_data/merged_chr3.fam
+
+
+###4. Stitch together all merged files (chr 1 -23)
+```{bash, eval = FALSE}
+plink1.9 --bfile merged_chr_data/merged_chr1 --merge-list merged_chr_data/all_merged.txt --make-bed --out plink_output/var_out_merge
+```
+
+This produced the same 'out of memory' error that I received when I attempted to merge the original file sets. To try and resolve the issue, I increased the RAM for PLINK workspace from 8GB to 12GB by: 
+
+```{bash, eval = FALSE}
+plink1.9 --bfile merged_chr_data/merged_chr1 --merge-list merged_chr_data/all_merged_chr.txt --memory 12000 --make-bed --out plink_output/var_out_merge
+```
+
+I did not let this run finish as it was producing numerous 'multiple chromosomes' warnings. Miles has realised that the SNP array data was imputed using the hg19 build whereas the WGS was with hg38. SNPs can change (move or disappear) between builds, thus the 'multiple locations/chromosomes' warning. 
+
 #Results 
 
 I took note of the number of variants and genotyping rates that resulted from splitting and merging the data sets. 
@@ -49,3 +68,4 @@ chr_var_merge <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.pro
 chr_var_merge
 ```
 
+I will abandon this exercise because the SNP array data has to be changed to the hg38 build. 

@@ -511,7 +511,73 @@ based on dark.css by Ivan Sagalaev
       </div>
 
       <div class="post-content">
-        
+        <div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Merging the two genomic data sets caused an error because my laptop has inadequate RAM to perform the merge in a single command. Therefore, I will split the data and merge them by chromosome and stitch these together to create a unified merged file set.</p>
+</div>
+<div id="method" class="section level1">
+<h1>Method</h1>
+<div id="use-for-loop-to-split-snp-data-by-chromosome" class="section level3">
+<h3>1. Use ‘for’ loop to split SNP data by chromosome</h3>
+<pre class="bash"><code>for i in {1..23}
+  do plink1.9 --bfile plink_output/snp_exclude --chr $i --make-bed --out merged_chr_data/snp_chr$i
+done</code></pre>
+</div>
+<div id="repeat-for-loop-to-split-wgs-data-by-chromosome" class="section level3">
+<h3>2. Repeat ‘for’ loop to split WGS data by chromosome</h3>
+<pre class="bash"><code>for i in {1..23}
+  do plink1.9 --bfile plink_output/wgs_exclude --chr $i --make-bed --out merged_chr_data/wgs_chr$i
+done</code></pre>
+</div>
+<div id="merge-snp-and-wgs-data-by-chromosome" class="section level3">
+<h3>3. Merge SNP and WGS data by chromosome</h3>
+<pre class="bash"><code>for i in {1..23}
+  do plink1.9 --bfile merged_chr_data/wgs_chr$i --bmerge merged_chr_data/snp_chr$i.bed merged_chr_data/snp_chr$i.bim merged_chr_data/snp_chr$i.fam --make-bed --out merged_chr_data/merged_chr$i 
+done</code></pre>
+</div>
+<div id="create-.txt-file-with-the-file-names-of-all-the-merged-file-sets" class="section level3">
+<h3>5. Create .txt file with the file names of all the merged file sets</h3>
+<p>For example: merged_chr_data/merged_chr2.bed merged_chr_data/merged_chr2.bim merged_chr_data/merged_chr2.fam merged_chr_data/merged_chr3.bed merged_chr_data/merged_chr3.bim merged_chr_data/merged_chr3.fam</p>
+</div>
+<div id="stitch-together-all-merged-files-chr-1--23" class="section level3">
+<h3>4. Stitch together all merged files (chr 1 -23)</h3>
+<pre class="bash"><code>plink1.9 --bfile merged_chr_data/merged_chr1 --merge-list merged_chr_data/all_merged.txt --make-bed --out plink_output/var_out_merge</code></pre>
+<p>This produced the same ‘out of memory’ error that I received when I attempted to merge the original file sets. To try and resolve the issue, I reduced the RAM reserved for the main working space from 8GB to 2.5GB by:</p>
+<pre class="bash"><code>plink1.9 --bfile merged_chr_data/merged_chr1 --merge-list merged_chr_data/all_merged.txt --memory 2500 --make-bed --out plink_output/var_out_merge</code></pre>
+</div>
+</div>
+<div id="results" class="section level1">
+<h1>Results</h1>
+<p>I took note of the number of variants and genotyping rates that resulted from splitting and merging the data sets.</p>
+<pre class="r"><code>chr_var_merge &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/variant_chr_split.csv&#39;, header = T)
+
+chr_var_merge</code></pre>
+<pre><code>##    Chr WGS_var WGS_geno SNP_var SNP_geno merge_var merge_geno
+## 1    1 1471938   0.9982 2045396   0.9866   2794250     0.6876
+## 2    2 1539904   0.9983 2230433   0.9885   2987480     0.6986
+## 3    3 1245134   0.9986 1868276   0.9886   2460194     0.7076
+## 4    4 1230061   0.9986 1866123   0.9868   2427397     0.7142
+## 5    5 1149159   0.9983 1717607   0.9891   2271635     0.7052
+## 6    6 1142942   0.9985 1661762   0.9877   2223964     0.6985
+## 7    7 1059807   0.9983 1516898   0.9859   2036064     0.6967
+## 8    8  949817   0.9986 1485583   0.9891   1924936     0.7157
+## 9    9  782401   0.9983 1129601   0.9854   1513331     0.6970
+## 10  10  782201   0.9982 1292199   0.9881   1684297     0.7063
+## 11  11  890397   0.9981 1288324   0.9883   1720229     0.7008
+## 12  12  891005   0.9983 1246651   0.9880   1687093     0.6944
+## 13  13  646982   0.9983  934764   0.9887   1233829     0.7094
+## 14  14  608194   0.9982  857735   0.9845   1151687     0.6970
+## 15  15  536960   0.9983  769800   0.9845   1039657     0.6914
+## 16  16  582842   0.9983  828336   0.9833   1125027     0.6876
+## 17  17  563589   0.9979  714075   0.9836   1033747     0.6555
+## 18  18  515967   0.9978  742614   0.9872    990748     0.7012
+## 19  19  521449   0.9970  569788   0.9761    881924     0.6234
+## 20  20  440425   0.9981  587911   0.9870    822813     0.6751
+## 21  21  272203   0.9977  356500   0.9849    503652     0.6694
+## 22  22  303125   0.9974  346997   0.9792    521489     0.6389
+## 23  23  764933   0.9633 1241272   0.9798   1721025     0.6573</code></pre>
+</div>
+
       </div>
       
       <div class="post-content">
