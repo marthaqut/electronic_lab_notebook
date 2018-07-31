@@ -3,8 +3,8 @@
 <head>
   
   <meta charset="utf-8">
-  <title>Tags</title>
-  <meta name="description" content="Tags">
+  <title>Converting SNP array data </title>
+  <meta name="description" content="Converting SNP array data ">
   <meta name="author" content="Martha Aquino">
   
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -420,8 +420,6 @@ based on dark.css by Ivan Sagalaev
 
   
   
-  <link href="/tags/index.xml" rel="alternate" type="application/rss+xml" title="Electronic Lab Notebook Feed" />
-  
 
   <meta name="generator" content="Hugo 0.40.3" />
 
@@ -486,68 +484,108 @@ based on dark.css by Ivan Sagalaev
     <div class="pure-u-1-24 pure-u-md-1-6"></div>
 </div>
 
+
 <div class="pure-g">
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
   <div class="pure-u-11-12 pure-u-md-2-3">
-    <p class="posts-name">Tags:</p>
-    <div class="post-content">
-      <ul class="posts">
+    <div class="post">
+
+      <div class="post-title">
+        <p class="footnote">
+        <time class="">07-26-2018</time>
         
         
-        <li>
-          <a href="r">r</a>
-          <span>&#40;15&#41;</span>
-        </li>
+        |
         
-        <li>
-          <a href="data-cleaning">data-cleaning</a>
-          <span>&#40;13&#41;</span>
-        </li>
         
-        <li>
-          <a href="genomic-data">genomic-data</a>
-          <span>&#40;9&#41;</span>
-        </li>
+        tags: [ <a href="/tags/genomic-data">Genomic Data</a> <a href="/tags/plink">PLINK</a> ]
         
-        <li>
-          <a href="plink">plink</a>
-          <span>&#40;9&#41;</span>
-        </li>
+
         
-        <li>
-          <a href="linux">linux</a>
-          <span>&#40;8&#41;</span>
-        </li>
+        categories: [<a href="/categories/coding">Coding</a> <a href="/categories/experiments">Experiments</a> ]
         
-        <li>
-          <a href="pca">pca</a>
-          <span>&#40;8&#41;</span>
-        </li>
+
         
-        <li>
-          <a href="imputation">imputation</a>
-          <span>&#40;7&#41;</span>
-        </li>
-        
-        <li>
-          <a href="ocular-biometry">ocular-biometry</a>
-          <span>&#40;3&#41;</span>
-        </li>
-        
-        <li>
-          <a href="bivariate-correlations">bivariate-correlations</a>
-          <span>&#40;2&#41;</span>
-        </li>
-        
-        <li>
-          <a href="reading">reading</a>
-          <span>&#40;1&#41;</span>
-        </li>
-        
-      </ul>
+        </p>
+        <h1>Converting SNP array data </h1>
+      </div>
+
+      <div class="post-content">
+        <div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>The SNP array was imputed using hg19 coordinates which is conflicting with the hg38 build (used for WGS). Therefore, the array data has to be converted to hg38 before re-running all summary statistics and further analyses.</p>
+</div>
+<div id="methods" class="section level1">
+<h1>Methods</h1>
+<div id="access-taurus-through-winscp" class="section level3">
+<h3>1.Access taurus through WinSCP</h3>
+</div>
+<div id="transfer-files-from-local-directory-to-remote-directory" class="section level3">
+<h3>2.Transfer files from local directory to remote directory</h3>
+<p>/data/all/martha</p>
+</div>
+<div id="convert-bed-files-to-ped-files" class="section level3">
+<h3>3.Convert bed files to ped files</h3>
+<pre class="bash"><code>plink --bfile NImerged.impute2.chrAllX.2014-Oct-02 --recode --tab --out plink_output/NImerged.impute2.chrAllX</code></pre>
+<p>This has converted the .bed .bim .fam files to .ped .map files.</p>
+</div>
+<div id="download-the-following-files" class="section level3">
+<h3>4. Download the following files:</h3>
+<p>LiftOverPlink python scripts: <a href="https://github.com/sritchie73/liftOverPlink" class="uri">https://github.com/sritchie73/liftOverPlink</a> LiftOver binary: <a href="http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/liftOver" class="uri">http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/liftOver</a> Chain files: <a href="http://hgdownload.cse.ucsc.edu/goldenPath/hg19/liftOver/hg19ToHg38.over.chain.gz" class="uri">http://hgdownload.cse.ucsc.edu/goldenPath/hg19/liftOver/hg19ToHg38.over.chain.gz</a></p>
+</div>
+<div id="create-a-lifted-map-file" class="section level3">
+<h3>5. Create a lifted map file</h3>
+<pre class="bash"><code>python liftOverPlink-master/liftOverPlink.py --bin /data/all/martha/Data/liftOver --map plink_output/Nimerged.impute.chrAllX.map --out plink_output/Nimerged.impute_lifted --chain hg19toHg38.over.chain</code></pre>
+<p>Note: permissions had to be modified for the binary to work</p>
+<p>The “lifted” map file is the product of conversion between genome builds. Typically, .map files contain chr. numbers, marker ID/SNP ID, genetic distance, and position of the SNP. However, not all SNPs can be converted between builds for various reasons. These have to be removed.</p>
+</div>
+<div id="remove-bad-lifted-snps-from-new-.map-file" class="section level3">
+<h3>6. Remove “bad” lifted SNPs from new .map file</h3>
+<pre class="bash"><code>python liftoverPlink-master/rmBadLifts.py --map plink_output/Nimerged.impute_lifted.map --out plink_output/NI.snp.good_lifted.map --log NI.snp.bad_lifted.dat</code></pre>
+</div>
+<div id="create-a-file-that-contains-unlifted-and-bad-snps." class="section level3">
+<h3>7. Create a file that contains “unlifted” and “bad” SNPs.</h3>
+<pre class="bash"><code>cut -f 2 plink_output/NI.snp.bad_lifted.dat &gt; plink_output/NI.snps_exclude.dat
+cut -f 4 plink_output/NImerged.impute_fted.bed.unlifted | sed &quot;/^#/d&quot; &gt;&gt; plink_output/NI.snps_exclude.dat </code></pre>
+</div>
+<div id="generate-a-.ped-file-that-excludes-the-unlifted-and-bad-snps." class="section level3">
+<h3>8. Generate a .ped file that excludes the “unlifted” and “bad” SNPs.</h3>
+<pre class="bash"><code>plink --file plink_output/Nimerged.impute.chrAllX --recode --out plink_output/NI_snp_hg38 --exclude plink_output/NI.snps.exclude.dat</code></pre>
+<p>Typically, .ped files contain family IDs, UUID, paternal ID, maternal ID, sex, affection, and genotypes.</p>
+<p>Output: - there are 27,310,409 variants in the original .map file - after excluding unlifted and bad SNPs: 26,055,300 SNPs remain - there are 824 duplicate variant IDs in the exclude file - total genotyping rate of the new file is 98.69%</p>
+</div>
+<div id="combine-the-good-.ped-and-.map-files" class="section level3">
+<h3>9. Combine the “good” .ped and .map files</h3>
+<pre class="bash"><code>plink --ped plink_output/NI_snp_hg38.ped --map plink_output/NI.snp.good_lifted.map --recode --out plink_output/NI.snp.hg38_final</code></pre>
+</div>
+<div id="convert-pedmap-files-to-bedbimfam-files" class="section level3">
+<h3>10. Convert ped/map files to bed/bim/fam files</h3>
+<pre class="bash"><code>plink --file plink_output/NI.snp.hg38_final --make-bed --out NI.snp.hg38_final</code></pre>
+</div>
+</div>
+
+      </div>
+      
+      <div class="post-content">
+        <div id="disqus_thread"></div>
+<script>
+(function() {
+var d = document, s = d.createElement('script');
+s.src = 'https://http-martha-labbook-netlify-com.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      </div>
+      
     </div>
   </div>
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
+</div>
+
+
 <div class="footer pure-g">
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
   <div class="pure-u-11-12 pure-u-md-2-3">
@@ -625,4 +663,6 @@ based on dark.css by Ivan Sagalaev
 
 </body>
 </html>
+
+
 

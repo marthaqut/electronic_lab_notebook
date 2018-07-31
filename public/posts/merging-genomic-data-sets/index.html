@@ -542,8 +542,9 @@ done</code></pre>
 <div id="stitch-together-all-merged-files-chr-1--23" class="section level3">
 <h3>4. Stitch together all merged files (chr 1 -23)</h3>
 <pre class="bash"><code>plink1.9 --bfile merged_chr_data/merged_chr1 --merge-list merged_chr_data/all_merged.txt --make-bed --out plink_output/var_out_merge</code></pre>
-<p>This produced the same ‘out of memory’ error that I received when I attempted to merge the original file sets. To try and resolve the issue, I reduced the RAM reserved for the main working space from 8GB to 2.5GB by:</p>
-<pre class="bash"><code>plink1.9 --bfile merged_chr_data/merged_chr1 --merge-list merged_chr_data/all_merged.txt --memory 2500 --make-bed --out plink_output/var_out_merge</code></pre>
+<p>This produced the same ‘out of memory’ error that I received when I attempted to merge the original file sets. To try and resolve the issue, I increased the RAM for PLINK workspace from 8GB to 12GB by:</p>
+<pre class="bash"><code>plink1.9 --bfile merged_chr_data/merged_chr1 --merge-list merged_chr_data/all_merged_chr.txt --memory 12000 --make-bed --out plink_output/var_out_merge</code></pre>
+<p>I did not let this run finish as it was producing numerous ‘multiple chromosomes’ warnings. Miles has realised that the SNP array data was imputed using the hg19 build whereas the WGS was with hg38. SNPs can change (move or disappear) between builds, thus the ‘multiple locations/chromosomes’ warning.</p>
 </div>
 </div>
 <div id="results" class="section level1">
@@ -576,6 +577,7 @@ chr_var_merge</code></pre>
 ## 21  21  272203   0.9977  356500   0.9849    503652     0.6694
 ## 22  22  303125   0.9974  346997   0.9792    521489     0.6389
 ## 23  23  764933   0.9633 1241272   0.9798   1721025     0.6573</code></pre>
+<p>I will abandon this exercise because the SNP array data has to be changed to the hg38 build.</p>
 </div>
 
       </div>

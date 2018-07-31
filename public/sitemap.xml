@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>/posts/converting-snp-array-data/</loc>
+    <lastmod>2018-07-26T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/posts/merging-genomic-data-sets/</loc>
     <lastmod>2018-07-25T00:00:00+00:00</lastmod>
   </url>
@@ -130,7 +135,7 @@
   
   <url>
     <loc>/categories/coding/</loc>
-    <lastmod>2018-07-25T00:00:00+00:00</lastmod>
+    <lastmod>2018-07-26T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -142,19 +147,19 @@
   
   <url>
     <loc>/</loc>
-    <lastmod>2018-07-25T00:00:00+00:00</lastmod>
+    <lastmod>2018-07-26T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/categories/experiments/</loc>
-    <lastmod>2018-07-25T00:00:00+00:00</lastmod>
+    <lastmod>2018-07-26T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/tags/genomic-data/</loc>
-    <lastmod>2018-07-25T00:00:00+00:00</lastmod>
+    <lastmod>2018-07-26T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -184,13 +189,13 @@
   
   <url>
     <loc>/tags/plink/</loc>
-    <lastmod>2018-07-25T00:00:00+00:00</lastmod>
+    <lastmod>2018-07-26T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/posts/</loc>
-    <lastmod>2018-07-25T00:00:00+00:00</lastmod>
+    <lastmod>2018-07-26T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -201,14 +206,14 @@
   </url>
   
   <url>
-    <loc>/tags/reading/</loc>
-    <lastmod>2018-04-20T00:00:00+00:00</lastmod>
+    <loc>/categories/reading/</loc>
+    <lastmod>2018-04-23T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>/categories/reading/</loc>
-    <lastmod>2018-04-23T00:00:00+00:00</lastmod>
+    <loc>/tags/reading/</loc>
+    <lastmod>2018-04-20T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   

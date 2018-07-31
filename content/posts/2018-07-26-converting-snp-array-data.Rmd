@@ -1,0 +1,78 @@
+---
+title: 'Converting SNP array data '
+author: Martha Aquino
+date: '2018-07-26'
+slug: converting-snp-array-data
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Genomic Data
+  - PLINK
+---
+
+#Introduction
+The SNP array was imputed using hg19 coordinates which is conflicting with the hg38 build (used for WGS). Therefore, the array data has to be converted to hg38 before re-running all summary statistics and further analyses. 
+
+#Methods 
+###1.Access taurus through WinSCP
+
+###2.Transfer files from local directory to remote directory 
+/data/all/martha
+
+###3.Convert bed files to ped files 
+```{bash, eval = FALSE}
+plink --bfile NImerged.impute2.chrAllX.2014-Oct-02 --recode --tab --out plink_output/NImerged.impute2.chrAllX
+```
+
+This has converted the .bed .bim .fam files to .ped .map files. 
+
+###4. Download the following files:
+LiftOverPlink python scripts: https://github.com/sritchie73/liftOverPlink
+LiftOver binary: http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/liftOver
+Chain files: http://hgdownload.cse.ucsc.edu/goldenPath/hg19/liftOver/hg19ToHg38.over.chain.gz
+
+###5. Create a lifted map file
+```{bash, eval = FALSE}
+python liftOverPlink-master/liftOverPlink.py --bin /data/all/martha/Data/liftOver --map plink_output/Nimerged.impute.chrAllX.map --out plink_output/Nimerged.impute_lifted --chain hg19toHg38.over.chain
+```
+
+Note: permissions had to be modified for the binary to work 
+
+The "lifted" map file is the product of conversion between genome builds. Typically, .map files contain chr. numbers, marker ID/SNP ID, genetic distance, and position of the SNP. However, not all SNPs can be converted between builds for various reasons. These have to be removed. 
+
+###6. Remove "bad" lifted SNPs from new .map file 
+```{bash, eval = FALSE}
+python liftoverPlink-master/rmBadLifts.py --map plink_output/Nimerged.impute_lifted.map --out plink_output/NI.snp.good_lifted.map --log NI.snp.bad_lifted.dat
+```
+
+###7. Create a file that contains "unlifted" and "bad" SNPs. 
+```{bash, eval = FALSE}
+cut -f 2 plink_output/NI.snp.bad_lifted.dat > plink_output/NI.snps_exclude.dat
+cut -f 4 plink_output/NImerged.impute_fted.bed.unlifted | sed "/^#/d" >> plink_output/NI.snps_exclude.dat 
+```
+
+###8. Generate a .ped file that excludes the "unlifted" and "bad" SNPs. 
+```{bash, eval = FALSE}
+plink --file plink_output/Nimerged.impute.chrAllX --recode --out plink_output/NI_snp_hg38 --exclude plink_output/NI.snps.exclude.dat
+```
+
+Typically, .ped files contain family IDs, UUID, paternal ID, maternal ID, sex, affection, and genotypes.
+
+Output: 
+- there are 27,310,409 variants in the original .map file
+- after excluding unlifted and bad SNPs: 26,055,300 SNPs remain
+- there are 824 duplicate variant IDs in the exclude file 
+- total genotyping rate of the new file is 98.69%
+
+###9. Combine the "good" .ped and .map files 
+```{bash, eval = FALSE}
+plink --ped plink_output/NI_snp_hg38.ped --map plink_output/NI.snp.good_lifted.map --recode --out plink_output/NI.snp.hg38_final
+```
+
+###10. Convert ped/map files to bed/bim/fam files 
+```{bash, eval = FALSE}
+plink --file plink_output/NI.snp.hg38_final --make-bed --out NI.snp.hg38_final
+```
+
+
