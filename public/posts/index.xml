@@ -9,10 +9,20 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Thu, 26 Jul 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 31 Jul 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Generating basic statistics for final genomic data sets</title>
+      <link>/posts/generating-basic-statistics-for-final-genomic-data-sets/</link>
+      <pubDate>Tue, 31 Jul 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/generating-basic-statistics-for-final-genomic-data-sets/</guid>
+      <description>IntroductionAfter obtaining the unfiltered WGS data and converting the SNP-array data to a hg38 genome reference build, I can generate basic stats, QC, and merge. There should not be anymore changes to the base data sets moving forward.
+Methods and Results1.Find allele frequencies in both file setsplink1.9 --bfile NI.snp.hg38_final --freq --out plink_output/snp_allele_freqOutput: - 26,055,300 variants loaded - 506 individuals (247 males, 259 females) - 45 founders - genotyping rate is 98.</description>
+    </item>
     
     <item>
       <title>Converting SNP array data </title>

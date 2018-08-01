@@ -1,0 +1,101 @@
+---
+title: Generating basic statistics for final genomic data sets
+author: Martha Aquino
+date: '2018-07-31'
+slug: generating-basic-statistics-for-final-genomic-data-sets
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Data Cleaning
+  - Genomic Data
+  - Linux
+  - PLINK
+---
+
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>After obtaining the unfiltered WGS data and converting the SNP-array data to a hg38 genome reference build, I can generate basic stats, QC, and merge. There should not be anymore changes to the base data sets moving forward.</p>
+</div>
+<div id="methods-and-results" class="section level1">
+<h1>Methods and Results</h1>
+<div id="find-allele-frequencies-in-both-file-sets" class="section level3">
+<h3>1.Find allele frequencies in both file sets</h3>
+<pre class="bash"><code>plink1.9 --bfile NI.snp.hg38_final --freq --out plink_output/snp_allele_freq</code></pre>
+<p>Output: - 26,055,300 variants loaded - 506 individuals (247 males, 259 females) - 45 founders - genotyping rate is 98.69%</p>
+<pre class="bash"><code>plink1.9 --bfile NI_wgs_merged_snps --freq --out plink_output/wgs_allele_freq</code></pre>
+<p>Output: - 19,208,586 variants loaded - 108 individuals (58 males, 50 females) - 108 founders - genotyping rate is 99.68%</p>
+</div>
+<div id="plot-histogram-of-allele-frequency-distributions-in-both-file-sets" class="section level3">
+<h3>2. Plot histogram of allele frequency distributions in both file sets</h3>
+<pre class="r"><code>wgs_allele_freq &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/wgs_allele_freq.frq&#39;, header = T)
+
+hist(wgs_allele_freq$MAF, main = &quot;Allele Frequency Distributions of WGS Data&quot;, xlab = &quot;Minor Allele Frequency&quot;, xlim = c(0.0, 0.5), col = &quot;lightpink&quot;)</code></pre>
+<p><img src="/posts/2018-07-31-generating-basic-statistics-for-final-genomic-data-sets_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>snp_allele_freq &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/snp_allele_freq.frq&#39;, header = T)
+
+hist(snp_allele_freq$MAF, main = &quot;Allele Frequency Distribution of SNP Data&quot;, xlab = &quot;Minor Allele Frequency&quot;, xlim = c(0.0, 0.5), col = &quot;cadetblue1&quot;)</code></pre>
+<p><img src="/posts/2018-07-31-generating-basic-statistics-for-final-genomic-data-sets_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="generate-missingness-statistics" class="section level3">
+<h3>3. Generate missingness statistics</h3>
+<pre class="bash"><code>plink1.9 --bfile NI_wgs_merged_snps --missing --out plink_output/wgs_missing
+
+plink1.9 --bfile NI.snps.hg38_final --missing --out plink_output/snp_missing</code></pre>
+<p>Missingness statistics generate two files: one which details missingess rate for individuals and one for SNPs. For each individual, the file contains family and individual IDs, whether they have missing phenotypes, the number of missing SNPs, number of non-obligatory missing genotypes and the proportion of missing SNPs. For the SNPs, the file contains rsIDs, the chromosome number, the number of individuals missing that SNP, number of non-obligatory missing genotypes, and the proportion of samples missing that SNP.</p>
+</div>
+<div id="generate-hardy-weinberg-test-statistics" class="section level3">
+<h3>4. Generate hardy-weinberg test statistics</h3>
+<pre class="bash"><code>plink1.9 --bfile NI_wgs_merged_snps --hardy --out plink_output/wgs_hardy
+
+plink1.9 --bfile NI.snps.hg38_final --hardy --out plink_output/snp_hardy</code></pre>
+<p>The hardy-weinberg test statistics generates a file set that contains the SNP IDs, a code indicating sample, minor allele code, major allele code, genotype counts, observed heterozygosity, expected heterozygosity, and a HWE p-value.</p>
+</div>
+<div id="filter-out-variants-based-on-hwe-p-value" class="section level3">
+<h3>5. Filter out variants based on HWE p-value</h3>
+<pre class="bash"><code>plink1.9 --bfile NI_wgs_merged_snps --hwe 1.8e-7 --make-bed --out plink_output/wgs_hwe_filter
+
+plink1.9 --bfile NI.snp.hg38_final --hwe 1.8e-7 --make-bed --out plink_output/snp_hwe_filter</code></pre>
+<p>Note: this step creates a new set of files</p>
+<p>Output (WGS): - 305,519 variants were filtered out - 19,903,067 variants remain</p>
+<p>Output (SNP): - 17 variants were filtered out - 26,055,283 variants remain</p>
+<p>Number of SNPs filtered out seem incredibly small?</p>
+</div>
+<div id="perform-trial-merge-to-generate-file-with-variants-with-3-alleles" class="section level3">
+<h3>6. Perform trial merge to generate file with variants with 3+ alleles</h3>
+<pre class="bash"><code>plink1.9 --bfile plink_output/wgs_hwe_filter --bmerge plink_output/snp_hwe_filter.bed plink_output/snp_hwe_filter.bim plink_output/snp_hwe_filter.fam --make-bed --out plink_output/trial_merge</code></pre>
+<p>Note: despite the reference genome build conversion on the SNP-array data, this trial merge still resulted in a large number of multiple position warnings (600+). These will be excluded from the data sets, along with the variants that appear to have 3+ alleles (10,344 variants).</p>
+</div>
+<div id="exclude-variants-with-3-alleles-from-both-files" class="section level3">
+<h3>7. Exclude variants with 3+ alleles from both files</h3>
+<pre class="bash"><code>plink1.9 --bfile plink_output/wgs_hwe_filter --exclude plink_output/trial_merge-merge.missnp --make-bed --out plink_output/wgs_multall_exclude
+
+plink1.9 --bfile plink_output/snp_hwe_filter --exclude plink_output/trial_merge-merge.missnp --make-bed --out plink_output/snp_multall_exclude</code></pre>
+<p>WGS: 18,892,723 variants remain SNP: 26,044,939 variants remain</p>
+<p>Note: this step creates new file sets.</p>
+</div>
+<div id="exclude-variants-with-multiple-position-warnings" class="section level3">
+<h3>8. Exclude variants with multiple position warnings</h3>
+<pre class="bash"><code>plink1.9 --bfile plink_output/wgs_multall_exclude --exclude plink_output/multpos_var.txt --make-bed --out plink_output/wgs_multpos_out</code></pre>
+<p>Output: - 18,892,340 variants remain (383 variants removed)</p>
+<pre class="bash"><code>plink1.9 --bfile plink_output/snp_multall_exclude --exclude plink_output/multpos_var.txt --make-bed --out plink_output/snp_multpos_out</code></pre>
+<p>Output: - 26,044,556 variants remain (383 variants removed)</p>
+<p>Why is this process only removing 383 variants when there are 691 variants with multiple position warnings?</p>
+</div>
+<div id="re-try-merge-after-exclusion-of-multi-allelic-variants-and-variants-with-multiple-position-warnings." class="section level3">
+<h3>9. Re-try merge after exclusion of multi-allelic variants and variants with multiple position warnings.</h3>
+<pre class="bash"><code>plink1.9 --bfile plink_output/wgs_multpos_out --bmerge plink_output/snp_multpos_out.bed plink_output/snp_multpos_out.bim plink_output/snp_multpos_out.fam --make-bed --out plink_output/multiple_out_merge</code></pre>
+<p>Note: had to transfer to taurus for this step. I transferred only the wgs/snp_multpos_out file sets.</p>
+<ul>
+<li>18,892,340 variants loaded from WGS files</li>
+<li>26,044,556 variants loaded from SNP files</li>
+<li>9,143,298 variants are common across both file sets</li>
+<li>154,268 variants with same-position warnings</li>
+<li>merged files contain 35,793,598 variants</li>
+<li>genotyping rate is 68.45%</li>
+</ul>
+<p>The merge function in PLINK appears to exclude variants that are common across both file sets. Will have to manually extract common variants in R by comparing both data sets.</p>
+</div>
+</div>
