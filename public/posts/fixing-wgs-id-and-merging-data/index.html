@@ -626,7 +626,7 @@ head(wgs_fam_data4)</code></pre>
 <h3>12. Re-try merge-mode 6 in plink</h3>
 <pre class="bash"><code>plink --bfile plink_output/aray_filtered --bmerge plink_output/wgs_filtered.bed plink_output/wgs_filtered.bim plink_output/wgs_filtered.fam --merge-mode 6 --out plink_output/merge_mode6_filtered</code></pre>
 <p>Output: - 506 people from array; 108 from WGS - from WGS: 14 people are new, 94 people overlap with array (as expected) - 9,155,053 variants were loaded from both - 860,574,982 overlapping calls - 835,321,129 nonmissing in both file sets - 579,288,999 concordant - concordance rate = 69.31%</p>
-<p>This concordance rate is much lower than expected.</p>
+<p>This concordance rate is much lower than expected - it should be close to 100% but discrepancies between different sequencing technology cannot be avoided, therefore a concordance rate for the same sample will never be 100%.</p>
 </div>
 <div id="merge-both-file-sets-using-default-settings-consensus-calls" class="section level3">
 <h3>13. Merge both file sets using default settings (consensus calls)</h3>

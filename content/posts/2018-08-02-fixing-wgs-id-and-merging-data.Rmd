@@ -121,7 +121,7 @@ Output:
    - 579,288,999 concordant
    - concordance rate = 69.31%
 
-This concordance rate is much lower than expected. 
+This concordance rate is much lower than expected - it should be close to 100% but discrepancies between different sequencing technology cannot be avoided, therefore a concordance rate for the same sample will never be 100%.
 
 ###13. Merge both file sets using default settings (consensus calls)
 ```{bash, eval = FALSE}
