@@ -9,10 +9,31 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Tue, 31 Jul 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 02 Aug 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/plink/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Fixing WGS ID and merging data</title>
+      <link>/posts/fixing-wgs-id-and-merging-data/</link>
+      <pubDate>Thu, 02 Aug 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/fixing-wgs-id-and-merging-data/</guid>
+      <description>IntroductionPrior to merging the data sets, I need to fix the IDs in the WGS data as they are not UUIDs and are therefore recognising all individuals as unique despite having an overlap.
+Methods and Results1. Load WGS fam filewgs_fam_data &amp;lt;- read.table(&amp;#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/wgs_filtered.fam&amp;#39;, header = F)head(wgs_fam_data)## V1 V2 V3 V4 V5 V6## 1 1 110390 0 0 2 -9## 2 1 110990 0 0 1 -9## 3 1 111280 0 0 2 -9## 4 1 111800 0 0 2 -9## 5 1 111830 0 0 2 -9## 6 1 124520 0 0 1 -92.</description>
+    </item>
+    
+    <item>
+      <title>Extracting data for variants common in both file sets </title>
+      <link>/posts/extracting-data-for-variants-common-in-both-file-sets/</link>
+      <pubDate>Wed, 01 Aug 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/extracting-data-for-variants-common-in-both-file-sets/</guid>
+      <description>IntroductionThe merge function in PLINK appears to exclude variants that are common in both data sets, which is unexpected.The following work around extracts the variants common in both file sets and merges the data.
+NOTE: this exercise was performed on taurus.
+Methods and Results1. Extract SNP IDs from both .bim files and sort them numerically.awk &amp;#39;{print $2}&amp;#39; NI.snp.hg38_final.bim | sort &amp;gt; array_snp_hg38_sorted.txtawk &amp;#39;{print $2}&amp;#39; NI_wgs_merged_snps.bim | sort &amp;gt; wgs_snp_hg38_sorted.</description>
+    </item>
     
     <item>
       <title>Generating basic statistics for final genomic data sets</title>

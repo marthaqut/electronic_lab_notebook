@@ -1,0 +1,141 @@
+---
+title: Fixing WGS ID and merging data
+author: Martha Aquino
+date: '2018-08-02'
+slug: fixing-wgs-id-and-merging-data
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Data Cleaning
+  - Genomic Data
+  - Linux
+  - PLINK
+  - R
+---
+
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Prior to merging the data sets, I need to fix the IDs in the WGS data as they are not UUIDs and are therefore recognising all individuals as unique despite having an overlap.</p>
+</div>
+<div id="methods-and-results" class="section level1">
+<h1>Methods and Results</h1>
+<div id="load-wgs-fam-file" class="section level3">
+<h3>1. Load WGS fam file</h3>
+<pre class="r"><code>wgs_fam_data &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/wgs_filtered.fam&#39;, header = F)
+head(wgs_fam_data)</code></pre>
+<pre><code>##   V1     V2 V3 V4 V5 V6
+## 1  1 110390  0  0  2 -9
+## 2  1 110990  0  0  1 -9
+## 3  1 111280  0  0  2 -9
+## 4  1 111800  0  0  2 -9
+## 5  1 111830  0  0  2 -9
+## 6  1 124520  0  0  1 -9</code></pre>
+</div>
+<div id="load-spreadsheet-with-wgs-ids-and-uuids" class="section level3">
+<h3>2. Load spreadsheet with WGS IDs and UUIDs</h3>
+<pre class="r"><code>WGS_ID &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/WGS_ID_mapping.csv&#39;, header =F)
+head(WGS_ID)</code></pre>
+<pre><code>##           V1     V2     V3     V4    V5
+## 1     KCCGID  QUTID   UUID  patID matID
+## 2 FR07885645 ES_804 400804 316910  2802
+## 3 FR07885644 ES_801 400801 312590  1890
+## 4 FR07885643 ES_698 400698 311660    76
+## 5 FR07885642 ES_696 400696 311660    76
+## 6 FR07885324 ES_684 400684      0     0</code></pre>
+</div>
+<div id="merge-the-two-tables-by-the-fr-ids" class="section level3">
+<h3>3. Merge the two tables by the ‘FR’ IDs</h3>
+<pre class="r"><code>WGS_ID_merge &lt;- merge(wgs_fam_data, WGS_ID, by = &#39;V1&#39;)
+head(WGS_ID_merge)</code></pre>
+<pre><code>##  [1] V1   V2.x V3.x V4.x V5.x V6   V2.y V3.y V4.y V5.y
+## &lt;0 rows&gt; (or 0-length row.names)</code></pre>
+</div>
+<div id="subset-the-relevant-columns-to-retain-i.e.fam-id-uuid-paternal-id-maternal-id-sex-phenotype-value" class="section level3">
+<h3>4. Subset the relevant columns to retain (i.e. Fam ID, UUID, paternal ID, maternal ID, sex, phenotype value)</h3>
+<pre class="r"><code>fam_id_subset &lt;- c(&quot;V1&quot;, &quot;V3.y&quot;, &quot;V3.x&quot;, &quot;V4.x&quot;, &quot;V5.x&quot;, &quot;V6&quot;)
+wgs_fam_data2 &lt;- WGS_ID_merge[fam_id_subset]
+wgs_fam_data2 &lt;-`colnames&lt;-`(wgs_fam_data2, c(&quot;V1&quot;, &quot;V2&quot;, &quot;V3&quot;, &quot;V4&quot;, &quot;V5&quot;, &quot;V6&quot;))
+head(wgs_fam_data2)</code></pre>
+<pre><code>## [1] V1 V2 V3 V4 V5 V6
+## &lt;0 rows&gt; (or 0-length row.names)</code></pre>
+</div>
+<div id="export-this-new-.fam-file" class="section level3">
+<h3>5. Export this new .fam file</h3>
+<pre class="r"><code>write.table(wgs_fam_data2,&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/wgs_filtered.fam&#39;, row.names = F, col.names = F, quote = F)</code></pre>
+<p>Note: I replaced wgs_filtered.fam in taurus so that it contains this new data set with UUIDs in place of the FR IDs.</p>
+</div>
+<div id="try-merging-data-sets-using-new-fam-file" class="section level3">
+<h3>6. Try merging data sets using new fam file</h3>
+<pre class="bash"><code>plink --bfile plink_output/wgs_filtered --bmerge plink_output/array_filtered.bed plink_output/array_filtered.bim plink_output/array_filtered.fam --merge-mode 6 --out plink_output/merge_mode6_filtered</code></pre>
+<p>Note: This step does not technically merge the two data sets. Merge mode 6 will report all mismatching calls - assuming that there will be a difference in genotypes reported between the two data sets for the same individuals.</p>
+<p>I checked the number of overlapping individuals in R - there are 94. However, the merge still does not recognise them as overlapping. I suspect that the merge considers all other variables in the .fam file. Therefore, despite having the same UUIDs, the individuals that do overlap have different family, paternal, and maternal IDs. This will have to be resolved first.</p>
+</div>
+<div id="merge-wgs-and-array-fam-files-by-uuids-to-obtain-overlap" class="section level3">
+<h3>7. Merge WGS and array fam files by UUIDs to obtain overlap</h3>
+<pre class="r"><code>array_fam_data &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/array_filtered.fam&#39;, header = F)
+head(array_fam_data) #load in array fam file (WGS fam file already loaded)</code></pre>
+<pre><code>##   V1     V2     V3     V4 V5 V6
+## 1  1 110630    790    800  2 -9
+## 2  1 110850 111740 333130  2 -9
+## 3  1 111280    933     59  2 -9
+## 4  1 111830 169270 400523  2 -9
+## 5  1 310881      0      0  2 -9
+## 6  1 343481   1716 319731  2 -9</code></pre>
+<pre class="r"><code>array_V_wgs_uuid &lt;- merge(wgs_fam_data2, array_fam_data, by = &#39;V2&#39;)
+head(array_V_wgs_uuid)</code></pre>
+<pre><code>##  [1] V2   V1.x V3.x V4.x V5.x V6.x V1.y V3.y V4.y V5.y V6.y
+## &lt;0 rows&gt; (or 0-length row.names)</code></pre>
+</div>
+<div id="retain-info-from-array-file" class="section level3">
+<h3>8. Retain info from array file</h3>
+<pre class="r"><code>fam_id_subset2 &lt;- c(&quot;V1.y&quot;,&quot;V2&quot;, &quot;V3.y&quot;, &quot;V4.y&quot;, &quot;V5.x&quot;, &quot;V6.x&quot;) #select desired columns
+wgs_array_same &lt;- array_V_wgs_uuid[fam_id_subset2] #subset data based on selected columns
+wgs_array_same &lt;-`colnames&lt;-`(wgs_array_same, c(&quot;V1&quot;, &quot;V2&quot;, &quot;V3&quot;, &quot;V4&quot;, &quot;V5&quot;, &quot;V6&quot;)) #rename columns to match
+head(wgs_array_same)</code></pre>
+<pre><code>## [1] V1 V2 V3 V4 V5 V6
+## &lt;0 rows&gt; (or 0-length row.names)</code></pre>
+</div>
+<div id="replace-info-in-wgs_fam_data2-current-fam-file" class="section level3">
+<h3>9. Replace info in wgs_fam_data2 (current fam file)</h3>
+<pre class="r"><code>UUID_same &lt;- wgs_array_same$V2 #subset overlapping UUIDs
+head(UUID_same)</code></pre>
+<pre><code>## factor(0)
+## 109 Levels: 110390 110990 111100 111280 111800 111830 124520 ... UUID</code></pre>
+<pre class="r"><code>wgs_fam_omit &lt;- wgs_fam_data2[!wgs_fam_data2$V2 %in% UUID_same,] #remove data for individuals with the same UUID (ie overlapping indivs are omitted)
+
+wgs_fam_data3 &lt;- rbind(wgs_array_same, wgs_fam_omit) #put together the overlapping and non-overlapping indivs
+head(wgs_fam_data3)</code></pre>
+<pre><code>## [1] V1 V2 V3 V4 V5 V6
+## &lt;0 rows&gt; (or 0-length row.names)</code></pre>
+<pre class="r"><code>tail(wgs_fam_data3)</code></pre>
+<pre><code>## [1] V1 V2 V3 V4 V5 V6
+## &lt;0 rows&gt; (or 0-length row.names)</code></pre>
+<p>wgs_fam_data3 now ensures that all overlapping individuals have the same family, paternal, and maternal IDs as the array .fam file. However, I didn’t think to just make them all 1s and 0s. So in the interest of moving forward, I exported wgs_fam_data3 to Excel and made all family IDs = 1 and all paternal and maternal IDs = 0.</p>
+</div>
+<div id="export-wgs_fam_data3-to-excel-make-fam-pat-and-mat-ids-uniform-then-re-load-wgs_fam_data3" class="section level3">
+<h3>10. Export wgs_fam_data3 to Excel, make fam, pat, and mat IDs uniform, then re-load wgs_fam_data3</h3>
+<pre class="r"><code>write.csv(wgs_fam_data3,&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/wgs_filtered.csv&#39;, row.names = F, quote = F, col.names = F)
+
+wgs_fam_data4 &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/wgs_filtered.csv&#39;) #this now contains same fam, pat, and mat IDs as array .fam file
+head(wgs_fam_data4)</code></pre>
+</div>
+<div id="export-wgs_fam_data4-to-.fam-file-for-plink" class="section level3">
+<h3>11. Export wgs_fam_data4 to .fam file for plink</h3>
+<pre class="r"><code>write.table(wgs_fam_data4,&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/wgs_filtered.fam&#39;, row.names = F, quote = F, col.names = F)</code></pre>
+<p>Note: I replaced wgs_filtered.fam in taurus with this new .fam file (still names wgs_filtered.fam)</p>
+</div>
+<div id="re-try-merge-mode-6-in-plink" class="section level3">
+<h3>12. Re-try merge-mode 6 in plink</h3>
+<pre class="bash"><code>plink --bfile plink_output/aray_filtered --bmerge plink_output/wgs_filtered.bed plink_output/wgs_filtered.bim plink_output/wgs_filtered.fam --merge-mode 6 --out plink_output/merge_mode6_filtered</code></pre>
+<p>Output: - 506 people from array; 108 from WGS - from WGS: 14 people are new, 94 people overlap with array (as expected) - 9,155,053 variants were loaded from both - 860,574,982 overlapping calls - 835,321,129 nonmissing in both file sets - 579,288,999 concordant - concordance rate = 69.31%</p>
+<p>This concordance rate is much lower than expected.</p>
+</div>
+<div id="merge-both-file-sets-using-default-settings-consensus-calls" class="section level3">
+<h3>13. Merge both file sets using default settings (consensus calls)</h3>
+<pre class="bash"><code>plink --bfile plink_output/aray_filtered --bmerge plink_output/wgs_filtered.bed plink_output/wgs_filtered.bim plink_output/wgs_filtered.fam --make-bed --out plink_output/filtered_merge</code></pre>
+<p>Output: - 520 people (255 males, 265 females) and 9,155,053 variants pass filters and QC - 59 founders and 461 non-founders - total genotyping rate is 92.32%</p>
+</div>
+</div>
