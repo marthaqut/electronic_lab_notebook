@@ -9,10 +9,20 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Thu, 02 Aug 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 03 Aug 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/linux/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Generating stats for merged data and extracting data for NIES</title>
+      <link>/posts/generating-stats-for-merged-data-and-extracting-data-for-nies/</link>
+      <pubDate>Fri, 03 Aug 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/generating-stats-for-merged-data-and-extracting-data-for-nies/</guid>
+      <description>IntroductionNow that the merge has been successful and there should no longer be duplicated individuals, general stats need to be performed on the merged data set. Subsequently, the final step to this data prep and cleaning is to extract data for the NIES individuals only.
+Methods and ResultsNote: Most processes up until the merge from the previous entry was performed on taurus. I transferred filtered_merge to local directory. These stat tests will be performed locally.</description>
+    </item>
     
     <item>
       <title>Fixing WGS ID and merging data</title>

@@ -1,0 +1,90 @@
+---
+title: Generating stats for merged data and extracting data for NIES
+author: Martha Aquino
+date: '2018-08-03'
+slug: generating-stats-for-merged-data-and-extracting-data-for-nies
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Data Cleaning
+  - Genomic Data
+  - Linux
+  - PLINK
+---
+
+#Introduction
+Now that the merge has been successful and there should no longer be duplicated individuals, general stats need to be performed on the merged data set. Subsequently, the final step to this data prep and cleaning is to extract data for the NIES individuals only. 
+
+##Methods and Results 
+Note: Most processes up until the merge from the previous entry was performed on taurus. I transferred filtered_merge to local directory. These stat tests will be performed locally. 
+###1. Generate allele freq stats
+```{bash, eval = FALSE}
+plink --bfile plink_output/filtered_merge --freq --out plink_output/merge_allele_freq
+```
+
+###2. Load allele freq file
+```{r}
+merged_allele_freq <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_allele_freq.frq', header = T)
+
+head(merged_allele_freq)
+```
+
+###3. Generate histogram for allele freq distributions
+```{r}
+hist(merged_allele_freq$MAF, main = "Allele Frequency Distributions of Merged Data", xlab = "Minor Allele Frequency", xlim = c(0.0, 0.5), col = "plum2")
+```
+
+###4. Generate missingness statistics
+```{bash, eval = FALSE}
+plink1.9 --bfile plink_output/filtered_merge --missing --out plink_output/merged_missing
+```
+```{r}
+#merged_missing_snp <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_missing.lmiss', header = T)
+
+#head(merged_missing_snp)
+
+#merged_missing_indiv <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_outout/merged_missing.imiss', header = T)
+
+#head(merged_missing_indiv)
+```
+
+
+###5. Generate hardy-weinberg statistics
+```{bash, eval = FALSE}
+plink1.9 --bfile plink_output/filtered_merge --hardy --out plink_output/merged_hardy
+```
+```{r}
+#merged_hardy <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_hardy.hwe', header = T)
+
+#head(merged_hardy)
+```
+
+
+###6. Filter out variants based on HWE p-value
+```{bash, eval = FALSE}
+plink1.9 --bfile plink_output/filtered_merge --hwe 1.8e-7 --make-bed --out plink_output/merged_hwe_filter
+```
+Note: unlike previous attempts at generating stats before merging, I did not use a HWE p-val filter before merging this data set. 
+Note: this creates a new file set
+
+Output:
+  - 1897 variants were excluded based on hwe p-val
+  - 9,153,156 variants remain
+  - warning: hwe observation counts vary by more than 10%
+  
+###7. Check allele freq stats after filtering
+```{bash, eval = FALSE}
+plink1.9 --bfile plink_output/merged_hwe_filter --freq --out plink_output/merge_hwefilter_freq
+```
+
+###8. Load allele freq file
+```{r}
+merged_hwefilter_freq <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merge_hwefilter_freq.frq', header = T)
+```
+
+###9. Generate histogram of allele freq distributions
+```{r}
+hist(merged_hwefilter_freq$MAF, main = "Allele Frequency Distributions of Merged Data after HWE filtering", xlab = "Minor Allele Frequency", xlim = c(0.0, 0.5), col = "peachpuff")
+```
+

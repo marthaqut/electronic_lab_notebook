@@ -3,8 +3,8 @@
 <head>
   
   <meta charset="utf-8">
-  <title>Data Cleaning</title>
-  <meta name="description" content="Data Cleaning">
+  <title>Generating stats for merged data and extracting data for NIES</title>
+  <meta name="description" content="Generating stats for merged data and extracting data for NIES">
   <meta name="author" content="Martha Aquino">
   
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -420,8 +420,6 @@ based on dark.css by Ivan Sagalaev
 
   
   
-  <link href="/tags/data-cleaning/index.xml" rel="alternate" type="application/rss+xml" title="Electronic Lab Notebook Feed" />
-  
 
   <meta name="generator" content="Hugo 0.40.3" />
 
@@ -487,242 +485,118 @@ based on dark.css by Ivan Sagalaev
 </div>
 
 
-
 <div class="pure-g">
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
   <div class="pure-u-11-12 pure-u-md-2-3">
-    <div class="post-content">
-      <p class="posts-name">Data Cleaning:</p>
+    <div class="post">
 
-      <ul class="posts">
+      <div class="post-title">
+        <p class="footnote">
+        <time class="">08-03-2018</time>
         
         
+        |
         
-        <li>
-          
-          <a class="post-list" href="/posts/generating-stats-for-merged-data-and-extracting-data-for-nies/">Generating stats for merged data and extracting data for NIES</a>
+        
+        tags: [ <a href="/tags/data-cleaning">Data Cleaning</a> <a href="/tags/genomic-data">Genomic Data</a> <a href="/tags/linux">Linux</a> <a href="/tags/plink">PLINK</a> ]
+        
 
-          <p class="footnote">
-          <time datetime="08-03-2018">
-            08-03-2018
-          </time>
-          </p>
-        </li>
         
+        categories: [<a href="/categories/coding">Coding</a> <a href="/categories/experiments">Experiments</a> ]
         
-        
-        <li>
-          
-          <a class="post-list" href="/posts/fixing-wgs-id-and-merging-data/">Fixing WGS ID and merging data</a>
 
-          <p class="footnote">
-          <time datetime="08-02-2018">
-            08-02-2018
-          </time>
-          </p>
-        </li>
         
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/extracting-data-for-variants-common-in-both-file-sets/">Extracting data for variants common in both file sets </a>
+        </p>
+        <h1>Generating stats for merged data and extracting data for NIES</h1>
+      </div>
 
-          <p class="footnote">
-          <time datetime="08-01-2018">
-            08-01-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/generating-basic-statistics-for-final-genomic-data-sets/">Generating basic statistics for final genomic data sets</a>
+      <div class="post-content">
+        <div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Now that the merge has been successful and there should no longer be duplicated individuals, general stats need to be performed on the merged data set. Subsequently, the final step to this data prep and cleaning is to extract data for the NIES individuals only.</p>
+<div id="methods-and-results" class="section level2">
+<h2>Methods and Results</h2>
+<p>Note: Most processes up until the merge from the previous entry was performed on taurus. I transferred filtered_merge to local directory. These stat tests will be performed locally. ###1. Generate allele freq stats</p>
+<pre class="bash"><code>plink --bfile plink_output/filtered_merge --freq --out plink_output/merge_allele_freq</code></pre>
+<div id="load-allele-freq-file" class="section level3">
+<h3>2. Load allele freq file</h3>
+<pre class="r"><code>merged_allele_freq &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_allele_freq.frq&#39;, header = T)
 
-          <p class="footnote">
-          <time datetime="07-31-2018">
-            07-31-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/merging-genomic-data-sets/">Merging genomic data sets</a>
+head(merged_allele_freq)</code></pre>
+<pre><code>##   CHR         SNP A1 A2      MAF NCHROBS
+## 1   1  rs62637813  C  G 0.125000     104
+## 2   1 rs146477069  G  A 0.009804     102
+## 3   1 rs141149254  A  G 0.031250      64
+## 4   1   rs2462492  T  C 0.425900      54
+## 5   1 rs143174675  G  T 0.009091     110
+## 6   1   rs3091274  C  A 0.000000     110</code></pre>
+</div>
+<div id="generate-histogram-for-allele-freq-distributions" class="section level3">
+<h3>3. Generate histogram for allele freq distributions</h3>
+<pre class="r"><code>hist(merged_allele_freq$MAF, main = &quot;Allele Frequency Distributions of Merged Data&quot;, xlab = &quot;Minor Allele Frequency&quot;, xlim = c(0.0, 0.5), col = &quot;plum2&quot;)</code></pre>
+<p><img src="/posts/2018-08-03-generating-stats-for-merged-data-and-extracting-data-for-nies_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="generate-missingness-statistics" class="section level3">
+<h3>4. Generate missingness statistics</h3>
+<pre class="bash"><code>plink1.9 --bfile plink_output/filtered_merge --missing --out plink_output/merged_missing</code></pre>
+<pre class="r"><code>#merged_missing_snp &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_missing.lmiss&#39;, header = T)
 
-          <p class="footnote">
-          <time datetime="07-25-2018">
-            07-25-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/cleaning-and-preparing-genomic-data/">Cleaning and preparing genomic data </a>
+#head(merged_missing_snp)
 
-          <p class="footnote">
-          <time datetime="07-24-2018">
-            07-24-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/extracting-genomic-data-exclusive-to-nies/">Extracting genomic data exclusive to NIES</a>
+#merged_missing_indiv &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_outout/merged_missing.imiss&#39;, header = T)
 
-          <p class="footnote">
-          <time datetime="07-05-2018">
-            07-05-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/extracting-common-variants-from-both-data-sets/">Extracting common variants from both data sets</a>
+#head(merged_missing_indiv)</code></pre>
+</div>
+<div id="generate-hardy-weinberg-statistics" class="section level3">
+<h3>5. Generate hardy-weinberg statistics</h3>
+<pre class="bash"><code>plink1.9 --bfile plink_output/filtered_merge --hardy --out plink_output/merged_hardy</code></pre>
+<pre class="r"><code>#merged_hardy &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_hardy.hwe&#39;, header = T)
 
-          <p class="footnote">
-          <time datetime="07-03-2018">
-            07-03-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/adding-conjunctival-uvaf-to-dataset/">Adding Conjunctival UVAF to dataset </a>
+#head(merged_hardy)</code></pre>
+</div>
+<div id="filter-out-variants-based-on-hwe-p-value" class="section level3">
+<h3>6. Filter out variants based on HWE p-value</h3>
+<pre class="bash"><code>plink1.9 --bfile plink_output/filtered_merge --hwe 1.8e-7 --make-bed --out plink_output/merged_hwe_filter</code></pre>
+<p>Note: unlike previous attempts at generating stats before merging, I did not use a HWE p-val filter before merging this data set. Note: this creates a new file set</p>
+<p>Output: - 1897 variants were excluded based on hwe p-val - 9,153,156 variants remain - warning: hwe observation counts vary by more than 10%</p>
+</div>
+<div id="check-allele-freq-stats-after-filtering" class="section level3">
+<h3>7. Check allele freq stats after filtering</h3>
+<pre class="bash"><code>plink1.9 --bfile plink_output/merged_hwe_filter --freq --out plink_output/merge_hwefilter_freq</code></pre>
+</div>
+<div id="load-allele-freq-file-1" class="section level3">
+<h3>8. Load allele freq file</h3>
+<pre class="r"><code>merged_hwefilter_freq &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merge_hwefilter_freq.frq&#39;, header = T)</code></pre>
+</div>
+<div id="generate-histogram-of-allele-freq-distributions" class="section level3">
+<h3>9. Generate histogram of allele freq distributions</h3>
+<pre class="r"><code>hist(merged_hwefilter_freq$MAF, main = &quot;Allele Frequency Distributions of Merged Data after HWE filtering&quot;, xlab = &quot;Minor Allele Frequency&quot;, xlim = c(0.0, 0.5), col = &quot;peachpuff&quot;)</code></pre>
+<p><img src="/posts/2018-08-03-generating-stats-for-merged-data-and-extracting-data-for-nies_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+</div>
+</div>
+</div>
 
-          <p class="footnote">
-          <time datetime="05-10-2018">
-            05-10-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/pearson-s-correlations-on-imputed-data-set/">Pearson&#39;s correlations on imputed data set</a>
+      </div>
+      
+      <div class="post-content">
+        <div id="disqus_thread"></div>
+<script>
+(function() {
+var d = document, s = d.createElement('script');
+s.src = 'https://http-martha-labbook-netlify-com.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 
-          <p class="footnote">
-          <time datetime="05-09-2018">
-            05-09-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/mipca-of-phenotypic-data-without-logmar-with-ph-values/">MIPCA of Phenotypic Data without LogMAR-with-PH values</a>
-
-          <p class="footnote">
-          <time datetime="05-05-2018">
-            05-05-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/multiple-pca-imputation-of-quantitative-phenotypic-data-updated/">Multiple PCA Imputation of Quantitative Phenotypic Data  - updated</a>
-
-          <p class="footnote">
-          <time datetime="05-04-2018">
-            05-04-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/example-of-data-impuation-with-missmda/">Example of data imputation with missMDA</a>
-
-          <p class="footnote">
-          <time datetime="04-23-2018">
-            04-23-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/understanding-pca/">Understanding PCA </a>
-
-          <p class="footnote">
-          <time datetime="04-23-2018">
-            04-23-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/subsetting-relevant-phenotypic-data/">Subsetting relevant phenotypic data</a>
-
-          <p class="footnote">
-          <time datetime="04-21-2018">
-            04-21-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/finding-outliers-in-quantitative-data/">Finding outliers in quantitative data</a>
-
-          <p class="footnote">
-          <time datetime="04-16-2018">
-            04-16-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/plotting-histograms-for-quantitative-phenotypic-data/">Plotting histograms for quantitative phenotypic data</a>
-
-          <p class="footnote">
-          <time datetime="04-10-2018">
-            04-10-2018
-          </time>
-          </p>
-        </li>
-        
-        
-      </ul>
+      </div>
+      
     </div>
   </div>
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
 </div>
+
 
 <div class="footer pure-g">
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
@@ -801,4 +675,6 @@ based on dark.css by Ivan Sagalaev
 
 </body>
 </html>
+
+
 

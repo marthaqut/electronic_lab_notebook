@@ -1,0 +1,81 @@
+---
+title: Generating stats for merged data and extracting data for NIES
+author: Martha Aquino
+date: '2018-08-03'
+slug: generating-stats-for-merged-data-and-extracting-data-for-nies
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Data Cleaning
+  - Genomic Data
+  - Linux
+  - PLINK
+---
+
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Now that the merge has been successful and there should no longer be duplicated individuals, general stats need to be performed on the merged data set. Subsequently, the final step to this data prep and cleaning is to extract data for the NIES individuals only.</p>
+<div id="methods-and-results" class="section level2">
+<h2>Methods and Results</h2>
+<p>Note: Most processes up until the merge from the previous entry was performed on taurus. I transferred filtered_merge to local directory. These stat tests will be performed locally. ###1. Generate allele freq stats</p>
+<pre class="bash"><code>plink --bfile plink_output/filtered_merge --freq --out plink_output/merge_allele_freq</code></pre>
+<div id="load-allele-freq-file" class="section level3">
+<h3>2. Load allele freq file</h3>
+<pre class="r"><code>merged_allele_freq &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_allele_freq.frq&#39;, header = T)
+
+head(merged_allele_freq)</code></pre>
+<pre><code>##   CHR         SNP A1 A2      MAF NCHROBS
+## 1   1  rs62637813  C  G 0.125000     104
+## 2   1 rs146477069  G  A 0.009804     102
+## 3   1 rs141149254  A  G 0.031250      64
+## 4   1   rs2462492  T  C 0.425900      54
+## 5   1 rs143174675  G  T 0.009091     110
+## 6   1   rs3091274  C  A 0.000000     110</code></pre>
+</div>
+<div id="generate-histogram-for-allele-freq-distributions" class="section level3">
+<h3>3. Generate histogram for allele freq distributions</h3>
+<pre class="r"><code>hist(merged_allele_freq$MAF, main = &quot;Allele Frequency Distributions of Merged Data&quot;, xlab = &quot;Minor Allele Frequency&quot;, xlim = c(0.0, 0.5), col = &quot;plum2&quot;)</code></pre>
+<p><img src="/posts/2018-08-03-generating-stats-for-merged-data-and-extracting-data-for-nies_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="generate-missingness-statistics" class="section level3">
+<h3>4. Generate missingness statistics</h3>
+<pre class="bash"><code>plink1.9 --bfile plink_output/filtered_merge --missing --out plink_output/merged_missing</code></pre>
+<pre class="r"><code>#merged_missing_snp &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_missing.lmiss&#39;, header = T)
+
+#head(merged_missing_snp)
+
+#merged_missing_indiv &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_outout/merged_missing.imiss&#39;, header = T)
+
+#head(merged_missing_indiv)</code></pre>
+</div>
+<div id="generate-hardy-weinberg-statistics" class="section level3">
+<h3>5. Generate hardy-weinberg statistics</h3>
+<pre class="bash"><code>plink1.9 --bfile plink_output/filtered_merge --hardy --out plink_output/merged_hardy</code></pre>
+<pre class="r"><code>#merged_hardy &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_hardy.hwe&#39;, header = T)
+
+#head(merged_hardy)</code></pre>
+</div>
+<div id="filter-out-variants-based-on-hwe-p-value" class="section level3">
+<h3>6. Filter out variants based on HWE p-value</h3>
+<pre class="bash"><code>plink1.9 --bfile plink_output/filtered_merge --hwe 1.8e-7 --make-bed --out plink_output/merged_hwe_filter</code></pre>
+<p>Note: unlike previous attempts at generating stats before merging, I did not use a HWE p-val filter before merging this data set. Note: this creates a new file set</p>
+<p>Output: - 1897 variants were excluded based on hwe p-val - 9,153,156 variants remain - warning: hwe observation counts vary by more than 10%</p>
+</div>
+<div id="check-allele-freq-stats-after-filtering" class="section level3">
+<h3>7. Check allele freq stats after filtering</h3>
+<pre class="bash"><code>plink1.9 --bfile plink_output/merged_hwe_filter --freq --out plink_output/merge_hwefilter_freq</code></pre>
+</div>
+<div id="load-allele-freq-file-1" class="section level3">
+<h3>8. Load allele freq file</h3>
+<pre class="r"><code>merged_hwefilter_freq &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merge_hwefilter_freq.frq&#39;, header = T)</code></pre>
+</div>
+<div id="generate-histogram-of-allele-freq-distributions" class="section level3">
+<h3>9. Generate histogram of allele freq distributions</h3>
+<pre class="r"><code>hist(merged_hwefilter_freq$MAF, main = &quot;Allele Frequency Distributions of Merged Data after HWE filtering&quot;, xlab = &quot;Minor Allele Frequency&quot;, xlim = c(0.0, 0.5), col = &quot;peachpuff&quot;)</code></pre>
+<p><img src="/posts/2018-08-03-generating-stats-for-merged-data-and-extracting-data-for-nies_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+</div>
+</div>
+</div>
