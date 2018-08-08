@@ -40,13 +40,13 @@ hist(merged_allele_freq$MAF, main = "Allele Frequency Distributions of Merged Da
 plink1.9 --bfile plink_output/filtered_merge --missing --out plink_output/merged_missing
 ```
 ```{r}
-#merged_missing_snp <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_missing.lmiss', header = T)
+merged_missing_snp <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_missing.lmiss', header = T)
 
-#head(merged_missing_snp)
+head(merged_missing_snp)
 
-#merged_missing_indiv <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_outout/merged_missing.imiss', header = T)
+merged_missing_indiv <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_missing.imiss', header = T)
 
-#head(merged_missing_indiv)
+head(merged_missing_indiv)
 ```
 
 
@@ -86,5 +86,59 @@ merged_hwefilter_freq <- read.table('C:/Users/Martha/Documents/Honours/Project/h
 ###9. Generate histogram of allele freq distributions
 ```{r}
 hist(merged_hwefilter_freq$MAF, main = "Allele Frequency Distributions of Merged Data after HWE filtering", xlab = "Minor Allele Frequency", xlim = c(0.0, 0.5), col = "peachpuff")
+```
+
+###10. Load spreadsheet with NI study participants
+```{r}
+ni_ped_uuid <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NI_UUID_Ped_20180718.csv', header = T) 
+
+head(ni_ped_uuid)
+```
+
+###11. Isolate all NIES individuals using "NIES" column, and all NIES indivs with sequencing data using "GWAS_NIES" column 
+```{r}
+gwas_niesID <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_niesID.csv', header = F)
+
+head(gwas_niesID)
+```
+There are 363 NIES individuals that may have sequencing data identified from the spreadsheet. This list was also converted to .txt to be compatible with PLINK.
+
+###12. Extract data in PLINK
+```{bash, eval = FALSE}
+plink1.9 --bfile plink_output/merged_hwe_filter --keep gwas_niesID.txt --make-bed --out merged_nies
+```
+This extracted data for only 361 individuals, which is 2 less than expected. I suspect it may be because of differing paternal and maternal IDs. Therefore, I changed all maternal and paternal IDs in "merged_hwe_filter.fam" to 0s but this did not resolve the issue. PLINK is still only extracting data for 361 individuals (9,153,156 variants; total genotyping rate = 91.68%)
+
+The file sets created in this step will be used for all subsequent analysis. 
+
+###13. Check allele frequencies of this final data set
+```{bash, eval = FALSE}
+plink1.9 --bfile merged_nies --freq --out plink_output/merged_nies_allele_freq
+```
+
+###14. Load allele freq file
+```{r}
+merged_nies_allele_freq <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_nies_allele_freq.frq', header = T)
+
+head(merged_nies_allele_freq)
+```
+
+###15. Generate histogram for allele frequency distributions
+```{r}
+hist(merged_nies_allele_freq$MAF, main = "Allele Frequency Distributions of NIES Data", xlab = "Minor Allele Frequency", xlim = c(0.0, 0.5), col = "lightskyblue1")
+```
+
+###16. Check missingness rates
+```{bash, eval = FALSE}
+plink1.9 --bfile merged_nies --missing --out plink_output/merged_nies_missing
+```
+```{r}
+merged_nies_imissing <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_nies_missing.imiss', header = T)
+
+head(merged_nies_imissing)
+
+merged_nies_lmissing <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_nies_missing.lmiss', header = T)
+
+head(merged_nies_lmissing)
 ```
 
