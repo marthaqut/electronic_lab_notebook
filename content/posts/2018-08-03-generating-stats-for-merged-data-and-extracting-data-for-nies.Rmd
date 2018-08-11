@@ -142,3 +142,44 @@ merged_nies_lmissing <- read.table('C:/Users/Martha/Documents/Honours/Project/ho
 head(merged_nies_lmissing)
 ```
 
+###17. The current data set should be filtered for missingness rates. 
+PLINK's default parameters excludes individuals with >10% missing genotypes, and SNPs with >10% missing calls. According to literature, typical QC excludes individuals with >2-7% missing genotypes, and SNPs with >1-5% mising calls. (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3061487/) (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3025522/)
+```{bash, eval = FALSE}
+plink1.9 --bfile merged_nies --mind 0.1 --geno 0.05 --make-bed --out merged_nies_miss_filter
+```
+
+This filters out individuals with >10% missing genotypes and SNPs with >5% missing call rates. By doing so, 73 individuals and 1,357,838 variants were filtered out. The new data set contains: 288 individuals and 7,795,318 variants, with a total genotpying rate of 97.10% (this genotyping rate has increased from 91.68%).
+
+This filtering step excluded more individuals and variants than I expected. The exlcuded individuals had missing genotyping rates ranging from 19 - 31%. However, due to the modest number of samples in this study, we are reluctant to exclude any individuals and will therefore not be using a filter for missing genotypes per sample.
+
+###18. Apply genotyping rate filter for SNPs.
+```{bash, eval = FALSE}
+plink1.9 --bfile merged_nies --geno 0.1 --make-bed --out merged_nies_miss_filter
+```
+
+This filters out 3,465,839 variants. The final data set includes 361 individuals and 5,687,317 variants with a total genotyping rate of 91.68%. 
+
+###19. Check allele frequencies for this filtered data set
+```{bash, eval = FALSE}
+plink1.9 --bfile merged_nies_miss_filter --freq --out plink_output/nies_geno0.1_allele_freq
+```
+
+Output:
+   - 361 individuals
+   - 5,687,317 variants
+   - total genotyping rate = 95.78%
+   
+###20. Load allele frequency file 
+```{r}
+nies_geno0.1_freq <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/nies_geno0.1_allele_freq.frq', header = T)
+
+head(nies_geno0.1_freq)
+```
+
+###21. Generate histogram for allele frequency distribution
+```{r}
+hist(nies_geno0.1_freq$MAF, main = "Allele Frequency Distributions of NIES Data Post-Geno Filtering", xlab = "Minor Allele Frequency", xlim = c(0.0, 0.5), col = "salmon1")
+
+```
+
+The allele frequency distribution of this filtered data set appears to retain roughly the same number of rare variants (MAR < 0.05). However, there is a noticeable change 

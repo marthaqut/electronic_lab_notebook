@@ -1,0 +1,57 @@
+---
+title: Performing PCA on genomic data
+author: Martha Aquino
+date: '2018-08-08'
+slug: performing-pca-on-genomic-data
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Genomic Data
+  - Linux
+  - PCA
+  - PLINK
+  - R
+---
+
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>The final step to the second part of aim 1 is to perform a PCA on the genomic data to investigate the population structure. This is important because it will allow me to determine if there are any underlying genetic structures in the genomic data and I can account for relatedness among individuals for subsequent analyses.</p>
+</div>
+<div id="methods-and-results" class="section level1">
+<h1>Methods and Results</h1>
+<div id="run-pca" class="section level3">
+<h3>1. Run PCA</h3>
+<pre class="bash"><code>plink1.9 --bfile merged_nies --pca 180 var-wts --out plink_output/nies_final_pca</code></pre>
+<p>The count had to be increased (default is 20) because there are over 100 components with an eigenvalue &gt;1.</p>
+<p>Including the var-wts modifier will generate a file for variant weights.</p>
+</div>
+<div id="load-eigenvalue-results" class="section level3">
+<h3>2. Load eigenvalue results</h3>
+<pre class="r"><code>nies_final_pca_eigenval &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/nies_final_pca.eigenval&#39;, header = F)
+
+head(nies_final_pca_eigenval)</code></pre>
+<pre><code>##        V1
+## 1 4.25322
+## 2 3.95956
+## 3 3.18262
+## 4 2.86084
+## 5 2.80460
+## 6 2.73255</code></pre>
+</div>
+<div id="produce-screeplot" class="section level3">
+<h3>3. Produce screeplot</h3>
+<pre class="r"><code>barplot(nies_final_pca_eigenval$V1, 
+        names.arg = 1:nrow(nies_final_pca_eigenval), 
+        main = &quot;NIES PCA Eigenvalue&quot;,
+        xlab = &quot;Principal Components&quot;,
+        ylab = &quot;Eigenvalue&quot;,
+        col =&quot;lightskyblue2&quot;)
+lines(x = 1:nrow(nies_final_pca_eigenval), nies_final_pca_eigenval$V1, 
+      type = &quot;b&quot;, pch = 19, col = &quot;red&quot;)</code></pre>
+<p><img src="/posts/2018-08-08-performing-pca-on-genomic-data_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>There are 124 principal components that have an eigenvalue &gt;1.</p>
+</div>
+</div>

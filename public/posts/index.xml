@@ -9,10 +9,20 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Fri, 03 Aug 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 08 Aug 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Performing PCA on genomic data</title>
+      <link>/posts/performing-pca-on-genomic-data/</link>
+      <pubDate>Wed, 08 Aug 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/performing-pca-on-genomic-data/</guid>
+      <description>IntroductionThe final step to the second part of aim 1 is to perform a PCA on the genomic data to investigate the population structure. This is important because it will allow me to determine if there are any underlying genetic structures in the genomic data and I can account for relatedness among individuals for subsequent analyses.
+Methods and Results1. Run PCAplink1.9 --bfile merged_nies --pca 180 var-wts --out plink_output/nies_final_pcaThe count had to be increased (default is 20) because there are over 100 components with an eigenvalue &amp;gt;1.</description>
+    </item>
     
     <item>
       <title>Generating stats for merged data and extracting data for NIES</title>

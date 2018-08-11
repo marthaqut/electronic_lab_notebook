@@ -1,0 +1,15 @@
+---
+title: Troubleshooting missing genotype filtering
+author: Martha Aquino
+date: '2018-08-11'
+slug: troubleshooting-missing-genotype-filtering
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Data Cleaning
+  - Genomic Data
+  - PLINK
+  - R
+---
+

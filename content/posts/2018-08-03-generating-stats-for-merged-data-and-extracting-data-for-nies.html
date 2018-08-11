@@ -197,5 +197,41 @@ head(merged_nies_lmissing)</code></pre>
 ## 5   1 rs143174675     27    361 0.07479
 ## 6   1   rs3091274     16    361 0.04432</code></pre>
 </div>
+<div id="the-current-data-set-should-be-filtered-for-missingness-rates." class="section level3">
+<h3>17. The current data set should be filtered for missingness rates.</h3>
+<p>PLINK’s default parameters excludes individuals with &gt;10% missing genotypes, and SNPs with &gt;10% missing calls. According to literature, typical QC excludes individuals with &gt;2-7% missing genotypes, and SNPs with &gt;1-5% mising calls. (<a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3061487/" class="uri">https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3061487/</a>) (<a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3025522/" class="uri">https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3025522/</a>)</p>
+<pre class="bash"><code>plink1.9 --bfile merged_nies --mind 0.1 --geno 0.05 --make-bed --out merged_nies_miss_filter</code></pre>
+<p>This filters out individuals with &gt;10% missing genotypes and SNPs with &gt;5% missing call rates. By doing so, 73 individuals and 1,357,838 variants were filtered out. The new data set contains: 288 individuals and 7,795,318 variants, with a total genotpying rate of 97.10% (this genotyping rate has increased from 91.68%).</p>
+<p>This filtering step excluded more individuals and variants than I expected. The exlcuded individuals had missing genotyping rates ranging from 19 - 31%. However, due to the modest number of samples in this study, we are reluctant to exclude any individuals and will therefore not be using a filter for missing genotypes per sample.</p>
+</div>
+<div id="apply-genotyping-rate-filter-for-snps." class="section level3">
+<h3>18. Apply genotyping rate filter for SNPs.</h3>
+<pre class="bash"><code>plink1.9 --bfile merged_nies --geno 0.1 --make-bed --out merged_nies_miss_filter</code></pre>
+<p>This filters out 3,465,839 variants. The final data set includes 361 individuals and 5,687,317 variants with a total genotyping rate of 91.68%.</p>
+</div>
+<div id="check-allele-frequencies-for-this-filtered-data-set" class="section level3">
+<h3>19. Check allele frequencies for this filtered data set</h3>
+<pre class="bash"><code>plink1.9 --bfile merged_nies_miss_filter --freq --out plink_output/nies_geno0.1_allele_freq</code></pre>
+<p>Output: - 361 individuals - 5,687,317 variants - total genotyping rate = 95.78%</p>
+</div>
+<div id="load-allele-frequency-file" class="section level3">
+<h3>20. Load allele frequency file</h3>
+<pre class="r"><code>nies_geno0.1_freq &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/nies_geno0.1_allele_freq.frq&#39;, header = T)
+
+head(nies_geno0.1_freq)</code></pre>
+<pre><code>##   CHR         SNP A1 A2      MAF NCHROBS
+## 1   1 rs143174675  G  T 0.002994     668
+## 2   1   rs3091274  C  A 0.000000     690
+## 3   1 rs183209871  A  G 0.002801     714
+## 4   1   rs4117992  T  C 0.000000     716
+## 5   1  rs79114531  C  A 0.000000     716
+## 6   1   rs2808353  G  A 0.000000     700</code></pre>
+</div>
+<div id="generate-histogram-for-allele-frequency-distribution" class="section level3">
+<h3>21. Generate histogram for allele frequency distribution</h3>
+<pre class="r"><code>hist(nies_geno0.1_freq$MAF, main = &quot;Allele Frequency Distributions of NIES Data Post-Geno Filtering&quot;, xlab = &quot;Minor Allele Frequency&quot;, xlim = c(0.0, 0.5), col = &quot;salmon1&quot;)</code></pre>
+<p><img src="/posts/2018-08-03-generating-stats-for-merged-data-and-extracting-data-for-nies_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p>The allele frequency distribution of this filtered data set appears to retain roughly the same number of rare variants (MAR &lt; 0.05). However, there is a noticeable change</p>
+</div>
 </div>
 </div>
