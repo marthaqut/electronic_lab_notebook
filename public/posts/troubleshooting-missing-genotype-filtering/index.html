@@ -3,8 +3,8 @@
 <head>
   
   <meta charset="utf-8">
-  <title>R</title>
-  <meta name="description" content="R">
+  <title>Troubleshooting missing genotype filtering</title>
+  <meta name="description" content="Troubleshooting missing genotype filtering">
   <meta name="author" content="Martha Aquino">
   
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -420,8 +420,6 @@ based on dark.css by Ivan Sagalaev
 
   
   
-  <link href="/tags/r/index.xml" rel="alternate" type="application/rss+xml" title="Electronic Lab Notebook Feed" />
-  
 
   <meta name="generator" content="Hugo 0.40.3" />
 
@@ -487,268 +485,200 @@ based on dark.css by Ivan Sagalaev
 </div>
 
 
-
 <div class="pure-g">
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
   <div class="pure-u-11-12 pure-u-md-2-3">
-    <div class="post-content">
-      <p class="posts-name">R:</p>
+    <div class="post">
 
-      <ul class="posts">
+      <div class="post-title">
+        <p class="footnote">
+        <time class="">08-11-2018</time>
         
         
+        |
         
-        <li>
-          
-          <a class="post-list" href="/posts/troubleshooting-missing-genotype-filtering/">Troubleshooting missing genotype filtering</a>
+        
+        tags: [ <a href="/tags/data-cleaning">Data Cleaning</a> <a href="/tags/genomic-data">Genomic Data</a> <a href="/tags/plink">PLINK</a> <a href="/tags/r">R</a> ]
+        
 
-          <p class="footnote">
-          <time datetime="08-11-2018">
-            08-11-2018
-          </time>
-          </p>
-        </li>
         
+        categories: [<a href="/categories/coding">Coding</a> <a href="/categories/experiments">Experiments</a> ]
         
-        
-        <li>
-          
-          <a class="post-list" href="/posts/performing-pca-on-genomic-data/">Performing PCA on genomic data</a>
 
-          <p class="footnote">
-          <time datetime="08-08-2018">
-            08-08-2018
-          </time>
-          </p>
-        </li>
         
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/fixing-wgs-id-and-merging-data/">Fixing WGS ID and merging data</a>
+        </p>
+        <h1>Troubleshooting missing genotype filtering</h1>
+      </div>
 
-          <p class="footnote">
-          <time datetime="08-02-2018">
-            08-02-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/extracting-data-for-variants-common-in-both-file-sets/">Extracting data for variants common in both file sets </a>
+      <div class="post-content">
+        <div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Applying a missing genotype filter for individuals and markers (described in previous entry) yielded unexpected results as a significant number of individuals and variants were removed. Considering the high genotyping rates (~99%) of the original files (WGS and SNP-array), there should only be a small number of variants removed due to missing genotypes.</p>
+<p>This exercise is aimed at determining the possible cause for this filtering issue by testing the filtering parameters on the original data set and merged data set. This should identify the step at which the genotyping rate changes.</p>
+<p>Note: this exercise was performed on taurus #Methods and Results ###1. Apply missingness filters on original WGS data set</p>
+<pre class="bash"><code>plink --bfile NI_wgs_merged_snps --mind 0.05 --make-bed -out test_output/wgs_imiss_filter</code></pre>
+<p>Output: No individuals were removed.</p>
+<pre class="bash"><code>plink --bfile NI_wgs_merged_snps --geno 0.1 --make-bed -out test_output/wgs_imiss_filter</code></pre>
+<p>Output: 1 variant removed</p>
+<pre class="bash"><code>plink --bfile NI_wgs_merged_snps --geno 0.01 --make-bed --out test_output/wgs_imiss_filter</code></pre>
+<p>Output: 781,724 variants removed (18,426,862 variants remain)</p>
+<div id="apply-missingness-filters-on-original-snp-array-data-set" class="section level3">
+<h3>2. Apply missingness filters on original SNP-array data set</h3>
+<pre class="bash"><code>plink --bfile NI.snp.hg38_final --mind 0.05 --make-bed --out test_output/array_imiss_filter</code></pre>
+<p>Output: No individuals were removed.</p>
+<pre class="bash"><code>plink --bfile NI.snp.hg38_final --geno 0.1 --make-bed -out test_output/array_imiss_filter</code></pre>
+<p>output: 810,752 variants removed (25,244,548 variants remain)</p>
+<pre class="bash"><code>plink --bfile NI.snp.hg38_final --geno 0.01 --make-bed --out test_output/array_imiss_filter</code></pre>
+<p>Output: 4,554,230 variants removed (21,501,070 variants remain)</p>
+</div>
+<div id="apply-missingness-filters-on-merged-data-set" class="section level3">
+<h3>3. Apply missingness filters on merged data set</h3>
+<pre class="bash"><code>plink --bfile plink_output/filtered_merge --mind 0.05 --make-bed --out test_output/merged_miss_filter</code></pre>
+<p>Output: 96 individuals removed (424 individuals remain)</p>
+<pre class="bash"><code>plink --bfile plink_output/filtered_merge --mind 0.1 --make-bed --out test_output/merged_miss_filter</code></pre>
+<p>Output: 94 individuals removed (426 individuals remain)</p>
+<pre class="bash"><code>plink --bfile plink_output/filtered_merge --geno 0.01 --make-bed --out test_output/merged_miss_filter</code></pre>
+<p>Output: 8,003,914 variants removed (1,151,139 variants remain)</p>
+<pre class="bash"><code>plink --bfile plink_output/filtered_merge --geno 0.1 --make-bed --out test_output/merged_miss_filter</code></pre>
+<p>Output: 2,857,039 variants removed (6,298,014 variants remain)</p>
+<p>Applying the filtering parameters on the merged data set indicates that the change in the genotyping rates occurred because of this merge. From the PLINK manual (<a href="http://zzz.bwh.harvard.edu/plink/dataman.shtml#merge" class="uri">http://zzz.bwh.harvard.edu/plink/dataman.shtml#merge</a>), it appears that the default merge mode uses a consensus. This means that if there is a missing genotype in one file, it is overwritten by the other file. However, if a genotype is present in both files but they mismatch, it is treated as missing.</p>
+</div>
+<div id="re-run-merge-mode-6-to-determine-mismatching-calls-between-the-two-files." class="section level3">
+<h3>4. Re-run merge-mode 6 to determine mismatching calls between the two files.</h3>
+<pre class="bash"><code>plink --bfile plink_output/wgs_filtered --bmerge plink_output/array_filtered.bed plink_output/array_filtered.bim plink_output/array_filtered.fam --merge-mode 6 --out plink_output/merged_mode6_filtered</code></pre>
+<p>Output: - 860,574,982 overlapping calls - 835,821,129 non-missing in both filesets - 579,288,999 concordant - 69.31% concordance rate</p>
+<p>This low concordance rate indicates that there is a substantial number of calls between the file sets that mismatch. Therefore, merging them using the default setting would identify these calls as missing, which explains the large number of individuals and variants filtered out.</p>
+</div>
+<div id="use-merge-mode-3-to-merge-the-file-sets." class="section level3">
+<h3>5. Use merge-mode 3 to merge the file sets.</h3>
+<pre class="bash"><code>plink --bfile plink_output/array_filtered --bmerge plink_output/wgs_filtered.bed plink_output/wgs_filtered.bim plink_output/wgs_filtered.fam --merge-mode 3 --make-bed --out plink_output/filtered_merge_mode3</code></pre>
+<p>Output: - 9,155,053 variants and 520 individuals pass filters and QC - total genotyping rate = 97.7%</p>
+<p>Already, this total genotyping rate has increased compared to using the default merge setting (~92%).</p>
+</div>
+<div id="generate-allele-frequency-stats" class="section level3">
+<h3>6. Generate allele frequency stats</h3>
+<pre class="bash"><code>plink1.9 --bfile plink_output/filtered_merge_mode3 --freq --out plink_output/merged_mode3_freq</code></pre>
+</div>
+<div id="load-allele-freq-file" class="section level3">
+<h3>7. Load allele freq file</h3>
+<pre class="r"><code>merged_mode3_freq &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_mode3_freq.frq&#39;, header = T)</code></pre>
+</div>
+<div id="generate-histogram-for-allele-frequency-distributions" class="section level3">
+<h3>8. Generate histogram for allele frequency distributions</h3>
+<pre class="r"><code>hist(merged_mode3_freq$MAF, main = &quot;Allele Frequency Distributions of Merged Data Set (Mode3)&quot;, xlab = &quot;Minor Allele Frequency&quot;, xlim = c(0.0, 0.5), col = &quot;turquoise3&quot;)</code></pre>
+<p><img src="/posts/2018-08-11-troubleshooting-missing-genotype-filtering_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+</div>
+<div id="filter-out-variants-based-on-hwe-p-value" class="section level3">
+<h3>9. Filter out variants based on HWE p-value</h3>
+<pre class="bash"><code>plink1.9 --bfile plink_output/filtered_merge_mode3 --hwe 1.8e-7 --make-bed --out plink_output/merged_hwe_filter</code></pre>
+<p>Output: - 2295 variants removed due to HWE p-value - 9,152,758 variants remain</p>
+</div>
+<div id="load-spreadsheet-with-ni-study-participants" class="section level3">
+<h3>10. Load spreadsheet with NI study participants</h3>
+<pre class="r"><code>ni_ped_uuid &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NI_UUID_Ped_20180718.csv&#39;, header = T) 
 
-          <p class="footnote">
-          <time datetime="08-01-2018">
-            08-01-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/cleaning-and-preparing-genomic-data/">Cleaning and preparing genomic data </a>
+head(ni_ped_uuid)</code></pre>
+<pre><code>##     UUID Ped_ID LAB_ID  PID  SID NIES KCCGID Gender        DOB IN_2000
+## 1 110020     NA   1002 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt; Female  5/16/1929       1
+## 2 110030     NA   1003 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt; Female  5/23/1928       1
+## 3 110040   3676   1004 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt; Female  2/08/1959       1
+## 4 110050    765   1005 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   Male 11/07/1954       1
+## 5 110080     NA   1008 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt; Female 10/07/1933       1
+## 6 110090     NA   1009 &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt; Female 10/08/1968       1
+##   AGE_2000NIHS IN_2010 AGE_2010NIHS IN_NIES AGE_NIES RECOLLECT COREPED_1
+## 1           71       0           80       0       79         0         0
+## 2           72       0           81       0       80         0         0
+## 3           41       0           50       0       49         0         0
+## 4           46       0           55       0       54         0         1
+## 5           67       0           76       0       75         0         0
+## 6           32       0           41       0       40         0         0
+##   COREPED_2 Miles_core DNA_NIHS X2000NIHS_GWAS X2010NIHS_GWAS GWAS_NIHS
+## 1         0          0        1              0              0         0
+## 2         0          0        1              0              0         0
+## 3         0          0        1              0              0         0
+## 4         1          1        1              1              0         1
+## 5         0          0        1              0              0         0
+## 6         0          0        1              0              0         0
+##   DNA_NIES GWAS_NIES Total_GWAS NI_exprs WGS_data DNA_TOTAL
+## 1        0         0          0        0        0         1
+## 2        0         0          0        0        0         1
+## 3        0         0          0        0        0         1
+## 4        0         0          1        0        0         1
+## 5        0         0          0        0        0         1
+## 6        0         0          0        0        0         1
+##   Relation.to.NIHS.Pedigree..n.6379. patID matID Ped_Gender isParent
+## 1                               &lt;NA&gt;    NA    NA       &lt;NA&gt;       NA
+## 2                               &lt;NA&gt;    NA    NA       &lt;NA&gt;       NA
+## 3                               &lt;NA&gt;    NA    NA       &lt;NA&gt;       NA
+## 4                               &lt;NA&gt;   764   762       Male    FALSE
+## 5                               &lt;NA&gt;    NA    NA       &lt;NA&gt;       NA
+## 6                               &lt;NA&gt;    NA    NA       &lt;NA&gt;       NA</code></pre>
+</div>
+<div id="isolate-nies-individuals-using-nies-column-then-all-nies-individuals-with-sequencing-data-using-gwas_nies-column" class="section level3">
+<h3>11. Isolate NIES individuals using “NIES” column, then all NIES individuals with sequencing data using “GWAS_NIES” column</h3>
+<pre class="r"><code>gwas_niesID &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_niesID.csv&#39;, header = F)
 
-          <p class="footnote">
-          <time datetime="07-24-2018">
-            07-24-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/extracting-genomic-data-exclusive-to-nies/">Extracting genomic data exclusive to NIES</a>
+head(gwas_niesID)</code></pre>
+<pre><code>##       V1
+## 1 312481
+## 2 311020
+## 3 255711
+## 4 321130
+## 5 232110
+## 6 253810</code></pre>
+</div>
+<div id="extract-data-in-plink" class="section level3">
+<h3>12. Extract data in PLINK</h3>
+<pre class="bash"><code>plink1.9 --bfile plink_output/merged_hwe_filter --keep gwas_niesID.txt --make-bed --out merged_nies</code></pre>
+<p>Output: - 361 people and 9,152,758 variants remain - total genotyping rate = 97.68%</p>
+</div>
+<div id="check-allele-freq-stats-for-this-data-set" class="section level3">
+<h3>13. Check allele freq stats for this data set</h3>
+<pre class="bash"><code>plink1.9 --bfile merged_nies --freq --out plink_output/merged_nies_allele_freq</code></pre>
+</div>
+<div id="load-allele-frequency-file" class="section level3">
+<h3>14. Load allele frequency file</h3>
+<pre class="r"><code>merged_nies_allele_freq &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_nies_allele_freq.frq&#39;, header = T)</code></pre>
+</div>
+<div id="generate-histogram-for-allele-frequency-distribution" class="section level3">
+<h3>15. Generate histogram for allele frequency distribution</h3>
+<pre class="r"><code>hist(merged_nies_allele_freq$MAF, main = &quot;Allele Frequency Distributions of NIES Data&quot;, xlab = &quot;Minor Allele Frequency&quot;, xlim = c(0.0, 0.5), col = &quot;lightskyblue1&quot;)</code></pre>
+<p><img src="/posts/2018-08-11-troubleshooting-missing-genotype-filtering_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+</div>
+<div id="apply-filter-for-missing-genotypes" class="section level3">
+<h3>16. Apply filter for missing genotypes</h3>
+<pre class="bash"><code>plink1.9 --bfile merged_nies --mind 0.05 --geno 0.01 --make-bed --out nies_miss_filtered</code></pre>
+<p>Output: - 2 individuals removed (359 individuals remain) - 3,160,490 variants removed (5,992,268 variants remain) - total genotyping rate = 97.70%</p>
+<p>Although this has significantly improved, two individuals were still removed and there is still a substantial number of variants being filtered out.</p>
+</div>
+<div id="apply-a-less-stringent-filter" class="section level3">
+<h3>17. Apply a less stringent filter</h3>
+<pre class="bash"><code>plink1.9 --bfile merged_nies --mind 0.1 --geno 0.05 --make-bed --out nies_miss_filtered</code></pre>
+<p>Output: - 0 individuals removed - 1,096,020 variants removed (8,056,738 variants remain)</p>
+</div>
+</div>
 
-          <p class="footnote">
-          <time datetime="07-05-2018">
-            07-05-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/generating-basic-statistics-for-merged-data-set/">Generating basic statistics for merged data set</a>
+      </div>
+      
+      <div class="post-content">
+        <div id="disqus_thread"></div>
+<script>
+(function() {
+var d = document, s = d.createElement('script');
+s.src = 'https://http-martha-labbook-netlify-com.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 
-          <p class="footnote">
-          <time datetime="07-04-2018">
-            07-04-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/extracting-common-variants-from-both-data-sets/">Extracting common variants from both data sets</a>
-
-          <p class="footnote">
-          <time datetime="07-03-2018">
-            07-03-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/pca-of-phenotypic-data/">PCA of Phenotypic Data </a>
-
-          <p class="footnote">
-          <time datetime="05-17-2018">
-            05-17-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/adding-conjunctival-uvaf-to-dataset/">Adding Conjunctival UVAF to dataset </a>
-
-          <p class="footnote">
-          <time datetime="05-10-2018">
-            05-10-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/pearson-s-correlations-on-imputed-data-set/">Pearson&#39;s correlations on imputed data set</a>
-
-          <p class="footnote">
-          <time datetime="05-09-2018">
-            05-09-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/mipca-of-phenotypic-data-without-logmar-with-ph-values/">MIPCA of Phenotypic Data without LogMAR-with-PH values</a>
-
-          <p class="footnote">
-          <time datetime="05-05-2018">
-            05-05-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/multiple-pca-imputation-of-quantitative-phenotypic-data-updated/">Multiple PCA Imputation of Quantitative Phenotypic Data  - updated</a>
-
-          <p class="footnote">
-          <time datetime="05-04-2018">
-            05-04-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/multiple-pca-imputation-of-phenotypic-data/">Multiple PCA Imputation of Phenotypic Data</a>
-
-          <p class="footnote">
-          <time datetime="04-29-2018">
-            04-29-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/example-of-data-impuation-with-missmda/">Example of data imputation with missMDA</a>
-
-          <p class="footnote">
-          <time datetime="04-23-2018">
-            04-23-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/subsetting-relevant-phenotypic-data/">Subsetting relevant phenotypic data</a>
-
-          <p class="footnote">
-          <time datetime="04-21-2018">
-            04-21-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/finding-outliers-in-quantitative-data/">Finding outliers in quantitative data</a>
-
-          <p class="footnote">
-          <time datetime="04-16-2018">
-            04-16-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/plotting-histograms-for-quantitative-phenotypic-data/">Plotting histograms for quantitative phenotypic data</a>
-
-          <p class="footnote">
-          <time datetime="04-10-2018">
-            04-10-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/cleaning-phenotypic-data/">Cleaning phenotypic data</a>
-
-          <p class="footnote">
-          <time datetime="04-05-2018">
-            04-05-2018
-          </time>
-          </p>
-        </li>
-        
-        
-      </ul>
+      </div>
+      
     </div>
   </div>
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
 </div>
+
 
 <div class="footer pure-g">
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
@@ -827,4 +757,6 @@ based on dark.css by Ivan Sagalaev
 
 </body>
 </html>
+
+
 

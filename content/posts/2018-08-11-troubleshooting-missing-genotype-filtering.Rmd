@@ -13,3 +13,180 @@ tags:
   - R
 ---
 
+#Introduction
+Applying a missing genotype filter for individuals and markers (described in previous entry) yielded unexpected results as a significant number of individuals and variants were removed. Considering the high genotyping rates (~99%) of the original files (WGS and SNP-array), there should only be a small number of variants removed due to missing genotypes.
+
+This exercise is aimed at determining the possible cause for this filtering issue by testing the filtering parameters on the original data set and merged data set. This should identify the step at which the genotyping rate changes. 
+
+Note: this exercise was performed on taurus
+#Methods and Results
+###1. Apply missingness filters on original WGS data set
+```{bash, eval = FALSE}
+plink --bfile NI_wgs_merged_snps --mind 0.05 --make-bed -out test_output/wgs_imiss_filter
+```
+
+Output: No individuals were removed. 
+
+```{bash, eval = FALSE}
+plink --bfile NI_wgs_merged_snps --geno 0.1 --make-bed -out test_output/wgs_imiss_filter
+```
+
+Output: 1 variant removed
+
+```{bash, eval = FALSE}
+plink --bfile NI_wgs_merged_snps --geno 0.01 --make-bed --out test_output/wgs_imiss_filter
+```
+
+Output: 781,724 variants removed (18,426,862 variants remain)
+
+###2. Apply missingness filters on original SNP-array data set
+```{bash, eval = FALSE}
+plink --bfile NI.snp.hg38_final --mind 0.05 --make-bed --out test_output/array_imiss_filter
+```
+
+Output: No individuals were removed. 
+
+```{bash, eval = FALSE}
+plink --bfile NI.snp.hg38_final --geno 0.1 --make-bed -out test_output/array_imiss_filter
+```
+
+output: 810,752 variants removed (25,244,548 variants remain)
+
+```{bash, eval = FALSE}
+plink --bfile NI.snp.hg38_final --geno 0.01 --make-bed --out test_output/array_imiss_filter
+```
+
+Output: 4,554,230 variants removed (21,501,070 variants remain)
+
+###3. Apply missingness filters on merged data set
+```{bash, eval = FALSE}
+plink --bfile plink_output/filtered_merge --mind 0.05 --make-bed --out test_output/merged_miss_filter
+```
+Output: 96 individuals removed (424 individuals remain)
+
+```{bash, eval = FALSE}
+plink --bfile plink_output/filtered_merge --mind 0.1 --make-bed --out test_output/merged_miss_filter
+```
+Output: 94 individuals removed (426 individuals remain)
+
+```{bash, eval = FALSE}
+plink --bfile plink_output/filtered_merge --geno 0.01 --make-bed --out test_output/merged_miss_filter
+```
+
+Output: 8,003,914 variants removed (1,151,139 variants remain)
+
+```{bash, eval = FALSE}
+plink --bfile plink_output/filtered_merge --geno 0.1 --make-bed --out test_output/merged_miss_filter
+```
+
+Output: 2,857,039 variants removed (6,298,014 variants remain)
+
+Applying the filtering parameters on the merged data set indicates that the change in the genotyping rates occurred because of this merge. From the PLINK manual (http://zzz.bwh.harvard.edu/plink/dataman.shtml#merge), it appears that the default merge mode uses a consensus. This means that if there is a missing genotype in one file, it is overwritten by the other file. However, if a genotype is present in both files but they mismatch, it is treated as missing.
+
+###4. Re-run merge-mode 6 to determine mismatching calls between the two files. 
+```{bash, eval = FALSE}
+plink --bfile plink_output/wgs_filtered --bmerge plink_output/array_filtered.bed plink_output/array_filtered.bim plink_output/array_filtered.fam --merge-mode 6 --out plink_output/merged_mode6_filtered
+```
+
+Output: 
+   - 860,574,982 overlapping calls 
+   - 835,821,129 non-missing in both filesets
+   - 579,288,999 concordant
+   - 69.31% concordance rate
+   
+This low concordance rate indicates that there is a substantial number of calls between the file sets that mismatch. Therefore, merging them using the default setting would identify these calls as missing, which explains the large number of individuals and variants filtered out. 
+
+###5. Use merge-mode 3 to merge the file sets. 
+```{bash, eval = FALSE}
+plink --bfile plink_output/array_filtered --bmerge plink_output/wgs_filtered.bed plink_output/wgs_filtered.bim plink_output/wgs_filtered.fam --merge-mode 3 --make-bed --out plink_output/filtered_merge_mode3
+```
+
+Output:
+  - 9,155,053 variants and 520 individuals pass filters and QC
+  - total genotyping rate = 97.7%
+  
+Already, this total genotyping rate has increased compared to using the default merge setting (~92%). 
+
+###6. Generate allele frequency stats
+```{bash, eval = FALSE}
+plink1.9 --bfile plink_output/filtered_merge_mode3 --freq --out plink_output/merged_mode3_freq
+```
+
+###7. Load allele freq file
+```{r}
+merged_mode3_freq <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_mode3_freq.frq', header = T)
+```
+
+###8. Generate histogram for allele frequency distributions
+```{r}
+hist(merged_mode3_freq$MAF, main = "Allele Frequency Distributions of Merged Data Set (Mode3)", xlab = "Minor Allele Frequency", xlim = c(0.0, 0.5), col = "turquoise3")
+
+```
+
+###9. Filter out variants based on HWE p-value
+```{bash, eval = FALSE}
+plink1.9 --bfile plink_output/filtered_merge_mode3 --hwe 1.8e-7 --make-bed --out plink_output/merged_hwe_filter
+```
+
+Output: 
+  - 2295 variants removed due to HWE p-value
+  - 9,152,758 variants remain
+
+###10. Load spreadsheet with NI study participants
+```{r}
+ni_ped_uuid <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NI_UUID_Ped_20180718.csv', header = T) 
+
+head(ni_ped_uuid)
+```
+
+###11. Isolate NIES individuals using "NIES" column, then all NIES individuals with sequencing data using "GWAS_NIES" column
+```{r}
+gwas_niesID <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_niesID.csv', header = F)
+
+head(gwas_niesID)
+```
+
+###12. Extract data in PLINK
+```{bash, eval = FALSE}
+plink1.9 --bfile plink_output/merged_hwe_filter --keep gwas_niesID.txt --make-bed --out merged_nies
+```
+
+Output:
+  - 361 people and 9,152,758 variants remain
+  - total genotyping rate = 97.68%
+
+###13. Check allele freq stats for this data set
+```{bash, eval = FALSE}
+plink1.9 --bfile merged_nies --freq --out plink_output/merged_nies_allele_freq
+```
+
+###14. Load allele frequency file
+```{r}
+merged_nies_allele_freq <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_nies_allele_freq.frq', header = T)
+```
+
+###15. Generate histogram for allele frequency distribution
+```{r}
+hist(merged_nies_allele_freq$MAF, main = "Allele Frequency Distributions of NIES Data", xlab = "Minor Allele Frequency", xlim = c(0.0, 0.5), col = "lightskyblue1")
+```
+
+###16. Apply filter for missing genotypes
+```{bash, eval = FALSE}
+plink1.9 --bfile merged_nies --mind 0.05 --geno 0.01 --make-bed --out nies_miss_filtered
+```
+
+Output: 
+  - 2 individuals removed (359 individuals remain)
+  - 3,160,490 variants removed (5,992,268 variants remain)
+  - total genotyping rate = 97.70%
+  
+Although this has significantly improved, two individuals were still removed and there is still a substantial number of variants being filtered out. 
+
+###17. Apply a less stringent filter
+```{bash, eval = FALSE}
+plink1.9 --bfile merged_nies --mind 0.1 --geno 0.05 --make-bed --out nies_miss_filtered
+```
+
+Output: 
+  - 0 individuals removed 
+  - 1,096,020 variants removed (8,056,738 variants remain)

@@ -9,10 +9,20 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Wed, 08 Aug 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 11 Aug 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Troubleshooting missing genotype filtering</title>
+      <link>/posts/troubleshooting-missing-genotype-filtering/</link>
+      <pubDate>Sat, 11 Aug 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/troubleshooting-missing-genotype-filtering/</guid>
+      <description>IntroductionApplying a missing genotype filter for individuals and markers (described in previous entry) yielded unexpected results as a significant number of individuals and variants were removed. Considering the high genotyping rates (~99%) of the original files (WGS and SNP-array), there should only be a small number of variants removed due to missing genotypes.
+This exercise is aimed at determining the possible cause for this filtering issue by testing the filtering parameters on the original data set and merged data set.</description>
+    </item>
     
     <item>
       <title>Performing PCA on genomic data</title>
