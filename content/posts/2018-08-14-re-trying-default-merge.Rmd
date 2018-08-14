@@ -1,0 +1,58 @@
+---
+title: Re-trying default merge
+author: Martha Aqquino
+date: '2018-08-14'
+slug: re-trying-default-merge
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Data Cleaning
+  - Genomic Data
+  - PLINK
+  - R
+---
+
+#Introduction
+The missing genotype filtering is still removing more variants than expected. We suspect that PLINK may not be handling the overlapping data/duplicate samples well. Therefore, I will be removing the SNP-array data for individuals that have duplicate data before attempting to merge the data set using the default setting (consensus calls) in PLINK. 
+
+#Methods and Results 
+
+###1. Identify individuals with SNP-array only and duplicate data. 
+Using the master spreadsheet containing UUIDs, I 1) isolated all NIES individuals, 2) isolated NIES individuals with SNP data (GWAS_NIES), 3) separate individuals with potential duplicates and SNP-array data. 
+
+From this: 
+
+- 363 UUIDs with SNP-data 
+
+- 73 UUIDs with WGS and/or SNP-array (I do not know for sure which individuals have duplicate data because I do not have the list of IDs for individuals with SNP-array data)
+
+- 290 UUIDs with ONLY SNP-array data (presumably)
+
+###2. Extract SNP-aray data for 290 individuals
+
+array_filtered file contains 9million+ variants extracted from the original SNP-array file. 
+```{bash, eval = FALSE}
+plink --bfile plink_output/array_filtered --keep snp-array_only_uuid.txt --make-bed --out NIES.array.hg38
+```
+
+Note: data for 288 are extracted
+
+###3. Try default merging with new array data set
+```{bash, eval = FALSE}
+plink --bfile NIES.array.hg38 --bmerge plink_output/wgs_filtered.bed plink_output/wgs_filtered.bim plink_output/wgs_filtered.fam --make-bed --out merged_def2_nies
+```
+
+I accidentally used the wgs_filtered file which contains data for all 108 individuals with WGS data. Not all are NIES individuals. 
+
+###4. Extract merged data for NIES 
+```{r}
+plink --bfile merged_def2_nies --keep gwas_niesID.txt --make-bed --out merged_def3_nies
+```
+
+gwas_niesID.txt contains UUIDs of all NIES individuals with SNP data. 
+
+Output: 
+
+  - 361 people remain
+  - 9,155,053 variants 

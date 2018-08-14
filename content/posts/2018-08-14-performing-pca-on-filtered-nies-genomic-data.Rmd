@@ -1,0 +1,73 @@
+---
+title: Performing PCA on filtered NIES genomic data
+author: Martha Aqquino
+date: '2018-08-14'
+slug: performing-pca-on-filtered-nies-genomic-data
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Genomic Data
+  - PCA
+  - PLINK
+---
+
+#Introduction 
+After addressing the missing genotype filtering issue, the PCA on the final data set will need to be repeated. Performing a PCA will reveal population structure and will reveal any underlying genetic structures in the genomic data. 
+
+#Methods and Results 
+
+Note: I forgot to change the paternal and maternal IDs before I re-did the merge and it seemed to be causing issues with the PCA. I changed the paternal and maternal IDs in the final data set (nies_miss_filtered) ONLY. 
+
+###1. Run PCA 
+```{bash, eval = FALSE}
+plink1.9 --bfile nies_miss_filtered --pca 180 var-wts --out plink_output/nies_mergedsnp_pca 
+```
+
+The count is modified to 180 to capture all PCs with an eigenvalue > 1 and the var-wts modifier will generate a file that includes variant contributions (i.e. membership coefficients). 
+
+###2. Load eigenvalue file 
+```{r}
+nies_mergedsnp_pca_eigenval <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/nies_mergedsnp_pca.eigenval', header = F)
+
+head(nies_mergedsnp_pca_eigenval)
+```
+
+###3. Generate screeplot
+```{r}
+barplot(nies_mergedsnp_pca_eigenval$V1, 
+        names.arg = 1:nrow(nies_mergedsnp_pca_eigenval), 
+        main = "NIES PCA Eigenvalue",
+        xlab = "Principal Components",
+        ylab = "Eigenvalue",
+        col ="lightskyblue2")
+lines(x = 1:nrow(nies_mergedsnp_pca_eigenval), nies_mergedsnp_pca_eigenval$V1, 
+      type = "b", pch = 19, col = "red")
+```
+
+There are 124 PCs with eigenvalue >1. 
+
+
+###4. Load eigenvector file
+```{r}
+nies_mergedsnp_pca_eigenvec <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/nies_mergedsnp_pca.eigenvec', header = F)
+
+head(nies_mergedsnp_pca_eigenvec)
+```
+
+###5. Generate plots based on eigenvectors 
+```{r}
+plot(nies_mergedsnp_pca_eigenvec$V3, nies_mergedsnp_pca_eigenvec$V4, xlab = "PC1", ylab = "PC2", main = "PC1 vs PC2 eigenvectors") #PC1 vs PC2
+```
+
+```{r}
+plot(nies_mergedsnp_pca_eigenvec$V4, nies_mergedsnp_pca_eigenvec$V5, xlab = "PC2", ylab = "PC3", main = "PC2 vs PC3 eigenvectors") #PC1 vs PC2
+```
+
+```{r}
+plot(nies_mergedsnp_pca_eigenvec$V4, nies_mergedsnp_pca_eigenvec$V6, xlab = "PC2", ylab = "PC4", main = "PC2 vs PC4 eigenvectors") 
+```
+
+
+Note: the PCA plots have changed. The clustering that appeared from the first set of merged files no longer appear in the above PCA plots.  
+

@@ -3,8 +3,8 @@
 <head>
   
   <meta charset="utf-8">
-  <title>Experiments</title>
-  <meta name="description" content="Experiments">
+  <title>Re-trying default merge</title>
+  <meta name="description" content="Re-trying default merge">
   <meta name="author" content="Martha Aquino">
   
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -420,8 +420,6 @@ based on dark.css by Ivan Sagalaev
 
   
   
-  <link href="/categories/experiments/index.xml" rel="alternate" type="application/rss+xml" title="Electronic Lab Notebook Feed" />
-  
 
   <meta name="generator" content="Hugo 0.40.3" />
 
@@ -487,333 +485,80 @@ based on dark.css by Ivan Sagalaev
 </div>
 
 
-
 <div class="pure-g">
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
   <div class="pure-u-11-12 pure-u-md-2-3">
-    <div class="post-content">
-      <p class="posts-name">Experiments:</p>
+    <div class="post">
 
-      <ul class="posts">
+      <div class="post-title">
+        <p class="footnote">
+        <time class="">08-14-2018</time>
         
         
+        |
         
-        <li>
-          
-          <a class="post-list" href="/posts/performing-pca-on-filtered-nies-genomic-data/">Performing PCA on filtered NIES genomic data</a>
+        
+        tags: [ <a href="/tags/data-cleaning">Data Cleaning</a> <a href="/tags/genomic-data">Genomic Data</a> <a href="/tags/plink">PLINK</a> <a href="/tags/r">R</a> ]
+        
 
-          <p class="footnote">
-          <time datetime="08-14-2018">
-            08-14-2018
-          </time>
-          </p>
-        </li>
         
+        categories: [<a href="/categories/coding">Coding</a> <a href="/categories/experiments">Experiments</a> ]
         
-        
-        <li>
-          
-          <a class="post-list" href="/posts/re-trying-default-merge/">Re-trying default merge</a>
 
-          <p class="footnote">
-          <time datetime="08-14-2018">
-            08-14-2018
-          </time>
-          </p>
-        </li>
         
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/troubleshooting-missing-genotype-filtering/">Troubleshooting missing genotype filtering</a>
+        </p>
+        <h1>Re-trying default merge</h1>
+      </div>
 
-          <p class="footnote">
-          <time datetime="08-11-2018">
-            08-11-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/performing-pca-on-genomic-data/">Performing PCA on genomic data</a>
+      <div class="post-content">
+        <div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>The missing genotype filtering is still removing more variants than expected. We suspect that PLINK may not be handling the overlapping data/duplicate samples well. Therefore, I will be removing the SNP-array data for individuals that have duplicate data before attempting to merge the data set using the default setting (consensus calls) in PLINK.</p>
+</div>
+<div id="methods-and-results" class="section level1">
+<h1>Methods and Results</h1>
+<div id="identify-individuals-with-snp-array-only-and-duplicate-data." class="section level3">
+<h3>1. Identify individuals with SNP-array only and duplicate data.</h3>
+<p>Using the master spreadsheet containing UUIDs, I 1) isolated all NIES individuals, 2) isolated NIES individuals with SNP data (GWAS_NIES), 3) separate individuals with potential duplicates and SNP-array data.</p>
+<p>From this:</p>
+<ul>
+<li><p>363 UUIDs with SNP-data</p></li>
+<li><p>73 UUIDs with WGS and/or SNP-array (I do not know for sure which individuals have duplicate data because I do not have the list of IDs for individuals with SNP-array data)</p></li>
+<li><p>290 UUIDs with ONLY SNP-array data (presumably)</p></li>
+</ul>
+</div>
+<div id="extract-snp-aray-data-for-290-individuals" class="section level3">
+<h3>2. Extract SNP-aray data for 290 individuals</h3>
+<p>array_filtered file contains 9million+ variants extracted from the original SNP-array file.</p>
+<pre class="bash"><code>plink --bfile plink_output/array_filtered --keep snp-array_only_uuid.txt --make-bed --out NIES.array.hg38</code></pre>
+</div>
+<div id="try-default-merging-with-new-array-data-set" class="section level3">
+<h3>3. Try default merging with new array data set</h3>
+<pre class="bash"><code>plink --bfile NIES.array.hg38 --bmerge plink_output/wgs_filtered.bed plink_output/wgs_filtered.bim plink_output/wgs_filtered.fam --make-bed --out merged_def2_nies</code></pre>
+</div>
+</div>
 
-          <p class="footnote">
-          <time datetime="08-08-2018">
-            08-08-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/generating-stats-for-merged-data-and-extracting-data-for-nies/">Generating stats for merged data and extracting data for NIES</a>
+      </div>
+      
+      <div class="post-content">
+        <div id="disqus_thread"></div>
+<script>
+(function() {
+var d = document, s = d.createElement('script');
+s.src = 'https://http-martha-labbook-netlify-com.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 
-          <p class="footnote">
-          <time datetime="08-03-2018">
-            08-03-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/fixing-wgs-id-and-merging-data/">Fixing WGS ID and merging data</a>
-
-          <p class="footnote">
-          <time datetime="08-02-2018">
-            08-02-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/extracting-data-for-variants-common-in-both-file-sets/">Extracting data for variants common in both file sets </a>
-
-          <p class="footnote">
-          <time datetime="08-01-2018">
-            08-01-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/generating-basic-statistics-for-final-genomic-data-sets/">Generating basic statistics for final genomic data sets</a>
-
-          <p class="footnote">
-          <time datetime="07-31-2018">
-            07-31-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/converting-snp-array-data/">Converting SNP array data </a>
-
-          <p class="footnote">
-          <time datetime="07-26-2018">
-            07-26-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/merging-genomic-data-sets/">Merging genomic data sets</a>
-
-          <p class="footnote">
-          <time datetime="07-25-2018">
-            07-25-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/cleaning-and-preparing-genomic-data/">Cleaning and preparing genomic data </a>
-
-          <p class="footnote">
-          <time datetime="07-24-2018">
-            07-24-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/extracting-genomic-data-exclusive-to-nies/">Extracting genomic data exclusive to NIES</a>
-
-          <p class="footnote">
-          <time datetime="07-05-2018">
-            07-05-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/generating-basic-statistics-for-merged-data-set/">Generating basic statistics for merged data set</a>
-
-          <p class="footnote">
-          <time datetime="07-04-2018">
-            07-04-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/extracting-common-variants-from-both-data-sets/">Extracting common variants from both data sets</a>
-
-          <p class="footnote">
-          <time datetime="07-03-2018">
-            07-03-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/generating-basic-statistics-for-genomic-data-sets/">Generating basic statistics for genomic data sets</a>
-
-          <p class="footnote">
-          <time datetime="06-27-2018">
-            06-27-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/trying-bmerge-function/">Trying bmerge function</a>
-
-          <p class="footnote">
-          <time datetime="06-15-2018">
-            06-15-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/pca-of-phenotypic-data/">PCA of Phenotypic Data </a>
-
-          <p class="footnote">
-          <time datetime="05-17-2018">
-            05-17-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/adding-conjunctival-uvaf-to-dataset/">Adding Conjunctival UVAF to dataset </a>
-
-          <p class="footnote">
-          <time datetime="05-10-2018">
-            05-10-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/pearson-s-correlations-on-imputed-data-set/">Pearson&#39;s correlations on imputed data set</a>
-
-          <p class="footnote">
-          <time datetime="05-09-2018">
-            05-09-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/mipca-of-phenotypic-data-without-logmar-with-ph-values/">MIPCA of Phenotypic Data without LogMAR-with-PH values</a>
-
-          <p class="footnote">
-          <time datetime="05-05-2018">
-            05-05-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/multiple-pca-imputation-of-quantitative-phenotypic-data-updated/">Multiple PCA Imputation of Quantitative Phenotypic Data  - updated</a>
-
-          <p class="footnote">
-          <time datetime="05-04-2018">
-            05-04-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/multiple-pca-imputation-of-phenotypic-data/">Multiple PCA Imputation of Phenotypic Data</a>
-
-          <p class="footnote">
-          <time datetime="04-29-2018">
-            04-29-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/example-of-data-impuation-with-missmda/">Example of data imputation with missMDA</a>
-
-          <p class="footnote">
-          <time datetime="04-23-2018">
-            04-23-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/finding-outliers-in-quantitative-data/">Finding outliers in quantitative data</a>
-
-          <p class="footnote">
-          <time datetime="04-16-2018">
-            04-16-2018
-          </time>
-          </p>
-        </li>
-        
-        
-      </ul>
+      </div>
+      
     </div>
   </div>
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
 </div>
+
 
 <div class="footer pure-g">
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
@@ -892,4 +637,6 @@ based on dark.css by Ivan Sagalaev
 
 </body>
 </html>
+
+
 

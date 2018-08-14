@@ -9,10 +9,20 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Sat, 11 Aug 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 14 Aug 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/r/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Re-trying default merge</title>
+      <link>/posts/re-trying-default-merge/</link>
+      <pubDate>Tue, 14 Aug 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/re-trying-default-merge/</guid>
+      <description>IntroductionThe missing genotype filtering is still removing more variants than expected. We suspect that PLINK may not be handling the overlapping data/duplicate samples well. Therefore, I will be removing the SNP-array data for individuals that have duplicate data before attempting to merge the data set using the default setting (consensus calls) in PLINK.
+Methods and Results1. Identify individuals with SNP-array only and duplicate data.Using the master spreadsheet containing UUIDs, I 1) isolated all NIES individuals, 2) isolated NIES individuals with SNP data (GWAS_NIES), 3) separate individuals with potential duplicates and SNP-array data.</description>
+    </item>
     
     <item>
       <title>Troubleshooting missing genotype filtering</title>

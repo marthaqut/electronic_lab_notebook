@@ -208,6 +208,6 @@ nies_merged_snp_freq <- read.table('C:/Users/Martha/Documents/Honours/Project/ho
 
 ###20. Generate histogram for allele frequency distribution
 ```{r}
-hist(nies_merged_snp_freq$MAF, main = "Allele Frequency Distributions of NIES Data", xlab = "Minor Allele Frequency", xlim = c(0.0, 0.5), col = "lightskyblue1")
+hist(nies_merged_snp_freq$MAF, main = "Allele Frequency Distributions of NIES Data", xlab = "Minor Allele Frequency", xlim = c(0.0, 0.5), col = "violet")
 ```
 

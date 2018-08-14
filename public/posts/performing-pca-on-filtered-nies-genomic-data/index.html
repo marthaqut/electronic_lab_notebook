@@ -3,8 +3,8 @@
 <head>
   
   <meta charset="utf-8">
-  <title>Experiments</title>
-  <meta name="description" content="Experiments">
+  <title>Performing PCA on filtered NIES genomic data</title>
+  <meta name="description" content="Performing PCA on filtered NIES genomic data">
   <meta name="author" content="Martha Aquino">
   
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -420,8 +420,6 @@ based on dark.css by Ivan Sagalaev
 
   
   
-  <link href="/categories/experiments/index.xml" rel="alternate" type="application/rss+xml" title="Electronic Lab Notebook Feed" />
-  
 
   <meta name="generator" content="Hugo 0.40.3" />
 
@@ -487,333 +485,333 @@ based on dark.css by Ivan Sagalaev
 </div>
 
 
-
 <div class="pure-g">
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
   <div class="pure-u-11-12 pure-u-md-2-3">
-    <div class="post-content">
-      <p class="posts-name">Experiments:</p>
+    <div class="post">
 
-      <ul class="posts">
+      <div class="post-title">
+        <p class="footnote">
+        <time class="">08-14-2018</time>
         
         
+        |
         
-        <li>
-          
-          <a class="post-list" href="/posts/performing-pca-on-filtered-nies-genomic-data/">Performing PCA on filtered NIES genomic data</a>
+        
+        tags: [ <a href="/tags/genomic-data">Genomic Data</a> <a href="/tags/pca">PCA</a> <a href="/tags/plink">PLINK</a> ]
+        
 
-          <p class="footnote">
-          <time datetime="08-14-2018">
-            08-14-2018
-          </time>
-          </p>
-        </li>
         
+        categories: [<a href="/categories/coding">Coding</a> <a href="/categories/experiments">Experiments</a> ]
         
-        
-        <li>
-          
-          <a class="post-list" href="/posts/re-trying-default-merge/">Re-trying default merge</a>
 
-          <p class="footnote">
-          <time datetime="08-14-2018">
-            08-14-2018
-          </time>
-          </p>
-        </li>
         
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/troubleshooting-missing-genotype-filtering/">Troubleshooting missing genotype filtering</a>
+        </p>
+        <h1>Performing PCA on filtered NIES genomic data</h1>
+      </div>
 
-          <p class="footnote">
-          <time datetime="08-11-2018">
-            08-11-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/performing-pca-on-genomic-data/">Performing PCA on genomic data</a>
+      <div class="post-content">
+        <div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>After addressing the missing genotype filtering issue, the PCA on the final data set will need to be repeated. Performing a PCA will reveal population structure and will reveal any underlying genetic structures in the genomic data.</p>
+</div>
+<div id="methods-and-results" class="section level1">
+<h1>Methods and Results</h1>
+<p>Note: I forgot to change the paternal and maternal IDs before I re-did the merge and it seemed to be causing issues with the PCA. I changed the paternal and maternal IDs in the final data set (nies_miss_filtered) ONLY.</p>
+<div id="run-pca" class="section level3">
+<h3>1. Run PCA</h3>
+<pre class="bash"><code>plink1.9 --bfile nies_miss_filtered --pca 180 var-wts --out plink_output/nies_mergedsnp_pca </code></pre>
+<p>The count is modified to 180 to capture all PCs with an eigenvalue &gt; 1 and the var-wts modifier will generate a file that includes variant contributions (i.e. membership coefficients).</p>
+</div>
+<div id="load-eigenvalue-file" class="section level3">
+<h3>2. Load eigenvalue file</h3>
+<pre class="r"><code>nies_mergedsnp_pca_eigenval &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/nies_mergedsnp_pca.eigenval&#39;, header = F)
 
-          <p class="footnote">
-          <time datetime="08-08-2018">
-            08-08-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/generating-stats-for-merged-data-and-extracting-data-for-nies/">Generating stats for merged data and extracting data for NIES</a>
+head(nies_mergedsnp_pca_eigenval)</code></pre>
+<pre><code>##        V1
+## 1 5.48553
+## 2 4.65242
+## 3 4.19170
+## 4 3.99730
+## 5 3.69793
+## 6 3.48182</code></pre>
+</div>
+<div id="generate-screeplot" class="section level3">
+<h3>3. Generate screeplot</h3>
+<pre class="r"><code>barplot(nies_mergedsnp_pca_eigenval$V1, 
+        names.arg = 1:nrow(nies_mergedsnp_pca_eigenval), 
+        main = &quot;NIES PCA Eigenvalue&quot;,
+        xlab = &quot;Principal Components&quot;,
+        ylab = &quot;Eigenvalue&quot;,
+        col =&quot;lightskyblue2&quot;)
+lines(x = 1:nrow(nies_mergedsnp_pca_eigenval), nies_mergedsnp_pca_eigenval$V1, 
+      type = &quot;b&quot;, pch = 19, col = &quot;red&quot;)</code></pre>
+<p><img src="/posts/2018-08-14-performing-pca-on-filtered-nies-genomic-data_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>There are 124 PCs with eigenvalue &gt;1.</p>
+</div>
+<div id="load-eigenvector-file" class="section level3">
+<h3>4. Load eigenvector file</h3>
+<pre class="r"><code>nies_mergedsnp_pca_eigenvec &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/nies_mergedsnp_pca.eigenvec&#39;, header = F)
 
-          <p class="footnote">
-          <time datetime="08-03-2018">
-            08-03-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/fixing-wgs-id-and-merging-data/">Fixing WGS ID and merging data</a>
+head(nies_mergedsnp_pca_eigenvec)</code></pre>
+<pre><code>##   V1     V2         V3          V4          V5          V6         V7
+## 1  1 110150  0.0580533 -0.02181010 -0.00780063 -0.01339780 -0.0159969
+## 2  1 110160  0.0603027 -0.02610870  0.00123163 -0.01550290 -0.0283369
+## 3  1 110500 -0.0627142 -0.00597684  0.01986040  0.02116970 -0.0201570
+## 4  1 110650 -0.1213000 -0.00551570 -0.10189800 -0.04138730  0.0418274
+## 5  1 110820 -0.0124270 -0.00744404 -0.02447650  0.00310853 -0.0316200
+## 6  1 111280  0.0734706 -0.02527090 -0.01060830 -0.02471250 -0.0204686
+##            V8           V9         V10         V11         V12         V13
+## 1 -0.01048690 -0.012945600  0.00388005  0.00648779  0.00957051 -0.00660300
+## 2 -0.01289850 -0.018414400  0.00813571 -0.01661600  0.03049390 -0.00272608
+## 3  0.01639690 -0.012247800  0.00849990 -0.05850000  0.05549920 -0.00372680
+## 4  0.00875482  0.024374700 -0.02105260  0.03956000 -0.01939270  0.00260395
+## 5 -0.00792899 -0.000714059 -0.00782901  0.03126400  0.03276160 -0.04951610
+## 6 -0.01038480 -0.012323000  0.00349920 -0.00311082  0.01847910 -0.00294400
+##           V14          V15         V16         V17         V18        V19
+## 1  0.00593293 -0.000588801  0.00309164 -0.00858625 -0.00260197  0.0149693
+## 2 -0.00317803 -0.008996640 -0.02629710 -0.01435460 -0.01107970  0.0888328
+## 3  0.01591510 -0.009341670 -0.00302872 -0.05892730 -0.06463570  0.0745986
+## 4 -0.02714940  0.000537460 -0.01113080  0.01490040  0.03649120  0.0237077
+## 5  0.03871610  0.003605940  0.03906190 -0.06576060 -0.00262143 -0.0934364
+## 6  0.00394709 -0.022009200 -0.00119686 -0.00976863  0.01805600  0.0165097
+##            V20         V21          V22         V23         V24
+## 1 -0.005934760 -0.00208618 -3.29184e-03 -0.00658050 -0.00800942
+## 2 -0.011911400 -0.05967270 -2.91357e-02 -0.00700849 -0.09652530
+## 3 -0.022431900 -0.06561370 -1.49645e-03  0.08740310  0.10013700
+## 4 -0.000991943 -0.03240350 -1.97088e-05 -0.00295890 -0.00546874
+## 5 -0.004635140 -0.00310451 -2.30620e-02  0.02301510 -0.03129290
+## 6 -0.013334700  0.00156326  1.86692e-02 -0.01120950 -0.02313320
+##           V25         V26          V27         V28         V29         V30
+## 1 -0.00463907  0.01396930 -0.001245380 -0.00106755 -0.00783984  0.00217777
+## 2  0.11622200 -0.06482740  0.032276300  0.00755965  0.02632220  0.03814950
+## 3  0.01200850 -0.05191590 -0.015575600 -0.03646400  0.06959300 -0.02495550
+## 4  0.01132850  0.00295416  0.000606828  0.00620507 -0.02301050  0.01666500
+## 5 -0.00762375  0.03222100  0.037171900 -0.12920700  0.00528434  0.04090880
+## 6  0.01525300  0.04073370 -0.025054900 -0.01336830 -0.02046330  0.00141455
+##           V31         V32        V33         V34         V35         V36
+## 1 -0.00782729 -0.00240342  0.0174927 -0.00870952  0.00520303 -0.01150820
+## 2 -0.02293870 -0.00390053 -0.0347669  0.00917760 -0.01337650  0.00912830
+## 3  0.02795900  0.03207720  0.0281315  0.00851524  0.00803930  0.00143664
+## 4  0.00582874 -0.00296321 -0.0457396 -0.08751990 -0.00906126 -0.02864310
+## 5 -0.00262458 -0.08845570 -0.0794186 -0.00865573 -0.00783652  0.01948510
+## 6  0.01693450  0.01753910  0.0882141  0.02257800  0.08313920 -0.10071400
+##           V37         V38         V39         V40         V41         V42
+## 1  0.01617970 -0.00581790  0.00115008 -0.00664286 -0.00557068  0.00963309
+## 2  0.00118579  0.02002830  0.02335850  0.01875990 -0.00397718  0.01018800
+## 3 -0.01614540 -0.17845600 -0.04332030 -0.23522600  0.05695340 -0.15193500
+## 4  0.01501750  0.00980803  0.00568763  0.00319338  0.00312568 -0.02486890
+## 5 -0.01003610  0.03723760 -0.05217610 -0.01213090  0.00819801  0.03638850
+## 6  0.08159660 -0.00227000 -0.30616400 -0.10026200 -0.70026500 -0.14530300
+##           V43         V44         V45         V46         V47         V48
+## 1  0.01045060  0.00242226 -0.01406610  0.00634299 -0.00195383  0.00157447
+## 2 -0.00253252 -0.00293676  0.00384136  0.00597699 -0.00489726 -0.00622170
+## 3  0.06158300 -0.04812370  0.01945250  0.01432440  0.02020720 -0.00229730
+## 4 -0.01407990 -0.01548830  0.00325367 -0.00451456 -0.00689999 -0.00298612
+## 5  0.02401120 -0.01671840  0.01413850 -0.01193280 -0.02145040  0.02439760
+## 6 -0.29851300 -0.30788400  0.13692500  0.23115300 -0.15269900  0.00966720
+##           V49         V50         V51         V52         V53         V54
+## 1  0.00337618  0.01240300 -0.00425539 -0.00485039  0.00122091  0.00164213
+## 2 -0.03244820  0.00178894 -0.00358877  0.01135150 -0.00307234 -0.00485710
+## 3 -0.08335380 -0.03811870 -0.12540100 -0.14672400  0.02024600  0.01596100
+## 4 -0.00536638 -0.01639000  0.00312845  0.04265300  0.03169380  0.01940930
+## 5 -0.01935800 -0.03202100 -0.02432510  0.01735530  0.01533200  0.02006330
+## 6  0.12562500 -0.02361540  0.02880490 -0.01318460  0.08401570 -0.02934090
+##           V55         V56         V57         V58        V59         V60
+## 1  0.00690449  0.01910110  0.00412265 -0.01580070  0.0104596  0.00498214
+## 2  0.00820774 -0.00250109 -0.00528773 -0.00916875  0.0214467  0.01299530
+## 3 -0.02925380  0.01802110  0.08061020 -0.08222120  0.0303873  0.03521750
+## 4 -0.01341600  0.02796420  0.00967232  0.01937110 -0.0516484 -0.18781600
+## 5  0.00293897  0.03627790 -0.00294191  0.06370170  0.0428291  0.06877990
+## 6 -0.03870670  0.01597550  0.00235369  0.09853200 -0.0521655  0.00671212
+##           V61         V62         V63         V64         V65         V66
+## 1  0.00880112 -0.01114290  0.00636398  0.01324840  0.00389913  0.01120740
+## 2  0.05021760 -0.00141409  0.05050970  0.03640430 -0.02779430  0.00517638
+## 3  0.01256570  0.03476970 -0.01369090 -0.00310447  0.03363490 -0.02376850
+## 4  0.03322760  0.10737200  0.00588210 -0.00902759  0.07114620  0.02218740
+## 5 -0.01453880 -0.02876180  0.00914536  0.01292470  0.00486764 -0.01540110
+## 6 -0.04543700  0.06673130  0.02010830 -0.02291080 -0.02526520 -0.02677710
+##          V67         V68         V69         V70         V71          V72
+## 1  0.0146682  0.00522434 -0.00914312 -0.01146890  0.00885911  0.000108119
+## 2  0.0251600  0.02821230 -0.04985000 -0.00434802  0.08090540 -0.117711000
+## 3 -0.0370360 -0.05922970 -0.03449760  0.02741540  0.01229940  0.012229300
+## 4  0.0650385  0.01137480  0.00902250 -0.10260600  0.00837667  0.005941700
+## 5  0.0206996  0.04067020 -0.04720190  0.01477110 -0.01549600  0.021433000
+## 6 -0.0315374  0.00880754  0.02105490  0.00660042  0.00338457  0.008695640
+##            V73        V74        V75        V76        V77        V78
+## 1  0.010066100 -0.0223144 -0.0273216 -0.0150315  0.0156034  0.0171533
+## 2  0.166257000 -0.0256179  0.0682009  0.0214916 -0.0672570 -0.0131806
+## 3  0.000053434 -0.0463886  0.0028018  0.0325513  0.0210180  0.0140566
+## 4  0.094069800  0.0647535  0.0523219 -0.1143650  0.0283962  0.0847421
+## 5 -0.026934700  0.0126614  0.0190672 -0.1262400 -0.0239081 -0.0534103
+## 6  0.006987970  0.0102255  0.0284900  0.0192278 -0.0206665 -0.0100639
+##            V79         V80         V81         V82         V83         V84
+## 1 -0.008136860  0.00962546  0.00982921  0.01156120  0.02129050 -0.01751680
+## 2  0.021038700  0.00138233  0.01509810 -0.01608150 -0.01731750  0.02469600
+## 3  0.028249800 -0.01641900 -0.03046390  0.02027460  0.02883530 -0.00740610
+## 4 -0.000906123 -0.01156610 -0.10494700  0.07667300 -0.00524314 -0.00236648
+## 5  0.040599400  0.00601000  0.04847380 -0.07806990 -0.04116620 -0.01521740
+## 6 -0.002312770  0.00287455  0.00178415 -0.00225482 -0.00821111  0.00309447
+##           V85         V86         V87        V88         V89         V90
+## 1  0.00457159 -0.00408645 -0.00457461  0.0181709  0.01745590  0.00212766
+## 2 -0.00471093  0.00867787  0.03015190 -0.0342671  0.01375430  0.04829120
+## 3 -0.02373860 -0.04686160 -0.02421930  0.0196338  0.03499210 -0.00401268
+## 4  0.03022330 -0.15827700 -0.00225803  0.0568574  0.06251270  0.04089830
+## 5 -0.17776800 -0.09685540 -0.05043750  0.0261205  0.19505900 -0.01687070
+## 6  0.00259575  0.02041260  0.01660500 -0.0047839 -0.00140185  0.00417252
+##          V91         V92         V93          V94         V95         V96
+## 1 0.02184280 -0.00967006  0.01123210 -0.000299601 -0.01688730 -0.00264460
+## 2 0.00522579 -0.03001530 -0.02092030  0.017658800 -0.08505740  0.04929710
+## 3 0.01808690  0.01877150  0.00950924 -0.007053430  0.01569400 -0.00395051
+## 4 0.03609610 -0.08461420  0.05794560  0.022976800 -0.01925530  0.04648220
+## 5 0.07233380  0.10162100  0.02064050  0.022698100  0.08363990 -0.00336410
+## 6 0.00670400 -0.00246764 -0.00505919  0.005006050  0.00545145 -0.00900900
+##           V97         V98          V99        V100        V101        V102
+## 1  0.00462763 -0.01831480  0.022564000 -0.00284203  0.00865470 -0.05006000
+## 2 -0.07607840  0.15477800 -0.075241500  0.02399970  0.01290660 -0.05024880
+## 3  0.01919240 -0.00483976  0.033116500 -0.02065310 -0.03759220  0.00472340
+## 4 -0.06316070 -0.16117100  0.026668400  0.03465200 -0.03016840  0.01521690
+## 5  0.05518850  0.10920800 -0.017930600 -0.16920700 -0.14847900 -0.13024400
+## 6 -0.00461421  0.01825110  0.000887915 -0.00697237 -0.00212243  0.00367182
+##           V103        V104        V105        V106        V107
+## 1 -0.068075500  0.02510520  0.13952800 -0.00413094  0.00630122
+## 2 -0.000255193  0.12302400 -0.00539848 -0.01039540  0.02018690
+## 3 -0.001421450  0.00088267 -0.02221840  0.03299920 -0.00390762
+## 4  0.028593000 -0.01139920  0.04093560 -0.00938868 -0.00720572
+## 5  0.198864000 -0.05879400  0.12358000 -0.06155320 -0.02708440
+## 6  0.005995210 -0.00996802 -0.01659920  0.01602410 -0.00120011
+##           V108        V109        V110        V111        V112        V113
+## 1 -0.032489400  0.06817740 -0.03171390  0.01951640  0.01232290  0.05196460
+## 2 -0.012184300 -0.05497160 -0.03218070 -0.04555290 -0.02661560  0.01424140
+## 3  0.000472951 -0.00335946  0.01623950 -0.02141890  0.02024450 -0.02069300
+## 4 -0.024008500 -0.02658030  0.00166353 -0.03345550  0.00416706 -0.06799350
+## 5  0.095998500 -0.01631460  0.00351234  0.03254430 -0.05519100  0.01142940
+## 6 -0.002547700 -0.01080140  0.01687360  0.00703329 -0.00206468 -0.00497138
+##          V114        V115        V116        V117        V118        V119
+## 1 -0.02699800  0.06150460  0.02418310  0.04262860  0.13165200 -0.16303800
+## 2  0.04955760  0.04940340 -0.08022640  0.07110660 -0.01719100  0.04071160
+## 3  0.00913006 -0.00540506 -0.02094380 -0.01465740  0.01247950 -0.02158340
+## 4 -0.03477620 -0.03173170 -0.05694930 -0.07467990 -0.06334620 -0.03725600
+## 5 -0.06990980 -0.03009870 -0.06511780  0.05388050 -0.00609493  0.02029200
+## 6 -0.00834490 -0.00286578  0.00278953 -0.00274628  0.00113293 -0.00317027
+##          V120         V121         V122        V123        V124
+## 1  0.06842750 -0.044383300  0.019167900  0.14649500 -0.24960800
+## 2 -0.04587240  0.028600900 -0.000525909  0.02063370 -0.01125590
+## 3  0.00915690  0.004296840 -0.008668290 -0.00450780 -0.04789140
+## 4  0.00642140 -0.059385600 -0.015295900  0.02130460 -0.04922690
+## 5 -0.00237306 -0.000535242 -0.021844900  0.04308430 -0.00855428
+## 6  0.00137092  0.002995040  0.000962721 -0.00738091  0.00734140
+##          V125         V126         V127         V128        V129
+## 1 -0.19129100  0.390730000  0.178652000  0.073308300 -0.04382930
+## 2 -0.05310810  0.009346700  0.015126400 -0.025005900  0.05899090
+## 3 -0.01254080 -0.012677200 -0.060179100 -0.052547800 -0.01116910
+## 4 -0.00252294 -0.061113200  0.041647700  0.039890000  0.01900570
+## 5  0.02669190 -0.002728450  0.049494300  0.018860200  0.01723320
+## 6 -0.00109346  0.000644824 -0.000498865 -0.000839896 -0.00804003
+##          V130         V131         V132        V133        V134
+## 1  0.10033500 -0.478367000  0.324151000 -0.12891800  0.01354240
+## 2 -0.01896500  0.023762900 -0.007318970  0.01999910 -0.00149277
+## 3  0.00314394 -0.015922400  0.014662100  0.01883330  0.02075710
+## 4  0.04161340 -0.003076160 -0.003657620 -0.00500664  0.00861792
+## 5  0.01307070  0.028648500  0.029492200  0.00191751  0.00435353
+## 6 -0.00181600  0.000960612 -0.000100017  0.00194846  0.00428462
+##          V135        V136        V137        V138        V139       V140
+## 1  0.05209730 -0.00478589 -0.11858600 -0.13287300  0.12610600  0.0705684
+## 2  0.02003470  0.00124692 -0.01390430 -0.03611690  0.01483050 -0.0464841
+## 3  0.02073970  0.01858150 -0.02646090 -0.00623113 -0.01226930 -0.0203073
+## 4  0.00199488  0.01170620  0.01032170 -0.04124960 -0.01553880 -0.0124197
+## 5 -0.03089050 -0.02281130  0.02113440 -0.00439903 -0.01456160  0.0495630
+## 6 -0.00354532 -0.00864431 -0.00446856 -0.00517413 -0.00214382  0.0013762
+##          V141         V142         V143       V144        V145        V146
+## 1  0.12247700 -7.38478e-02 -0.032232500  0.0769023  0.15929500 -0.20513100
+## 2  0.02524720  2.41657e-03 -0.040413700  0.0627728  0.01970590  0.08143080
+## 3 -0.01342990 -5.44775e-03  0.000967213  0.0136930 -0.00351556  0.05391820
+## 4  0.02441970  5.22873e-02  0.012021900 -0.0139247 -0.02080860  0.00457880
+## 5  0.02199570  2.73086e-02 -0.013581500  0.0256259 -0.00720759  0.03005100
+## 6 -0.00764995 -4.77188e-05  0.002664110 -0.0030741  0.00204634 -0.00052989
+##           V147        V148        V149        V150        V151        V152
+## 1  0.052119000 -0.02522370  0.09477110  0.05137340 0.054656000 -0.04817710
+## 2  0.006748520  0.00869137 -0.06372070  0.07520740 0.048658000  0.07498410
+## 3  0.003322480  0.01871520  0.00471530 -0.01615590 0.035514100  0.00825111
+## 4  0.030539200 -0.01881560 -0.01218860 -0.00649297 0.012409300  0.01321870
+## 5  0.009736080 -0.00659521 -0.02035260 -0.03510660 0.000679085 -0.01974010
+## 6 -0.000997563  0.00389109 -0.00242497 -0.00129399 0.002954580  0.01004160
+##          V153         V154        V155        V156         V157
+## 1 -0.06625430 -0.019998800  0.02961120 -0.01644810 -8.84433e-03
+## 2  0.06864840  0.124158000 -0.01050020 -0.05891040  1.54492e-01
+## 3  0.03240720  0.013901900  0.03792000  0.01376910 -4.95837e-02
+## 4 -0.05507040  0.026160500  0.00533067 -0.07011790  1.67534e-02
+## 5  0.01166580  0.009774090  0.01829380 -0.01534050 -4.88636e-04
+## 6 -0.00168715 -0.000869744 -0.00493961  0.00243669  8.10003e-06
+##           V158         V159         V160        V161        V162
+## 1 -0.039019700 -0.017672700 -0.057368500  0.00775504  0.02659430
+## 2 -0.074140600  0.096408900 -0.038436500  0.05198080  0.08380840
+## 3 -0.024275200 -0.020752900 -0.028232300  0.02196050  0.01363410
+## 4  0.020681400  0.000902287 -0.049579200 -0.04381270 -0.03362120
+## 5 -0.000308501 -0.009178990 -0.022717600  0.02129490 -0.00697893
+## 6  0.005115700 -0.005565500 -0.000724328 -0.00258916  0.00450059
+##          V163         V164        V165        V166        V167        V168
+## 1  0.01042740  0.060763100 -0.01092560  0.02810950  0.00643299  0.02917300
+## 2 -0.16714100  0.005338340  0.04283570  0.07471760  0.07143240 -0.08232050
+## 3  0.00653668 -0.013609600  0.00092289 -0.01984740 -0.01534040 -0.01668310
+## 4  0.03618720  0.014015900 -0.02508620 -0.03684450  0.02077830 -0.00119209
+## 5  0.00160157  0.029267200  0.01807740  0.00986753 -0.00593741  0.00466225
+## 6 -0.00152874 -0.000754018  0.00638870 -0.00140111 -0.00168477  0.00152801
+##          V169        V170        V171        V172         V173        V174
+## 1  0.04545880 -0.02023620 -0.03157790  0.02090030  0.011116700  0.06602600
+## 2  0.15246000  0.01855330 -0.05902410 -0.07257110  0.027449300 -0.02702810
+## 3 -0.01548680 -0.00400023  0.01357240  0.00114033 -0.000496046 -0.00995036
+## 4  0.02537400  0.02701610 -0.00830635  0.00754541 -0.004043270 -0.06484790
+## 5 -0.02529580 -0.02000870 -0.00121372  0.00755906 -0.004868680 -0.00732274
+## 6  0.00356159  0.00189407 -0.00244621  0.00309933  0.001073780  0.00776754
+##          V175        V176        V177        V178         V179        V180
+## 1  0.02915790 -0.03298980  0.00165833 -0.04564290 -0.023814200 -0.00564948
+## 2 -0.06474470  0.09401120 -0.12200500 -0.03669680  0.071505100  0.14759900
+## 3 -0.02230090 -0.01658990 -0.00931276  0.02469480  0.054522300 -0.00649999
+## 4 -0.03232290 -0.01633540 -0.00014721 -0.01572870 -0.031833700 -0.03190570
+## 5  0.00424838 -0.00318330  0.01250620  0.01063030 -0.000175706 -0.00199057
+## 6  0.00444232  0.00265844  0.00114818  0.00352842 -0.001934140 -0.00453990
+##          V181        V182
+## 1  0.00960140 -0.02056120
+## 2  0.02908570  0.17446100
+## 3 -0.00341861 -0.02695520
+## 4  0.01715600 -0.03955110
+## 5 -0.00452073 -0.00969280
+## 6  0.00728620 -0.00313501</code></pre>
+</div>
+<div id="generate-plots-based-on-eigenvectors" class="section level3">
+<h3>5. Generate plots based on eigenvectors</h3>
+<pre class="r"><code>plot(nies_mergedsnp_pca_eigenvec$V3, nies_mergedsnp_pca_eigenvec$V4, xlab = &quot;PC1&quot;, ylab = &quot;PC2&quot;, main = &quot;PC1 vs PC2 eigenvectors&quot;) #PC1 vs PC2</code></pre>
+<p><img src="/posts/2018-08-14-performing-pca-on-filtered-nies-genomic-data_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>plot(nies_mergedsnp_pca_eigenvec$V4, nies_mergedsnp_pca_eigenvec$V5, xlab = &quot;PC2&quot;, ylab = &quot;PC3&quot;, main = &quot;PC2 vs PC3 eigenvectors&quot;) #PC1 vs PC2</code></pre>
+<p><img src="/posts/2018-08-14-performing-pca-on-filtered-nies-genomic-data_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>plot(nies_mergedsnp_pca_eigenvec$V4, nies_mergedsnp_pca_eigenvec$V6, xlab = &quot;PC2&quot;, ylab = &quot;PC4&quot;, main = &quot;PC2 vs PC4 eigenvectors&quot;) </code></pre>
+<p><img src="/posts/2018-08-14-performing-pca-on-filtered-nies-genomic-data_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>Note: the PCA plots have changed. The clustering that appeared from the first set of merged files no longer appear in the above PCA plots.</p>
+</div>
+</div>
 
-          <p class="footnote">
-          <time datetime="08-02-2018">
-            08-02-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/extracting-data-for-variants-common-in-both-file-sets/">Extracting data for variants common in both file sets </a>
+      </div>
+      
+      <div class="post-content">
+        <div id="disqus_thread"></div>
+<script>
+(function() {
+var d = document, s = d.createElement('script');
+s.src = 'https://http-martha-labbook-netlify-com.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 
-          <p class="footnote">
-          <time datetime="08-01-2018">
-            08-01-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/generating-basic-statistics-for-final-genomic-data-sets/">Generating basic statistics for final genomic data sets</a>
-
-          <p class="footnote">
-          <time datetime="07-31-2018">
-            07-31-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/converting-snp-array-data/">Converting SNP array data </a>
-
-          <p class="footnote">
-          <time datetime="07-26-2018">
-            07-26-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/merging-genomic-data-sets/">Merging genomic data sets</a>
-
-          <p class="footnote">
-          <time datetime="07-25-2018">
-            07-25-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/cleaning-and-preparing-genomic-data/">Cleaning and preparing genomic data </a>
-
-          <p class="footnote">
-          <time datetime="07-24-2018">
-            07-24-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/extracting-genomic-data-exclusive-to-nies/">Extracting genomic data exclusive to NIES</a>
-
-          <p class="footnote">
-          <time datetime="07-05-2018">
-            07-05-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/generating-basic-statistics-for-merged-data-set/">Generating basic statistics for merged data set</a>
-
-          <p class="footnote">
-          <time datetime="07-04-2018">
-            07-04-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/extracting-common-variants-from-both-data-sets/">Extracting common variants from both data sets</a>
-
-          <p class="footnote">
-          <time datetime="07-03-2018">
-            07-03-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/generating-basic-statistics-for-genomic-data-sets/">Generating basic statistics for genomic data sets</a>
-
-          <p class="footnote">
-          <time datetime="06-27-2018">
-            06-27-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/trying-bmerge-function/">Trying bmerge function</a>
-
-          <p class="footnote">
-          <time datetime="06-15-2018">
-            06-15-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/pca-of-phenotypic-data/">PCA of Phenotypic Data </a>
-
-          <p class="footnote">
-          <time datetime="05-17-2018">
-            05-17-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/adding-conjunctival-uvaf-to-dataset/">Adding Conjunctival UVAF to dataset </a>
-
-          <p class="footnote">
-          <time datetime="05-10-2018">
-            05-10-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/pearson-s-correlations-on-imputed-data-set/">Pearson&#39;s correlations on imputed data set</a>
-
-          <p class="footnote">
-          <time datetime="05-09-2018">
-            05-09-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/mipca-of-phenotypic-data-without-logmar-with-ph-values/">MIPCA of Phenotypic Data without LogMAR-with-PH values</a>
-
-          <p class="footnote">
-          <time datetime="05-05-2018">
-            05-05-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/multiple-pca-imputation-of-quantitative-phenotypic-data-updated/">Multiple PCA Imputation of Quantitative Phenotypic Data  - updated</a>
-
-          <p class="footnote">
-          <time datetime="05-04-2018">
-            05-04-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/multiple-pca-imputation-of-phenotypic-data/">Multiple PCA Imputation of Phenotypic Data</a>
-
-          <p class="footnote">
-          <time datetime="04-29-2018">
-            04-29-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/example-of-data-impuation-with-missmda/">Example of data imputation with missMDA</a>
-
-          <p class="footnote">
-          <time datetime="04-23-2018">
-            04-23-2018
-          </time>
-          </p>
-        </li>
-        
-        
-        
-        <li>
-          
-          <a class="post-list" href="/posts/finding-outliers-in-quantitative-data/">Finding outliers in quantitative data</a>
-
-          <p class="footnote">
-          <time datetime="04-16-2018">
-            04-16-2018
-          </time>
-          </p>
-        </li>
-        
-        
-      </ul>
+      </div>
+      
     </div>
   </div>
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
 </div>
+
 
 <div class="footer pure-g">
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
@@ -892,4 +890,6 @@ based on dark.css by Ivan Sagalaev
 
 </body>
 </html>
+
+
 

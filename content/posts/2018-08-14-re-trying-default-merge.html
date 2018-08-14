@@ -1,0 +1,43 @@
+---
+title: Re-trying default merge
+author: Martha Aqquino
+date: '2018-08-14'
+slug: re-trying-default-merge
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Data Cleaning
+  - Genomic Data
+  - PLINK
+  - R
+---
+
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>The missing genotype filtering is still removing more variants than expected. We suspect that PLINK may not be handling the overlapping data/duplicate samples well. Therefore, I will be removing the SNP-array data for individuals that have duplicate data before attempting to merge the data set using the default setting (consensus calls) in PLINK.</p>
+</div>
+<div id="methods-and-results" class="section level1">
+<h1>Methods and Results</h1>
+<div id="identify-individuals-with-snp-array-only-and-duplicate-data." class="section level3">
+<h3>1. Identify individuals with SNP-array only and duplicate data.</h3>
+<p>Using the master spreadsheet containing UUIDs, I 1) isolated all NIES individuals, 2) isolated NIES individuals with SNP data (GWAS_NIES), 3) separate individuals with potential duplicates and SNP-array data.</p>
+<p>From this:</p>
+<ul>
+<li><p>363 UUIDs with SNP-data</p></li>
+<li><p>73 UUIDs with WGS and/or SNP-array (I do not know for sure which individuals have duplicate data because I do not have the list of IDs for individuals with SNP-array data)</p></li>
+<li><p>290 UUIDs with ONLY SNP-array data (presumably)</p></li>
+</ul>
+</div>
+<div id="extract-snp-aray-data-for-290-individuals" class="section level3">
+<h3>2. Extract SNP-aray data for 290 individuals</h3>
+<p>array_filtered file contains 9million+ variants extracted from the original SNP-array file.</p>
+<pre class="bash"><code>plink --bfile plink_output/array_filtered --keep snp-array_only_uuid.txt --make-bed --out NIES.array.hg38</code></pre>
+</div>
+<div id="try-default-merging-with-new-array-data-set" class="section level3">
+<h3>3. Try default merging with new array data set</h3>
+<pre class="bash"><code>plink --bfile NIES.array.hg38 --bmerge plink_output/wgs_filtered.bed plink_output/wgs_filtered.bim plink_output/wgs_filtered.fam --make-bed --out merged_def2_nies</code></pre>
+</div>
+</div>

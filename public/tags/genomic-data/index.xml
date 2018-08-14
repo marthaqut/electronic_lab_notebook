@@ -9,10 +9,30 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Sat, 11 Aug 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 14 Aug 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/genomic-data/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Performing PCA on filtered NIES genomic data</title>
+      <link>/posts/performing-pca-on-filtered-nies-genomic-data/</link>
+      <pubDate>Tue, 14 Aug 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/performing-pca-on-filtered-nies-genomic-data/</guid>
+      <description>IntroductionAfter addressing the missing genotype filtering issue, the PCA on the final data set will need to be repeated. Performing a PCA will reveal population structure and will reveal any underlying genetic structures in the genomic data.
+Methods and ResultsNote: I forgot to change the paternal and maternal IDs before I re-did the merge and it seemed to be causing issues with the PCA. I changed the paternal and maternal IDs in the final data set (nies_miss_filtered) ONLY.</description>
+    </item>
+    
+    <item>
+      <title>Re-trying default merge</title>
+      <link>/posts/re-trying-default-merge/</link>
+      <pubDate>Tue, 14 Aug 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/re-trying-default-merge/</guid>
+      <description>IntroductionThe missing genotype filtering is still removing more variants than expected. We suspect that PLINK may not be handling the overlapping data/duplicate samples well. Therefore, I will be removing the SNP-array data for individuals that have duplicate data before attempting to merge the data set using the default setting (consensus calls) in PLINK.
+Methods and Results1. Identify individuals with SNP-array only and duplicate data.Using the master spreadsheet containing UUIDs, I 1) isolated all NIES individuals, 2) isolated NIES individuals with SNP data (GWAS_NIES), 3) separate individuals with potential duplicates and SNP-array data.</description>
+    </item>
     
     <item>
       <title>Troubleshooting missing genotype filtering</title>
