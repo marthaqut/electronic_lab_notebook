@@ -190,3 +190,24 @@ plink1.9 --bfile merged_nies --mind 0.1 --geno 0.05 --make-bed --out nies_miss_f
 Output: 
   - 0 individuals removed 
   - 1,096,020 variants removed (8,056,738 variants remain)
+  
+###18. Check allele frequency
+```{bash, eval = FALSE}
+plink1.9 --bfile nies_miss_filtered --freq --out plink_output/nies_merged_snp_freq
+```
+
+Output: 
+  - 361 individuals loaded 
+  - 8,056,738 variants 
+  - total genotyping rate = 99.24%
+
+###19. Load allele frequency file 
+```{r}
+nies_merged_snp_freq <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/nies_merged_snp_freq.frq', header = T)
+```
+
+###20. Generate histogram for allele frequency distribution
+```{r}
+hist(nies_merged_snp_freq$MAF, main = "Allele Frequency Distributions of NIES Data", xlab = "Minor Allele Frequency", xlim = c(0.0, 0.5), col = "lightskyblue1")
+```
+

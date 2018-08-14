@@ -160,4 +160,18 @@ head(gwas_niesID)</code></pre>
 <pre class="bash"><code>plink1.9 --bfile merged_nies --mind 0.1 --geno 0.05 --make-bed --out nies_miss_filtered</code></pre>
 <p>Output: - 0 individuals removed - 1,096,020 variants removed (8,056,738 variants remain)</p>
 </div>
+<div id="check-allele-frequency" class="section level3">
+<h3>18. Check allele frequency</h3>
+<pre class="bash"><code>plink1.9 --bfile nies_miss_filtered --freq --out plink_output/nies_merged_snp_freq</code></pre>
+<p>Output: - 361 individuals loaded - 8,056,738 variants - total genotyping rate = 99.24%</p>
+</div>
+<div id="load-allele-frequency-file-1" class="section level3">
+<h3>19. Load allele frequency file</h3>
+<pre class="r"><code>nies_merged_snp_freq &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/nies_merged_snp_freq.frq&#39;, header = T)</code></pre>
+</div>
+<div id="generate-histogram-for-allele-frequency-distribution-1" class="section level3">
+<h3>20. Generate histogram for allele frequency distribution</h3>
+<pre class="r"><code>hist(nies_merged_snp_freq$MAF, main = &quot;Allele Frequency Distributions of NIES Data&quot;, xlab = &quot;Minor Allele Frequency&quot;, xlim = c(0.0, 0.5), col = &quot;lightskyblue1&quot;)</code></pre>
+<p><img src="/posts/2018-08-11-troubleshooting-missing-genotype-filtering_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+</div>
 </div>
