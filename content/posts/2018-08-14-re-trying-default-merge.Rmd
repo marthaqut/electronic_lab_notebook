@@ -56,3 +56,38 @@ Output:
 
   - 361 people remain
   - 9,155,053 variants 
+
+###5. Fix paternal and maternal IDs in merged_def3_nies fam file (change all to 0)
+
+###6. Filter variants based on HWE p-value
+```{bash, eval = FALSE}
+plink1.9 --bfile merged_def3_nies --hwe 1.8e-7 --make-bed --out plink_output/merged_nies_hwefilter
+```
+
+Output:
+
+  - 8811 variants removed 
+  - 9,146,242 variants remain
+
+###7. Filter based on missing genotypes 
+
+```{bash, eval = FALSE}
+plink1.9 --bfile plink_output/merged_nies_hwefilter --mind 0.05 --geno 0.01 --make-bed --out merged_nies_filter
+```
+
+Output: 
+
+  - 2 people removed 
+  - 3,158,627 variants removed
+  
+```{bash, eval = FALSE}
+plink1.9 --bfile plink_output/merged_nies_hwefilter --mind 0.1 --geno 0.05 --make-bed --out merged_nies_filter
+
+```
+
+Output: 
+
+   - 0 people removed 
+   - 1,092,421 variants removed 
+   
+Trying the default merge yielded very similar results to merge mode 3 with overlapping results. 
