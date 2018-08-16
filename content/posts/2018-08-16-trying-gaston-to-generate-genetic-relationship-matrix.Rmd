@@ -1,0 +1,147 @@
+---
+title: Trying gaston to generate genetic relationship matrix
+author: Martha Aquino
+date: '2018-08-16'
+slug: trying-gaston-to-generate-genetic-relationship-matrix
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Genomic Data
+  - Gaston
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages, message=FALSE, warning=FALSE}
+require(gaston)
+```
+
+#Introduction
+Gaston is an R package that allows for manipulation and analysis of SNP data. For this project, it will be used to estimate heritability of the phenotypes and perform the pedigree-based linear mixed model GWAS (https://cran.r-project.org/web/packages/gaston/vignettes/gaston.pdf). 
+
+#Methods and Results 
+
+###1. Re-filter the SNP data. 
+
+In the previous entry, I manually subsetted data for individuals before merging the data sets such that PLINK does not have to handle duplicate samples. In summary, I removed the SNP-array data for individuals with WGS. There are still 361 individuals (73 with WGS; 288 with SNP-array). 
+
+Since GLMNet does not handle missing data, we chose to apply a missing genotyping filter of 0% missing per SNV (no missing data). 
+
+```{bash, eval = FALSE}
+plink1.9 --bfile plink_output/merged_nies_hwefilter --mind 0.05 --geno 0 --make-bed --out merged_nies_filtered
+```
+
+Output: 
+
+  - 9,146,242 variants and 361 individuals loaded 
+  
+  - 2 individuals removed 
+  
+  - 5,236,165 variants removed
+  
+  - 359 individuals and 3,910,077 variants pass QC and filters 
+
+This data set will be entered into Gaston for generating genetic relationship matrix (GRM), estimating heritability, and performing the pedigree-based GWAS. 
+
+###2. Perform PCA on filtered data set 
+
+```{bash, eval = FALSE}
+plink1.9 --bfile merged_nies_filtered --pca 180 var-wts --out plink_output/merged_nies_pca
+```
+
+
+###3. Load eigenvalue file
+
+```{r}
+merged_nies_eigenval <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_nies_pca.eigenval', header = F)
+
+head(merged_nies_eigenval)
+```
+
+There are 116 PCs with eigenvalue >1. 
+
+###4. Generate screeplot 
+```{r}
+barplot(merged_nies_eigenval$V1, 
+        names.arg = 1:nrow(merged_nies_eigenval), 
+        main = "NIES PCA Eigenvalue",
+        xlab = "Principal Components",
+        ylab = "Eigenvalue",
+        col ="lightskyblue2")
+lines(x = 1:nrow(merged_nies_eigenval), merged_nies_eigenval$V1, 
+      type = "b", pch = 19, col = "red")
+```
+
+###5. Load eigenvector files
+
+```{r}
+merged_nies_eigenvec <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_nies_pca.eigenvec', header = F)
+
+head(merged_nies_eigenvec)
+```
+
+###6. Generate PCA plots 
+
+```{r}
+plot(merged_nies_eigenvec$V3, merged_nies_eigenvec$V4, xlab = "PC1", ylab = "PC2", main = "PC1 vs PC2 eigenvectors") #PC1 vs PC2
+```
+
+```{r}
+plot(merged_nies_eigenvec$V4, merged_nies_eigenvec$V5, xlab = "PC2", ylab = "PC3", main = "PC2 vs PC3 eigenvectors") #PC2 vs PC3
+```
+
+```{r}
+plot(merged_nies_eigenvec$V4, merged_nies_eigenvec$V6, xlab = "PC2", ylab = "PC4", main = "PC2 vs PC4 eigenvectors") #PC2 vs PC4
+```
+
+```{r}
+plot(merged_nies_eigenvec$V5, merged_nies_eigenvec$V6, xlab = "PC3", ylab = "PC4", main = "PC3 vs PC4 eigenvectors") #PC3 vs PC4
+```
+
+These PCA plots have changed after excluding duplicate samples. However, there appears to be one individual that is an outlier ? 
+
+###7. Load "gaston" package
+
+```{r}
+require(gaston)
+```
+
+###8. Load merged_nies_filtered files 
+
+```{r}
+merged_nies <- read.bed.matrix("C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_filtered.bed")
+```
+
+###9. Generate genetic relationship matrix (kinship matrix/GRM)
+```{r}
+merged_nies_GRM <- GRM(merged_nies)
+```
+
+###10. Compute eigen decomposition
+```{r}
+merged_nies_eiK <- eigen(merged_nies_GRM)
+```
+
+###11. Deal with small negative eigenvalues
+```{r}
+merged_nies_eiK$values[ merged_nies_eiK$values < 0] <- 0
+```
+
+###12. Perform PCA on GRM
+
+```{r}
+merged_nies_PC <- sweep(merged_neis_eiK$vectors, 2, sqrt(merged_neis_eiK$values), "*")
+```
+
+###13. Plot PC1 vs PC2
+```{r}
+plot(merged_nies_PC[,1], merged_nies_PC[,2], xlab = "PC1", ylab = "PC2", main = "GRM PC1 vs PC2") 
+```
+
+###14. Plot PC1 vs PC2 and colour code by gender
+```{r}
+plot(merged_nies_PC[,1], merged_nies_PC[,2], col = merged_nies@ped$sex, xlab = "PC1", ylab = "PC2", main = "GRM PC1 vs PC2")
+```
+

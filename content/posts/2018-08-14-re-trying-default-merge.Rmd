@@ -46,7 +46,7 @@ plink --bfile NIES.array.hg38 --bmerge plink_output/wgs_filtered.bed plink_outpu
 I accidentally used the wgs_filtered file which contains data for all 108 individuals with WGS data. Not all are NIES individuals. 
 
 ###4. Extract merged data for NIES 
-```{r}
+```{bash, eval = FALSE}
 plink --bfile merged_def2_nies --keep gwas_niesID.txt --make-bed --out merged_def3_nies
 ```
 
@@ -90,4 +90,4 @@ Output:
    - 0 people removed 
    - 1,092,421 variants removed 
    
-Trying the default merge yielded very similar results to merge mode 3 with overlapping results. 
+Trying the default merge yielded very similar results to merge mode 3 with overlapping results.   
