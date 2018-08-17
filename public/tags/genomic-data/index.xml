@@ -9,10 +9,20 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Tue, 14 Aug 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 16 Aug 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/genomic-data/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Trying gaston to generate genetic relationship matrix</title>
+      <link>/posts/trying-gaston-to-generate-genetic-relationship-matrix/</link>
+      <pubDate>Thu, 16 Aug 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/trying-gaston-to-generate-genetic-relationship-matrix/</guid>
+      <description>require(gaston)IntroductionGaston is an R package that allows for manipulation and analysis of SNP data. For this project, it will be used to estimate heritability of the phenotypes and perform the pedigree-based linear mixed model GWAS (https://cran.r-project.org/web/packages/gaston/vignettes/gaston.pdf).
+Methods and Results1. Re-filter the SNP data.In the previous entry, I manually subsetted data for individuals before merging the data sets such that PLINK does not have to handle duplicate samples.</description>
+    </item>
     
     <item>
       <title>Performing PCA on filtered NIES genomic data</title>

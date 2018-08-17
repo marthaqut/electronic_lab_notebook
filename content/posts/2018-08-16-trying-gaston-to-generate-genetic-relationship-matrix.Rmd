@@ -132,7 +132,7 @@ merged_nies_eiK$values[ merged_nies_eiK$values < 0] <- 0
 ###12. Perform PCA on GRM
 
 ```{r}
-merged_nies_PC <- sweep(merged_neis_eiK$vectors, 2, sqrt(merged_neis_eiK$values), "*")
+merged_nies_PC <- sweep(merged_nies_eiK$vectors, 2, sqrt(merged_nies_eiK$values), "*")
 ```
 
 ###13. Plot PC1 vs PC2
@@ -144,4 +144,5 @@ plot(merged_nies_PC[,1], merged_nies_PC[,2], xlab = "PC1", ylab = "PC2", main = 
 ```{r}
 plot(merged_nies_PC[,1], merged_nies_PC[,2], col = merged_nies@ped$sex, xlab = "PC1", ylab = "PC2", main = "GRM PC1 vs PC2")
 ```
+
 
