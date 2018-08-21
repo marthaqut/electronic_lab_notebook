@@ -42,7 +42,8 @@ geno_data_uuid <- merged_nies_fam$V2
 
 ###4. Extract relevant phenotypic data based on genomic UUIDs
 ```{r} 
-(nies_pheno <- imputed_phen_data[imputed_phen_data$UUID %in% c(geno_data_uuid), ])
+nies_pheno <- imputed_phen_data[imputed_phen_data$UUID %in% c(geno_data_uuid), ]
+head(nies_pheno)
 ```
 
 I thought that all 359 individuals would have phenotypic data. However, only 346 individuals were extracted, indicating that there are 346 individuals with phenotypic and genomic data. This is most likely because I removed individuals that were <17 years old. 
@@ -147,7 +148,8 @@ geno_data_uuid2 <- merged_nies_fam_210818$V2
 
 Remove individual from phenotypic data set
 ```{r}
-(nies_pheno_210818 <- nies_pheno[nies_pheno$UUID %in% c(geno_data_uuid2), ])
+nies_pheno_210818 <- nies_pheno[nies_pheno$UUID %in% c(geno_data_uuid2), ]
+head(nies_pheno_210818)
 ```
 
 ###13. Re-run PCA on genomic data set
@@ -224,6 +226,14 @@ h^2 of horizontal R K-value = 53.01% (?)
 for (i in 2:ncol(nies_pheno_210818)){
   fit <- lmm.diago(nies_pheno_210818[,i], eigenK = merged_nies_eiK)}
 ```
+
+
+###22. Include two principal components for estimating heritability
+```{r}
+for (i in 2:ncol(nies_pheno_210818)){
+  fit <- lmm.diago(nies_pheno_210818[,i], eigenK = merged_nies_eiK, p = 2)}
+```
+
 
 The output of this last step contains the narrow sense heritability estimates for each of the 27 variables in the phenotypic data set and the corresponding degrees of freedom. (need to add labels but it is in order of the variables as listed in the spreadsheet)
 
