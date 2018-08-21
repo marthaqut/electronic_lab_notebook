@@ -9,10 +9,20 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Thu, 16 Aug 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 19 Aug 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/categories/experiments/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Using gaston for estimating heritability-1</title>
+      <link>/posts/using-gaston-for-estimating-heritability-1/</link>
+      <pubDate>Sun, 19 Aug 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/using-gaston-for-estimating-heritability-1/</guid>
+      <description>IntroductionThe genetic relationship matrix generated from the previous exercise contains values that signify the degree of relatedness between the individuals. This will allow me to estimate the heritability of the traits and principal components identified in the first objective.
+To recap this concept, traits can vary among individuals due to environmental and genetic factors. Estimating the heritability of a trait means determining the proportion of variance that can be attributed to genetics (https://www.</description>
+    </item>
     
     <item>
       <title>Trying gaston to generate genetic relationship matrix</title>

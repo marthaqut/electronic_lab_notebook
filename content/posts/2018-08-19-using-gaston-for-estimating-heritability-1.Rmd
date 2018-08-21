@@ -1,0 +1,230 @@
+---
+title: Using gaston for estimating heritability-1
+author: Martha Aquino
+date: '2018-08-19'
+slug: using-gaston-for-estimating-heritability-1
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Gaston
+  - Genomic Data
+  - R
+  - PLINK
+  - Heritability
+---
+
+#Introduction
+The genetic relationship matrix generated from the previous exercise contains values that signify the degree of relatedness between the individuals. This will allow me to estimate the heritability of the traits and principal components identified in the first objective. 
+
+To recap this concept, traits can vary among individuals due to environmental and genetic factors. Estimating the heritability of a trait means determining the proportion of variance that can be attributed to genetics (https://www.nature.com/scitable/topicpage/estimating-trait-heritability-46889). The relationship matrix is used to account for the degree of relatedness between the individuals when considering phenotypic variance. This is how heritabiity estimates are calculated. 
+
+#Methods and Results 
+
+###1. Load imputed phenotypic data 
+```{r}
+imputed_phen_data <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/imputed_phenotypic_data_uvaf.csv', header = T)
+
+head(imputed_phen_data)
+```
+
+###2. Load genomic data
+```{r}
+merged_nies_fam <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies_filtered.fam', header = F)
+
+head(merged_nies_fam)
+```
+
+###3. Extract UUIDs in genomic data 
+```{r}
+geno_data_uuid <- merged_nies_fam$V2
+```
+
+###4. Extract relevant phenotypic data based on genomic UUIDs
+```{r} 
+(nies_pheno <- imputed_phen_data[imputed_phen_data$UUID %in% c(geno_data_uuid), ])
+```
+
+I thought that all 359 individuals would have phenotypic data. However, only 346 individuals were extracted, indicating that there are 346 individuals with phenotypic and genomic data. This is most likely because I removed individuals that were <17 years old. 
+
+###5. Isolate UUIDs of phenotypic data 
+```{r}
+pheno_data_uuid <- nies_pheno$UUID
+```
+```{r, eval = FALSE}
+write.table(pheno_data_uuid, 'C:/Users/Martha/Documents/Honours/honours.project/Data/filtered_pheno_uuid.txt', row.names = F, col.names = F, quote = F)
+```
+
+###6. Extract genomic data for individuals with phenotypic data 
+```{bash, eval = FALSE}
+plink1.9 --bfile merged_nies_filtered --keep filtered_pheno_uuid2.txt --make-bed --out merged_nies_geno
+```
+
+Note: I added a family ID column to the text file as PLINK only recognises ID files when they have family and individual IDs. 
+
+Output: 
+
+  - 346 individuals remain
+  
+  - 13 individuals removed 
+  
+  - 3,910,077 variants remain
+
+###7. Re-order samples in genomic data set based on order of UUIDs of phenotypic data set 
+
+```{bash, eval = FALSE}
+plink1.9 --bfile merged_nies_geno --indiv-sort f filtered_pheno_uuid2.txt --make-bed --out merged_nies_geno
+```
+
+The samples have to be re-ordered to be the same as the phenotypic data for estimating heritability. 
+
+###8. Run PCA on this new filtered data set 
+
+```{bash, eval = FALSE}
+plink1.9 --bfile merged_nies_geno --pca 120 var-wts --out plink_output/nies_geno_pca
+```
+
+PCA and generating GRM have to be repeated for this new data set as it contains less individuals compared to the last data set.
+
+###9. Load eigenvalue file and generate screeplot. 
+```{r}
+nies_geno_eigenval <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/nies_geno_pca.eigenval', header = F)
+
+barplot(nies_geno_eigenval$V1, 
+        names.arg = 1:nrow(nies_geno_eigenval), 
+        main = "NIES PCA Eigenvalue",
+        xlab = "Principal Components",
+        ylab = "Eigenvalue",
+        col ="lightskyblue2")
+lines(x = 1:nrow(nies_geno_eigenval), nies_geno_eigenval$V1, 
+      type = "b", pch = 19, col = "red")
+```
+
+There are 112 PCs with an eigenvalue >1. 
+
+###10. Load eigenvector files 
+```{r}
+nies_geno_eigenvec <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/nies_geno_pca.eigenvec', header = F)
+```
+
+###11. Generate eigenvector plots 
+```{r}
+plot(nies_geno_eigenvec$V3, nies_geno_eigenvec$V4, xlab = "PC1", ylab = "PC2", main = "PC1 vs PC2 eigenvectors") 
+```
+
+```{r}
+plot(nies_geno_eigenvec$V4, nies_geno_eigenvec$V5, xlab = "PC2", ylab = "PC3", main = "PC2 vs PC3 eigenvectors")
+```
+
+The outlier individual is still present in these plots. I need to identify and remove the individual from the data set. Rod speculated that this outlier may have been caused by a technical error. Since the individuals sequenced are part of the core pedigree, there should only be a single cluster of individuals in these plots. Therefore, having an individual that is significantly further away from the cluster is unusual. 
+
+####11a. Add labels to the plot to identify the outlier 
+```{r}
+require(ggplot2)
+pc1Vpc2 <- data.frame(PC1 = nies_geno_eigenvec$V3, PC2 = nies_geno_eigenvec$V4, names = nies_geno_eigenvec$V2)
+ggplot(pc1Vpc2, aes(PC1, PC2)) + geom_point() + geom_text(aes(label=names))
+```
+
+The outlier's UUID is 273431.
+
+###12. Remove outlier individual from phenotypic and genomic data sets. 
+Check that the individuals are still in the same order after removing the data set.
+
+- Removed UUID 273431 from the ID list 
+
+Remove individual from genomic data set
+```{bash, eval = FALSE}
+plink1.9 --bfile merged_nies_geno --keep filtered_pheno_uuid3 --make-bed --out merged_nies_geno_210818
+```
+
+```{r}
+merged_nies_fam_210818 <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.fam', header = F)
+head(merged_nies_fam_210818)
+
+geno_data_uuid2 <- merged_nies_fam_210818$V2
+```
+
+
+Remove individual from phenotypic data set
+```{r}
+(nies_pheno_210818 <- nies_pheno[nies_pheno$UUID %in% c(geno_data_uuid2), ])
+```
+
+###13. Re-run PCA on genomic data set
+```{bash, eval = FALSE}
+plink1.9 --bfile merged_nies_pheno_210818 --pca 120 var-wts --out plink_output/nies_pca_210818
+```
+
+###14. Load eigenvalue file and generate screeplot
+```{r}
+nies_eigenval_210818 <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/nies_pca_210818.eigenval', header = F)
+
+barplot(nies_eigenval_210818$V1, 
+        names.arg = 1:nrow(nies_eigenval_210818), 
+        main = "NIES PCA Eigenvalue",
+        xlab = "Principal Components",
+        ylab = "Eigenvalue",
+        col ="lightskyblue2")
+lines(x = 1:nrow(nies_eigenval_210818), nies_eigenval_210818$V1, 
+      type = "b", pch = 19, col = "red")
+```
+
+###16. Load eigenvector file and check that outlier is not present in PCA plots
+```{r}
+nies_eigenvec_210818 <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/nies_pca_210818.eigenvec', header = F)
+
+plot(nies_eigenvec_210818$V3, nies_eigenvec_210818$V4, xlab = "PC1", ylab = "PC2", main = "PC1 vs PC2 eigenvectors")
+```
+
+###17. Load genomic data 
+```{r}
+require(gaston)
+merged_nies_210818 <- read.bed.matrix("C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.bed")
+```
+
+###18. Generate GRM using gaston 
+Ensure that the individuals are in the same order as the phenotypic and genomic data. 
+```{r}
+merged_nies_GRM <- GRM(merged_nies_210818)
+
+```
+
+
+###19. Compute eigen decomposition
+```{r}
+merged_nies_eiK <- eigen(merged_nies_GRM)
+```
+
+###20. Deal with small negative eigenvalues
+```{r}
+merged_nies_eiK$values[ merged_nies_eiK$values < 0] <- 0
+```
+
+###18. Perform PCA on GRM
+```{r}
+merged_nies_PC <- sweep(merged_nies_eiK$vectors, 2, sqrt(merged_nies_eiK$values), "*")
+```
+
+###19. Plot eigenvector values from PCA of the GRM
+```{r}
+plot(merged_nies_PC[,1], merged_nies_PC[,2], xlab = "PC1", ylab = "PC2", main = "GRM PC1 vs PC2") 
+```
+
+###20. Test lmm.diago() function (gaston) 
+```{r}
+Y <- nies_pheno_210818$R.K.value.H
+fit <- lmm.diago(Y, eigenK = merged_nies_eiK)
+```
+
+h^2 of horizontal R K-value = 53.01% (?)
+
+###21. Repeat for all phenotypic variables 
+
+```{r}
+for (i in 2:ncol(nies_pheno_210818)){
+  fit <- lmm.diago(nies_pheno_210818[,i], eigenK = merged_nies_eiK)}
+```
+
+The output of this last step contains the narrow sense heritability estimates for each of the 27 variables in the phenotypic data set and the corresponding degrees of freedom. (need to add labels but it is in order of the variables as listed in the spreadsheet)
+
+When interpreting the results, does the last iteration indicate the heritability estimate? Why are there varying numbers of iterations for the variables? For the variables where there is only 1 iteration and it says maximum at min = 0, how is this interpreted? How do I estimate the heritability for the principal components? 

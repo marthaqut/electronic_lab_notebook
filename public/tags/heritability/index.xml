@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Gaston on Electronic Lab Notebook</title>
-    <link>/tags/gaston/</link>
-    <description>Recent content in Gaston on Electronic Lab Notebook</description>
+    <title>Heritability on Electronic Lab Notebook</title>
+    <link>/tags/heritability/</link>
+    <description>Recent content in Heritability on Electronic Lab Notebook</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
@@ -11,7 +11,7 @@
     <copyright>(c) 2018 -- All rights reserved.</copyright>
     <lastBuildDate>Sun, 19 Aug 2018 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/tags/gaston/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/tags/heritability/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -22,16 +22,6 @@
       <guid>/posts/using-gaston-for-estimating-heritability-1/</guid>
       <description>IntroductionThe genetic relationship matrix generated from the previous exercise contains values that signify the degree of relatedness between the individuals. This will allow me to estimate the heritability of the traits and principal components identified in the first objective.
 To recap this concept, traits can vary among individuals due to environmental and genetic factors. Estimating the heritability of a trait means determining the proportion of variance that can be attributed to genetics (https://www.</description>
-    </item>
-    
-    <item>
-      <title>Trying gaston to generate genetic relationship matrix</title>
-      <link>/posts/trying-gaston-to-generate-genetic-relationship-matrix/</link>
-      <pubDate>Thu, 16 Aug 2018 00:00:00 +0000</pubDate>
-      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
-      <guid>/posts/trying-gaston-to-generate-genetic-relationship-matrix/</guid>
-      <description>require(gaston)IntroductionGaston is an R package that allows for manipulation and analysis of SNP data. For this project, it will be used to estimate heritability of the phenotypes and perform the pedigree-based linear mixed model GWAS (https://cran.r-project.org/web/packages/gaston/vignettes/gaston.pdf).
-Methods and Results1. Re-filter the SNP data.In the previous entry, I manually subsetted data for individuals before merging the data sets such that PLINK does not have to handle duplicate samples.</description>
     </item>
     
   </channel>

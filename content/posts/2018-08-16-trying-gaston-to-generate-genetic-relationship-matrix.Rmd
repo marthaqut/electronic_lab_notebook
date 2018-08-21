@@ -117,11 +117,15 @@ merged_nies <- read.bed.matrix("C:/Users/Martha/Documents/Honours/Project/honour
 ###9. Generate genetic relationship matrix (kinship matrix/GRM)
 ```{r}
 merged_nies_GRM <- GRM(merged_nies)
+
+head(merged_nies_GRM)
 ```
 
 ###10. Compute eigen decomposition
 ```{r}
 merged_nies_eiK <- eigen(merged_nies_GRM)
+
+head(merged_nies_eiK$values)
 ```
 
 ###11. Deal with small negative eigenvalues
