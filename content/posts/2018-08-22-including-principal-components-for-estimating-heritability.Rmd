@@ -1,0 +1,191 @@
+---
+title: Including principal components for estimating heritability
+author: Martha Aquino
+date: '2018-08-22'
+slug: including-principal-components-for-estimating-heritability
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Gaston
+  - Genomic Data
+  - Heritability
+---
+
+#Introduction
+Recent studies suggest that hidden population stratification can singificantly inflate heritability estimates. It is therefore imperative that population structure is accounted for when estimating heritability by including principal components in the linear mixed model. Typically, 10 to 20 principal components are used for this correction in outbred populations, but these numbers have no theoretical basis. A paper by Dandine-Roulland et al. (2016) has shown that heritability estimates are significantly affected with the inclusion of the first principal component, but not of any more (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4879529/). 
+
+We expect that the same effect will be observed with my data and therefore, I will compare heritability estimates produced with 0, 1, 2, or 3 principal components included in the linear mixed model. 
+
+#Methods and Results 
+
+In the last exercise, I did not consider the sigma-squared and tau values, which are used to calculate heritability estimates. 
+
+  - tau = estimated genetic variance 
+  
+  - sigma2 = estimated residual variance 
+  
+  - tau + sigma2 = total variance
+  
+  - Therefore, tau/(tau + sigma2) = estimated heritability
+  
+For this exercise, I will calculate the heritability estimates for individual variables which have known/previously calculated heritability estimates (e.g. IOP, CDR, AC depth, etc.) using tau and sigma2 values. I will also test for the inclusion of 0, 1, 2, or 3 principal components in the linear mixed model. The aim for this is to determine a suitable number of principal components that will adequately correct for population stratification so that the heritability estimate obtained is not inflated. Once this is determined, the no. of PCs will be included in the calculation of heritability estimates for the rest of the phenotypic variables, and then for the phenotypic principal components. Confidence intervals will then be calculated to determine which variables are significantly heritable. 
+
+###1. Generate phenotypic data
+```{r}
+imputed_phen_data <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/imputed_phenotypic_data_uvaf.csv', header = T)
+merged_nies_fam <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies_filtered.fam', header = F)
+geno_data_uuid <- merged_nies_fam$V2
+nies_pheno <- imputed_phen_data[imputed_phen_data$UUID %in% c(geno_data_uuid), ]
+merged_nies_fam_210818 <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.fam', header = F)
+geno_data_uuid2 <- merged_nies_fam_210818$V2
+nies_pheno_210818 <- nies_pheno[nies_pheno$UUID %in% c(geno_data_uuid2), ] #final phenotypic data set
+```
+
+###2. Load genomic data 
+```{r}
+require(gaston)
+merged_nies_210818 <- read.bed.matrix("C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.bed")
+```
+
+###3. Generate GRM and calculate eigen decomposition 
+```{r}
+merged_nies_GRM <- GRM(merged_nies_210818)
+
+merged_nies_eiK <- eigen(merged_nies_GRM)
+
+merged_nies_eiK$values[ merged_nies_eiK$values < 0] <- 0
+```
+
+###4. Calculate heritability of anterior chamber depth 
+```{r}
+#for Right AC depth values
+#with 0 PCs
+fit.R.acd0 <- lmm.diago(nies_pheno_210818$R.AC.Depth, eigenK = merged_nies_eiK)
+h2.R.acd0 <- fit.R.acd0$tau / (fit.R.acd0$tau + fit.R.acd0$sigma2)
+h2.R.acd0
+
+#with 1PC
+fit.R.acd1 <- lmm.diago(nies_pheno_210818$R.AC.Depth, eigenK = merged_nies_eiK, p = 1)
+h2.R.acd1<- fit.R.acd1$tau / (fit.R.acd1$tau + fit.R.acd1$sigma2)
+h2.R.acd1
+
+#with 2PCs
+fit.R.acd2 <- lmm.diago(nies_pheno_210818$R.AC.Depth, eigenK = merged_nies_eiK, p = 2)
+h2.R.acd2<- fit.R.acd2$tau / (fit.R.acd2$tau + fit.R.acd2$sigma2)
+h2.R.acd2
+
+#with 3 PCs
+fit.R.acd3 <- lmm.diago(nies_pheno_210818$R.AC.Depth, eigenK = merged_nies_eiK, p = 3)
+h2.R.acd3<- fit.R.acd3$tau / (fit.R.acd3$tau + fit.R.acd3$sigma2)
+h2.R.acd3
+
+#for Left AC depth values
+#with 0 PCs
+fit.L.acd0 <- lmm.diago(nies_pheno_210818$L.AC.Depth, eigenK = merged_nies_eiK)
+h2.L.acd0<- fit.L.acd0$tau / (fit.L.acd0$tau + fit.L.acd0$sigma2)
+h2.L.acd0
+
+#with 1 PC
+fit.L.acd1 <- lmm.diago(nies_pheno_210818$L.AC.Depth, eigenK = merged_nies_eiK, p = 1)
+h2.L.acd1<- fit.L.acd1$tau / (fit.L.acd1$tau + fit.L.acd1$sigma2)
+h2.L.acd1
+
+#with 2 PCs
+fit.L.acd2 <- lmm.diago(nies_pheno_210818$L.AC.Depth, eigenK = merged_nies_eiK, p = 2)
+h2.L.acd2<- fit.L.acd2$tau / (fit.L.acd2$tau + fit.L.acd2$sigma2)
+h2.L.acd2
+
+#with 3 PCs
+fit.L.acd3 <- lmm.diago(nies_pheno_210818$L.AC.Depth, eigenK = merged_nies_eiK, p = 3)
+h2.L.acd3<- fit.L.acd3$tau / (fit.L.acd3$tau + fit.L.acd3$sigma2)
+h2.L.acd3
+```
+
+Current heritability estimate for ACD in NI from previous studies = 0.4
+
+###5. Calculate heritability estimates for IOP
+```{r}
+#for R IOP
+#with 0 PCs
+fit.R.iop0 <- lmm.diago(nies_pheno_210818$R.IOP.mmHg, eigenK = merged_nies_eiK)
+fit.R.iop0$tau / (fit.R.iop0$tau + fit.R.iop0$sigma2)
+
+#with 1 PC
+fit.R.iop1 <- lmm.diago(nies_pheno_210818$R.IOP.mmHg, eigenK = merged_nies_eiK, p = 1)
+fit.R.iop1$tau / (fit.R.iop1$tau + fit.R.iop1$sigma2)
+
+#with 2 PCs
+fit.R.iop2 <- lmm.diago(nies_pheno_210818$R.IOP.mmHg, eigenK = merged_nies_eiK, p = 2)
+fit.R.iop2$tau / (fit.R.iop2$tau + fit.R.iop2$sigma2)
+
+#with 3 PCs
+fit.R.iop3 <- lmm.diago(nies_pheno_210818$R.IOP.mmHg, eigenK = merged_nies_eiK, p = 3)
+fit.R.iop3$tau / (fit.R.iop3$tau + fit.R.iop3$sigma2)
+
+#for L IOP
+#with 0 PCs
+fit.L.iop0 <- lmm.diago(nies_pheno_210818$L.IOP.mmHg, eigenK = merged_nies_eiK)
+fit.L.iop0$tau / (fit.L.iop0$tau + fit.L.iop0$sigma2)
+
+#with 1 PC
+fit.L.iop1 <- lmm.diago(nies_pheno_210818$L.IOP.mmHg, eigenK = merged_nies_eiK, p = 1)
+fit.L.iop1$tau / (fit.L.iop1$tau + fit.L.iop1$sigma2)
+
+#with 2 PCs
+fit.L.iop2 <- lmm.diago(nies_pheno_210818$L.IOP.mmHg, eigenK = merged_nies_eiK, p = 2)
+fit.L.iop2$tau / (fit.L.iop2$tau + fit.L.iop2$sigma2)
+
+#with 3 PCs
+fit.L.iop3 <- lmm.diago(nies_pheno_210818$L.IOP.mmHg, eigenK = merged_nies_eiK, p = 3)
+fit.L.iop3$tau / (fit.L.iop3$tau + fit.L.iop3$sigma2)
+
+#with 10 PCs
+fit.L.iop10 <- lmm.diago(nies_pheno_210818$L.IOP.mmHg, eigenK = merged_nies_eiK, p = 10)
+fit.L.iop10$tau / (fit.L.iop10$tau + fit.L.iop10$sigma2)
+```
+
+Current heritability estimate for IOP in NI from previous studies = 0.35
+
+The above calculations indicate that the estimates fluctuate somewhat (+/- 2%) with the inclusion of up to 3 PCs. In the study mentioned above (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4879529/) the inclusion of 1 PC clearly decreases the estimates by ~7% and adding more PCs does not change this. Thus, it seems as if adding PCs to the model for my data does not significantly change the heritability estimates. This may be because the samples in this study is part of a single core pedigree (therefore no expected hidden population stratification?), whereas the study by Dandine-Roulland et al. (2016) is performed on an outbred population and involves 5700+ individuals. 
+
+Additionally, my estimates are ~10% less than the previous estimates for the same variables in the NI population. However, this is most likely due to the difference in sample sizes, having more SNVs, and a more robust estimation method in this study. 
+
+Based on these observations, there is no reason to include more than 2 PCs when estimating heritability of the other variables. 
+
+###6. Test lmm.diago.likelihood function to find confidence intervals for the heritability estimates 
+```{r}
+#for ACD
+lik.R.acd <- lmm.diago.likelihood(h2 = h2.R.acd2, Y = nies_pheno_210818$R.AC.Depth, eigenK = merged_nies_eiK, p=2)
+
+lik.R.acd$likelihood
+```
+
+This function gives me a likelihood value but I don't understand the significance of it. I need to know the p-value of the heritability estimate to determine the statistical significance of the estimate. After reading the documentation for gaston and the lmm.diago/lmm.diago.likelihood functions, I don't believe that there is any way to obtain the p-value using these functions.
+
+###7. Plot likelihood to check heritability estimate
+```{r}
+H2 <- seq(0,1,length=51)
+Lik <- lmm.diago.likelihood(h2 = H2, Y=nies_pheno_210818$R.AC.Depth, eigenK = merged_nies_eiK, p=2)
+plot(H2, exp(Lik$likelihood), type = "l", yaxt = "n",ylab = "likelihood", main = "Right ACD")
+```
+
+
+###7. Calculate heritability estimates for all of the individual phenotypic variables
+```{r,}
+require(magicfor)
+
+magic_for(print, silent = T)
+for (i in 2:ncol(nies_pheno_210818)){
+  variable1 <- colnames(nies_pheno_210818[i])
+  fit <- lmm.diago(nies_pheno_210818[,i], eigenK = merged_nies_eiK, p=2)
+  h2 <- fit$tau/(fit$tau + fit$sigma2)
+  lik <- lmm.diago.likelihood(h2 = h2, Y = nies_pheno_210818[,i], eigenK = merged_nies_eiK, p=2)
+  print(Variable = variable1, h2, likelihood = lik$likelihood)
+}
+
+h2.results <-magic_result_as_dataframe(2:ncol(nies_pheno_210818))
+h2.results
+```
+
+

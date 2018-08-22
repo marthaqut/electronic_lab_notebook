@@ -9,10 +9,19 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Sun, 19 Aug 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 22 Aug 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/heritability/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Including principal components for estimating heritability</title>
+      <link>/posts/including-principal-components-for-estimating-heritability/</link>
+      <pubDate>Wed, 22 Aug 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/including-principal-components-for-estimating-heritability/</guid>
+      <description>IntroductionRecent studies suggest that hidden population stratification can singificantly inflate heritability estimates. It is therefore imperative that population structure is accounted for when estimating heritability by including principal components in the linear mixed model. Typically, 10 to 20 principal components are used for this correction in outbred populations, but these numbers have no theoretical basis. A paper by Dandine-Roulland et al. (2016) has shown that heritability estimates are significantly affected with the inclusion of the first principal component, but not of any more (https://www.</description>
+    </item>
     
     <item>
       <title>Using gaston for estimating heritability-1</title>
