@@ -492,5 +492,89 @@ h2.results</code></pre>
 ## 25 26               R.CDR 0.5969690   384.16769
 ## 26 27               L.CDR 0.5404634   397.73078
 ## 27 28         totaluvafmm 0.4592306 -1298.94823</code></pre>
+<p>Heritability estimates also need to be calculated for the 9 principal components identified in the first objective.</p>
+</div>
+<div id="load-data-from-phenotypic-principal-components" class="section level3">
+<h3>8. Load data from phenotypic principal components</h3>
+<pre class="r"><code>pca_indiv &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/pca_indiv_results.csv&#39;, header = T)
+coord &lt;- c(&quot;UUID&quot;,&quot;coord.Dim.1&quot;, &quot;coord.Dim.2&quot;, &quot;coord.Dim.3&quot;, &quot;coord.Dim.4&quot;, &quot;coord.Dim.5&quot;, &quot;coord.Dim.6&quot;, &quot;coord.Dim.7&quot;,
+           &quot;coord.Dim.8&quot;, &quot;coord.Dim.9&quot;)
+pca_indiv_coord &lt;- pca_indiv[coord]
+pca_indiv_coord2 &lt;- pca_indiv_coord[pca_indiv_coord$UUID %in% c(geno_data_uuid2), ]</code></pre>
+</div>
+<div id="calculate-heritability-estimates-for-principal-components" class="section level3">
+<h3>9. Calculate heritability estimates for principal components</h3>
+<pre class="r"><code>magic_for(print, silent = T)
+for (i in 2:ncol(pca_indiv_coord2)){
+  variable2 &lt;- colnames(pca_indiv_coord2[i])
+  fit2 &lt;- lmm.diago(pca_indiv_coord2[,i], eigenK = merged_nies_eiK, p=2)
+  h2 &lt;- fit2$tau/(fit2$tau + fit2$sigma2)
+  lik2 &lt;- lmm.diago.likelihood(h2 = h2, Y = pca_indiv_coord2[,i], eigenK = merged_nies_eiK, p=2)
+  print(Variable = variable2, h2, likelihood = lik2$likelihood)
+}</code></pre>
+<pre><code>## Optimization in interval [0, 1]
+## Optimizing with p = 2
+## [Iteration 1] Current point = 0 df = 32.1324
+## [Iteration 2] Current point = 0.43118 df = 10.3438
+## [Iteration 3] Current point = 0.655946 df = -2.42438
+## [Iteration 4] Current point = 0.624108 df = -0.134976
+## [Iteration 5] Current point = 0.622124 df = -0.000435264
+## [Iteration 6] Current point = 0.622118 df = -4.53569e-009
+## Optimization in interval [0, 1]
+## Optimizing with p = 2
+## [Iteration 1] Current point = 0 df = 9.679
+## [Iteration 2] Current point = 0.181091 df = 1.51115
+## [Iteration 3] Current point = 0.218667 df = 0.012992
+## [Iteration 4] Current point = 0.218995 df = 4.54191e-007
+## Optimization in interval [0, 1]
+## Optimizing with p = 2
+## [Iteration 1] Current point = 0 df = 19.5808
+## [Iteration 2] Current point = 0.187983 df = 4.43599
+## [Iteration 3] Current point = 0.252207 df = 0.0353046
+## [Iteration 4] Current point = 0.252722 df = -2.47452e-006
+## Optimization in interval [0, 1]
+## Optimizing with p = 2
+## [Iteration 1] Current point = 0 df = 32.0964
+## [Iteration 2] Current point = 0.280623 df = 11.1789
+## [Iteration 3] Current point = 0.478465 df = -0.0372614
+## [Iteration 4] Current point = 0.477851 df = -1.52999e-005
+## Optimization in interval [0, 1]
+## Optimizing with p = 2
+## [Iteration 1] Current point = 0 df = -3.11006
+## [Iteration 1] maximum at min = 0
+## Optimization in interval [0, 1]
+## Optimizing with p = 2
+## [Iteration 1] Current point = 0 df = 9.81468
+## [Iteration 2] Current point = 0.116729 df = 1.35741
+## [Iteration 3] Current point = 0.13781 df = 0.0182816
+## [Iteration 4] Current point = 0.138102 df = 2.92277e-006
+## Optimization in interval [0, 1]
+## Optimizing with p = 2
+## [Iteration 1] Current point = 0 df = 18.1204
+## [Iteration 2] Current point = 0.212656 df = 3.86442
+## [Iteration 3] Current point = 0.279803 df = 0.0417537
+## [Iteration 4] Current point = 0.280539 df = -1.82371e-006
+## Optimization in interval [0, 1]
+## Optimizing with p = 2
+## [Iteration 1] Current point = 0 df = 25.044
+## [Iteration 2] Current point = 0.17053 df = 5.33242
+## [Iteration 3] Current point = 0.225899 df = 0.153398
+## [Iteration 4] Current point = 0.227578 df = 7.84673e-005
+## Optimization in interval [0, 1]
+## Optimizing with p = 2
+## [Iteration 1] Current point = 0 df = -0.110252
+## [Iteration 1] maximum at min = 0</code></pre>
+<pre class="r"><code>h2.pca.results &lt;-magic_result_as_dataframe(2:ncol(pca_indiv_coord2))
+h2.pca.results</code></pre>
+<pre><code>##    i    Variable        h2 likelihood
+## 1  2 coord.Dim.1 0.6221178  -397.0557
+## 2  3 coord.Dim.2 0.2189946  -344.8495
+## 3  4 coord.Dim.3 0.2527220  -381.9100
+## 4  5 coord.Dim.4 0.4778504  -291.2495
+## 5  6 coord.Dim.5 0.0000000  -299.9143
+## 6  7 coord.Dim.6 0.1381016  -279.4047
+## 7  8 coord.Dim.7 0.2805392  -198.2305
+## 8  9 coord.Dim.8 0.2275784  -208.0908
+## 9 10 coord.Dim.9 0.0000000  -187.1762</code></pre>
 </div>
 </div>

@@ -188,4 +188,29 @@ h2.results <-magic_result_as_dataframe(2:ncol(nies_pheno_210818))
 h2.results
 ```
 
+Heritability estimates also need to be calculated for the 9 principal components identified in the first objective. 
+
+###8. Load data from phenotypic principal components
+```{r}
+pca_indiv <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/pca_indiv_results.csv', header = T)
+coord <- c("UUID","coord.Dim.1", "coord.Dim.2", "coord.Dim.3", "coord.Dim.4", "coord.Dim.5", "coord.Dim.6", "coord.Dim.7",
+           "coord.Dim.8", "coord.Dim.9")
+pca_indiv_coord <- pca_indiv[coord]
+pca_indiv_coord2 <- pca_indiv_coord[pca_indiv_coord$UUID %in% c(geno_data_uuid2), ]
+```
+
+###9. Calculate heritability estimates for principal components
+```{r}
+magic_for(print, silent = T)
+for (i in 2:ncol(pca_indiv_coord2)){
+  variable2 <- colnames(pca_indiv_coord2[i])
+  fit2 <- lmm.diago(pca_indiv_coord2[,i], eigenK = merged_nies_eiK, p=2)
+  h2 <- fit2$tau/(fit2$tau + fit2$sigma2)
+  lik2 <- lmm.diago.likelihood(h2 = h2, Y = pca_indiv_coord2[,i], eigenK = merged_nies_eiK, p=2)
+  print(Variable = variable2, h2, likelihood = lik2$likelihood)
+}
+
+h2.pca.results <-magic_result_as_dataframe(2:ncol(pca_indiv_coord2))
+h2.pca.results
+```
 
