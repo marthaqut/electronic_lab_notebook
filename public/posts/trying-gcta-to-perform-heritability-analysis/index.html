@@ -538,7 +538,63 @@ based on dark.css by Ivan Sagalaev
 <p>Ideally, the GCTA estimates should be very similar as it uses a linear mixed model for estimation as well. The values are not expected to be identical because different packages/softwares perform analyses slightly differently and will result in decimal point differences.</p>
 <pre class="bash"><code>./gcta64 --reml --grm gcta_output/merged_nies_grm --pheno nies_pheno_020918.txt --mpheno 25 --reml-pred-rand -qcovar gcta_output/merged_nies_pca --out gcta_output/est_her_test</code></pre>
 <p>Note: the above function should allow me to generate the heritability estimates one-by-one. The “mpheno” function takes a PLAIN TEXT FILE with family and individual IDs in the first two columns respectively, and then data for the phenotypic variables in subsequent columns. The mpheno modifier takes a number from which you can specify the column for heritability estimation e.g. ‘25’ will take the data in the 27th column (i.e. 25th phenotype column = R.CDR)</p>
-<p>The output of this exercise is as follows: <img src="C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gcta_output/r.cdr.estimate.test.png" alt="Heritability estimate of R CDR" /></p>
+<p>The output of this exercise is as follows:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Source</th>
+<th>Variance</th>
+<th>SE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>V(G)</td>
+<td>0.025569</td>
+<td>0.006542</td>
+</tr>
+<tr class="even">
+<td>V(e)</td>
+<td>0.017285</td>
+<td>0.004785</td>
+</tr>
+<tr class="odd">
+<td>Vp</td>
+<td>0.042853</td>
+<td>0.003667</td>
+</tr>
+<tr class="even">
+<td>V(G)/Vp</td>
+<td>0.596660</td>
+<td>0.122792</td>
+</tr>
+<tr class="odd">
+<td>LogL</td>
+<td>384.161</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>logL0</td>
+<td>375.013</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>LRT</td>
+<td>18.296</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>df</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Pval</td>
+<td>9.4535e-06</td>
+<td></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 
