@@ -48,4 +48,4 @@ Ideally, the GCTA estimates should be very similar as it uses a linear mixed mod
 Note: the above function should allow me to generate the heritability estimates one-by-one. The "mpheno" function takes a PLAIN TEXT FILE with family and individual IDs in the first two columns respectively, and then data for the phenotypic variables in subsequent columns. The mpheno modifier takes a number from which you can specify the column for heritability estimation e.g. '25' will take the data in the 27th column (i.e. 25th phenotype column = R.CDR)
 
 The output of this exercise is as follows: 
-![Heritability estimate of R CDR](/C/Users/Martha/Documents/Honours/Project/honours.project/Data/gcta_output/r.cdr.estimate.test.png)
+![Heritability estimate of R CDR](C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gcta_output/r.cdr.estimate.test.png)
