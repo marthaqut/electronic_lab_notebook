@@ -532,12 +532,19 @@ based on dark.css by Ivan Sagalaev
 </ul>
 <p>This data set will be entered into Gaston for generating genetic relationship matrix (GRM), estimating heritability, and performing the pedigree-based GWAS.</p>
 </div>
+<div id="check-allele-frequency-distribution-of-this-final-data-set" class="section level3">
+<h3>2. Check allele frequency distribution of this final data set</h3>
+<pre class="bash"><code>plink1.9 --bfile merged_nies_filtered -freq --out plink_output/merged_nies_final_freq</code></pre>
+<pre class="r"><code>merged_nies_final_freq &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_nies_final_freq.frq&#39;, header = T)
+hist(merged_nies_final_freq$MAF, main = &quot;Allele Frequency Distributions of NIES genomic data&quot;, xlab = &quot;Minor Allele Frequency&quot;, xlim = c(0.0, 0.5), col = &quot;skyblue1&quot;)     </code></pre>
+<p><img src="/posts/2018-08-16-trying-gaston-to-generate-genetic-relationship-matrix_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
 <div id="perform-pca-on-filtered-data-set" class="section level3">
-<h3>2. Perform PCA on filtered data set</h3>
+<h3>3. Perform PCA on filtered data set</h3>
 <pre class="bash"><code>plink1.9 --bfile merged_nies_filtered --pca 180 var-wts --out plink_output/merged_nies_pca</code></pre>
 </div>
 <div id="load-eigenvalue-file" class="section level3">
-<h3>3. Load eigenvalue file</h3>
+<h3>4. Load eigenvalue file</h3>
 <pre class="r"><code>merged_nies_eigenval &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_nies_pca.eigenval&#39;, header = F)
 
 head(merged_nies_eigenval)</code></pre>
@@ -551,7 +558,7 @@ head(merged_nies_eigenval)</code></pre>
 <p>There are 116 PCs with eigenvalue &gt;1.</p>
 </div>
 <div id="generate-screeplot" class="section level3">
-<h3>4. Generate screeplot</h3>
+<h3>5. Generate screeplot</h3>
 <pre class="r"><code>barplot(merged_nies_eigenval$V1, 
         names.arg = 1:nrow(merged_nies_eigenval), 
         main = &quot;NIES PCA Eigenvalue&quot;,
@@ -560,10 +567,10 @@ head(merged_nies_eigenval)</code></pre>
         col =&quot;lightskyblue2&quot;)
 lines(x = 1:nrow(merged_nies_eigenval), merged_nies_eigenval$V1, 
       type = &quot;b&quot;, pch = 19, col = &quot;red&quot;)</code></pre>
-<p><img src="/posts/2018-08-16-trying-gaston-to-generate-genetic-relationship-matrix_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="/posts/2018-08-16-trying-gaston-to-generate-genetic-relationship-matrix_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 <div id="load-eigenvector-files" class="section level3">
-<h3>5. Load eigenvector files</h3>
+<h3>6. Load eigenvector files</h3>
 <pre class="r"><code>merged_nies_eigenvec &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_nies_pca.eigenvec&#39;, header = F)
 
 head(merged_nies_eigenvec)</code></pre>
@@ -786,23 +793,23 @@ head(merged_nies_eigenvec)</code></pre>
 ## 6 -0.01388720 -0.00103436 -0.00288065  3.23107e-03</code></pre>
 </div>
 <div id="generate-pca-plots" class="section level3">
-<h3>6. Generate PCA plots</h3>
+<h3>7. Generate PCA plots</h3>
 <pre class="r"><code>plot(merged_nies_eigenvec$V3, merged_nies_eigenvec$V4, xlab = &quot;PC1&quot;, ylab = &quot;PC2&quot;, main = &quot;PC1 vs PC2 eigenvectors&quot;) #PC1 vs PC2</code></pre>
-<p><img src="/posts/2018-08-16-trying-gaston-to-generate-genetic-relationship-matrix_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<pre class="r"><code>plot(merged_nies_eigenvec$V4, merged_nies_eigenvec$V5, xlab = &quot;PC2&quot;, ylab = &quot;PC3&quot;, main = &quot;PC2 vs PC3 eigenvectors&quot;) #PC2 vs PC3</code></pre>
-<p><img src="/posts/2018-08-16-trying-gaston-to-generate-genetic-relationship-matrix_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
-<pre class="r"><code>plot(merged_nies_eigenvec$V4, merged_nies_eigenvec$V6, xlab = &quot;PC2&quot;, ylab = &quot;PC4&quot;, main = &quot;PC2 vs PC4 eigenvectors&quot;) #PC2 vs PC4</code></pre>
 <p><img src="/posts/2018-08-16-trying-gaston-to-generate-genetic-relationship-matrix_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
-<pre class="r"><code>plot(merged_nies_eigenvec$V5, merged_nies_eigenvec$V6, xlab = &quot;PC3&quot;, ylab = &quot;PC4&quot;, main = &quot;PC3 vs PC4 eigenvectors&quot;) #PC3 vs PC4</code></pre>
+<pre class="r"><code>plot(merged_nies_eigenvec$V4, merged_nies_eigenvec$V5, xlab = &quot;PC2&quot;, ylab = &quot;PC3&quot;, main = &quot;PC2 vs PC3 eigenvectors&quot;) #PC2 vs PC3</code></pre>
 <p><img src="/posts/2018-08-16-trying-gaston-to-generate-genetic-relationship-matrix_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre class="r"><code>plot(merged_nies_eigenvec$V4, merged_nies_eigenvec$V6, xlab = &quot;PC2&quot;, ylab = &quot;PC4&quot;, main = &quot;PC2 vs PC4 eigenvectors&quot;) #PC2 vs PC4</code></pre>
+<p><img src="/posts/2018-08-16-trying-gaston-to-generate-genetic-relationship-matrix_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre class="r"><code>plot(merged_nies_eigenvec$V5, merged_nies_eigenvec$V6, xlab = &quot;PC3&quot;, ylab = &quot;PC4&quot;, main = &quot;PC3 vs PC4 eigenvectors&quot;) #PC3 vs PC4</code></pre>
+<p><img src="/posts/2018-08-16-trying-gaston-to-generate-genetic-relationship-matrix_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <p>These PCA plots have changed after excluding duplicate samples. However, there appears to be one individual that is an outlier ?</p>
 </div>
 <div id="load-gaston-package" class="section level3">
-<h3>7. Load “gaston” package</h3>
+<h3>8. Load “gaston” package</h3>
 <pre class="r"><code>require(gaston)</code></pre>
 </div>
 <div id="load-merged_nies_filtered-files" class="section level3">
-<h3>8. Load merged_nies_filtered files</h3>
+<h3>9. Load merged_nies_filtered files</h3>
 <pre class="r"><code>merged_nies &lt;- read.bed.matrix(&quot;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_filtered.bed&quot;)</code></pre>
 <pre><code>## Reading C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_filtered.fam 
 ## Reading C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_filtered.bim 
@@ -812,7 +819,7 @@ head(merged_nies_eigenvec)</code></pre>
 ## &#39;mu&#39; and &#39;sigma&#39; have been set.</code></pre>
 </div>
 <div id="generate-genetic-relationship-matrix-kinship-matrixgrm" class="section level3">
-<h3>9. Generate genetic relationship matrix (kinship matrix/GRM)</h3>
+<h3>10. Generate genetic relationship matrix (kinship matrix/GRM)</h3>
 <pre class="r"><code>merged_nies_GRM &lt;- GRM(merged_nies)
 
 head(merged_nies_GRM)</code></pre>
@@ -1322,29 +1329,29 @@ head(merged_nies_GRM)</code></pre>
 ## 111280  0.006056390  0.000790625  0.01608523  0.001336683  0.0010151991</code></pre>
 </div>
 <div id="compute-eigen-decomposition" class="section level3">
-<h3>10. Compute eigen decomposition</h3>
+<h3>11. Compute eigen decomposition</h3>
 <pre class="r"><code>merged_nies_eiK &lt;- eigen(merged_nies_GRM)
 
 head(merged_nies_eiK$values)</code></pre>
 <pre><code>## [1] 5.756455 4.630068 4.447051 4.199365 3.878659 3.575725</code></pre>
 </div>
 <div id="deal-with-small-negative-eigenvalues" class="section level3">
-<h3>11. Deal with small negative eigenvalues</h3>
+<h3>12. Deal with small negative eigenvalues</h3>
 <pre class="r"><code>merged_nies_eiK$values[ merged_nies_eiK$values &lt; 0] &lt;- 0</code></pre>
 </div>
 <div id="perform-pca-on-grm" class="section level3">
-<h3>12. Perform PCA on GRM</h3>
+<h3>13. Perform PCA on GRM</h3>
 <pre class="r"><code>merged_nies_PC &lt;- sweep(merged_nies_eiK$vectors, 2, sqrt(merged_nies_eiK$values), &quot;*&quot;)</code></pre>
 </div>
 <div id="plot-pc1-vs-pc2" class="section level3">
-<h3>13. Plot PC1 vs PC2</h3>
+<h3>14. Plot PC1 vs PC2</h3>
 <pre class="r"><code>plot(merged_nies_PC[,1], merged_nies_PC[,2], xlab = &quot;PC1&quot;, ylab = &quot;PC2&quot;, main = &quot;GRM PC1 vs PC2&quot;) </code></pre>
-<p><img src="/posts/2018-08-16-trying-gaston-to-generate-genetic-relationship-matrix_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p><img src="/posts/2018-08-16-trying-gaston-to-generate-genetic-relationship-matrix_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 </div>
 <div id="plot-pc1-vs-pc2-and-colour-code-by-gender" class="section level3">
-<h3>14. Plot PC1 vs PC2 and colour code by gender</h3>
+<h3>15. Plot PC1 vs PC2 and colour code by gender</h3>
 <pre class="r"><code>plot(merged_nies_PC[,1], merged_nies_PC[,2], col = merged_nies@ped$sex, xlab = &quot;PC1&quot;, ylab = &quot;PC2&quot;, main = &quot;GRM PC1 vs PC2&quot;)</code></pre>
-<p><img src="/posts/2018-08-16-trying-gaston-to-generate-genetic-relationship-matrix_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p><img src="/posts/2018-08-16-trying-gaston-to-generate-genetic-relationship-matrix_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 </div>
 </div>
 

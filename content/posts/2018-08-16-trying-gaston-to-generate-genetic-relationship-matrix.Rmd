@@ -45,14 +45,24 @@ Output:
 
 This data set will be entered into Gaston for generating genetic relationship matrix (GRM), estimating heritability, and performing the pedigree-based GWAS. 
 
-###2. Perform PCA on filtered data set 
+###2. Check allele frequency distribution of this final data set
+```{bash, eval = FALSE}
+plink1.9 --bfile merged_nies_filtered -freq --out plink_output/merged_nies_final_freq
+```
+
+```{r}
+merged_nies_final_freq <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_nies_final_freq.frq', header = T)
+hist(merged_nies_final_freq$MAF, main = "Allele Frequency Distributions of NIES genomic data", xlab = "Minor Allele Frequency", xlim = c(0.0, 0.5), col = "skyblue1")     
+```
+
+###3. Perform PCA on filtered data set 
 
 ```{bash, eval = FALSE}
 plink1.9 --bfile merged_nies_filtered --pca 180 var-wts --out plink_output/merged_nies_pca
 ```
 
 
-###3. Load eigenvalue file
+###4. Load eigenvalue file
 
 ```{r}
 merged_nies_eigenval <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_nies_pca.eigenval', header = F)
@@ -62,7 +72,7 @@ head(merged_nies_eigenval)
 
 There are 116 PCs with eigenvalue >1. 
 
-###4. Generate screeplot 
+###5. Generate screeplot 
 ```{r}
 barplot(merged_nies_eigenval$V1, 
         names.arg = 1:nrow(merged_nies_eigenval), 
@@ -74,7 +84,7 @@ lines(x = 1:nrow(merged_nies_eigenval), merged_nies_eigenval$V1,
       type = "b", pch = 19, col = "red")
 ```
 
-###5. Load eigenvector files
+###6. Load eigenvector files
 
 ```{r}
 merged_nies_eigenvec <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/merged_nies_pca.eigenvec', header = F)
@@ -82,7 +92,7 @@ merged_nies_eigenvec <- read.table('C:/Users/Martha/Documents/Honours/Project/ho
 head(merged_nies_eigenvec)
 ```
 
-###6. Generate PCA plots 
+###7. Generate PCA plots 
 
 ```{r}
 plot(merged_nies_eigenvec$V3, merged_nies_eigenvec$V4, xlab = "PC1", ylab = "PC2", main = "PC1 vs PC2 eigenvectors") #PC1 vs PC2
@@ -102,49 +112,49 @@ plot(merged_nies_eigenvec$V5, merged_nies_eigenvec$V6, xlab = "PC3", ylab = "PC4
 
 These PCA plots have changed after excluding duplicate samples. However, there appears to be one individual that is an outlier ? 
 
-###7. Load "gaston" package
+###8. Load "gaston" package
 
 ```{r}
 require(gaston)
 ```
 
-###8. Load merged_nies_filtered files 
+###9. Load merged_nies_filtered files 
 
 ```{r}
 merged_nies <- read.bed.matrix("C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_filtered.bed")
 ```
 
-###9. Generate genetic relationship matrix (kinship matrix/GRM)
+###10. Generate genetic relationship matrix (kinship matrix/GRM)
 ```{r}
 merged_nies_GRM <- GRM(merged_nies)
 
 head(merged_nies_GRM)
 ```
 
-###10. Compute eigen decomposition
+###11. Compute eigen decomposition
 ```{r}
 merged_nies_eiK <- eigen(merged_nies_GRM)
 
 head(merged_nies_eiK$values)
 ```
 
-###11. Deal with small negative eigenvalues
+###12. Deal with small negative eigenvalues
 ```{r}
 merged_nies_eiK$values[ merged_nies_eiK$values < 0] <- 0
 ```
 
-###12. Perform PCA on GRM
+###13. Perform PCA on GRM
 
 ```{r}
 merged_nies_PC <- sweep(merged_nies_eiK$vectors, 2, sqrt(merged_nies_eiK$values), "*")
 ```
 
-###13. Plot PC1 vs PC2
+###14. Plot PC1 vs PC2
 ```{r}
 plot(merged_nies_PC[,1], merged_nies_PC[,2], xlab = "PC1", ylab = "PC2", main = "GRM PC1 vs PC2") 
 ```
 
-###14. Plot PC1 vs PC2 and colour code by gender
+###15. Plot PC1 vs PC2 and colour code by gender
 ```{r}
 plot(merged_nies_PC[,1], merged_nies_PC[,2], col = merged_nies@ped$sex, xlab = "PC1", ylab = "PC2", main = "GRM PC1 vs PC2")
 ```

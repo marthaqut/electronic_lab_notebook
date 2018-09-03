@@ -1,0 +1,47 @@
+---
+title: Trying GCTA to perform heritability analysis
+author: Martha Aquino
+date: '2018-09-03'
+slug: trying-gcta-to-perform-heritability-analysis
+categories:
+  - Coding
+  - Experiments
+tags:
+  - GCTA
+  - Genomic Data
+  - Heritability
+  - Linux
+---
+
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>Although heritability estimates have been obtained from gaston, I was unable to obtain signficance values for the estimates. This is important as it will help me prioritise the phenotypes and principal components that will be carried forward to the pedigree-based GWAS. Therefore, I will attempt to re-calculate the heritability estimates using GCTA (<a href="http://cnsgenomics.com/software/gcta/#Overview" class="uri">http://cnsgenomics.com/software/gcta/#Overview</a>). GCTA is a command line program that uses PLINK input and output.</p>
+</div>
+<div id="methods-and-results" class="section level1">
+<h1>Methods and Results</h1>
+<div id="download-linux-version-of-gcta-and-unzip-in-data-folder." class="section level3">
+<h3>1. Download Linux version of GCTA and unzip in /Data folder.</h3>
+</div>
+<div id="check-that-gcta-has-been-installed-properly" class="section level3">
+<h3>2 Check that GCTA has been installed properly</h3>
+<pre class="bash"><code>./gcta64</code></pre>
+</div>
+<div id="make-grm-from-the-nies-genomic-data" class="section level3">
+<h3>3. Make GRM from the NIES genomic data</h3>
+<pre class="bash"><code>./gcta64 --bfile merged_nies_geno_210818 --make-grm --out gcta_output/merged_nies_grm</code></pre>
+</div>
+<div id="perform-pca-on-genomic-data-including-2-pcs" class="section level3">
+<h3>4. Perform PCA on genomic data, including 2 PCs</h3>
+<pre class="bash"><code>./gcta64 --bfile merged_nies_geno_210818 --make-grm --pca 2 --out gcta_output/merged_nies_pca</code></pre>
+<p>From the PCA performed in gaston, only 2 principal components are required to correct for population stratification in this data set.</p>
+</div>
+<div id="try-estimating-heritability-for-one-trait-e.g.cct-to-see-what-the-output-is-and-if-the-estimate-matches-gaston-results." class="section level3">
+<h3>5. Try estimating heritability for one trait e.g. CCT to see what the output is and if the estimate matches gaston results.</h3>
+<p>Ideally, the GCTA estimates should be very similar as it uses a linear mixed model for estimation as well. The values are not expected to be identical because different packages/softwares perform analyses slightly differently and will result in decimal point differences.</p>
+<pre class="bash"><code>./gcta64 --reml --grm gcta_output/merged_nies_grm --pheno nies_pheno_020918.txt --mpheno 25 --reml-pred-rand -qcovar gcta_output/merged_nies_pca --out gcta_output/est_her_test</code></pre>
+<p>Note: the above function should allow me to generate the heritability estimates one-by-one. The “mpheno” function takes a PLAIN TEXT FILE with family and individual IDs in the first two columns respectively, and then data for the phenotypic variables in subsequent columns. The mpheno modifier takes a number from which you can specify the column for heritability estimation e.g. ‘25’ will take the data in the 27th column (i.e. 25th phenotype column = R.CDR)</p>
+<p>The output of this exercise is as follows: <img src="/C/Users/Martha/Documents/Honours/Project/honours.project/Data/gcta_output/r.cdr.estimate.test.png" alt="Heritability estimate of R CDR" /></p>
+</div>
+</div>

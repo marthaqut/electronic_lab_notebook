@@ -9,10 +9,20 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Wed, 08 Aug 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 03 Sep 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/linux/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Trying GCTA to perform heritability analysis</title>
+      <link>/posts/trying-gcta-to-perform-heritability-analysis/</link>
+      <pubDate>Mon, 03 Sep 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/trying-gcta-to-perform-heritability-analysis/</guid>
+      <description>IntroductionAlthough heritability estimates have been obtained from gaston, I was unable to obtain signficance values for the estimates. This is important as it will help me prioritise the phenotypes and principal components that will be carried forward to the pedigree-based GWAS. Therefore, I will attempt to re-calculate the heritability estimates using GCTA (http://cnsgenomics.com/software/gcta/#Overview). GCTA is a command line program that uses PLINK input and output.
+Methods and Results1.</description>
+    </item>
     
     <item>
       <title>Performing PCA on genomic data</title>
