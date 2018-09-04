@@ -37,7 +37,7 @@ Although heritability estimates have been obtained from gaston, I was unable to 
 
 From the PCA performed in gaston, only 2 principal components are required to correct for population stratification in this data set. 
 
-###5. Try estimating heritability for one trait e.g. CCT to see what the output is and if the estimate matches gaston results. 
+###5. Try estimating heritability for one trait to see what the output is and if the estimate matches gaston results. 
 
 Ideally, the GCTA estimates should be very similar as it uses a linear mixed model for estimation as well. The values are not expected to be identical because different packages/softwares perform analyses slightly differently and will result in decimal point differences. 
 
@@ -60,3 +60,13 @@ logL0  | 375.013  |
 LRT    | 18.296   |          
 df     | 1        |          
 Pval   |9.4535e-06|          
+
+The value relating to V(G)/Vp gives the heritability estimate for the trait (R CDR) and the corresponding p-value suggests that this value is statistically signficant. Interestingly, the estimate obtained for this trait is very similar to the estimate obtained using 'gaston' (in previous entry). 
+
+###6. Repeat exercise for other traits
+
+```{r}
+read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gcta_output/trait_heritability_comparison.csv')
+```
+
+The gaston results were from Miles. The same traits appear to be heritable (p <0.05) and estimates are very similar, some only differing by decimal point values. 
