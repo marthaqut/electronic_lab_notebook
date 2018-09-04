@@ -659,6 +659,15 @@ based on dark.css by Ivan Sagalaev
 ## 27                               NA  NA  NA
 ## 28                               NA  NA  NA</code></pre>
 <p>The gaston results were from Miles. The same traits appear to be heritable (p &lt;0.05) and estimates are very similar, some only differing by decimal point values.</p>
+<p>The issue with my current method of estimating heritability is that I have to repeat the code for each trait and separate file sets are generated for each trait. I wrote a loop for the function, however, separate files are still generated for each trait.</p>
+<pre class="bash"><code>for i in {1..27}
+do 
+  ./gcta64 --reml --grm gcta_output/merged_nies_grm --pheno nies_pheno_020918.txt --mpheno $i --reml-pred-rand     --qcovar gcta_output/merged_nies_pca.eigenvec --out gcta_output/$i.est
+  
+  head gcta_output/$i.est.hsq
+
+done</code></pre>
+<p>This loop generates the heritability estimates for each trait and generates separate files for each estimate. GCTA does not take a phenotypic file with headers, which is why the files are labelled with numbers instead of the trait.</p>
 </div>
 </div>
 

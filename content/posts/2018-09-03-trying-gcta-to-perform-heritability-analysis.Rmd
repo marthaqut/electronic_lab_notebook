@@ -69,4 +69,18 @@ The value relating to V(G)/Vp gives the heritability estimate for the trait (R C
 read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gcta_output/trait_heritability_comparison.csv')
 ```
 
-The gaston results were from Miles. The same traits appear to be heritable (p <0.05) and estimates are very similar, some only differing by decimal point values. 
+The gaston results were from Miles. The same traits appear to be heritable (p <0.05) and estimates are very similar, some only differing by decimal point values.
+
+The issue with my current method of estimating heritability is that I have to repeat the code for each trait and separate file sets are generated for each trait. I wrote a loop for the function, however, separate files are still generated for each trait. 
+
+```{bash, eval = FALSE}
+for i in {1..27}
+do 
+  ./gcta64 --reml --grm gcta_output/merged_nies_grm --pheno nies_pheno_020918.txt --mpheno $i --reml-pred-rand     --qcovar gcta_output/merged_nies_pca.eigenvec --out gcta_output/$i.est
+  
+  head gcta_output/$i.est.hsq
+
+done
+```
+
+This loop generates the heritability estimates for each trait and generates separate files for each estimate. GCTA does not take a phenotypic file with headers, which is why the files are labelled with numbers instead of the trait. 
