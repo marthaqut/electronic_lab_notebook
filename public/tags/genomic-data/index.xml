@@ -9,10 +9,20 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Mon, 03 Sep 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 05 Sep 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/genomic-data/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Estimating heritability of principal components using GCTA</title>
+      <link>/posts/estimating-heritability-of-principal-components-using-gcta/</link>
+      <pubDate>Wed, 05 Sep 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/estimating-heritability-of-principal-components-using-gcta/</guid>
+      <description>IntroductionAfter trying GCTA for estimating the heritability of individual traits and comparing its results with results obtained from gaston, the heritability of the phenotypic PCs need to be estimated as well.
+Methods and Results1. Prepare principal component resultsGCTA requires the phenotypic input file to be a plain text file and have the family and UUID in the first two columns and it does not recognise headers. I converted the csv file to text file, removed the headers, and added a family ID column.</description>
+    </item>
     
     <item>
       <title>Trying GCTA to perform heritability analysis</title>

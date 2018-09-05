@@ -198,6 +198,10 @@ coord <- c("UUID","coord.Dim.1", "coord.Dim.2", "coord.Dim.3", "coord.Dim.4", "c
 pca_indiv_coord <- pca_indiv[coord]
 pca_indiv_coord2 <- pca_indiv_coord[pca_indiv_coord$UUID %in% c(geno_data_uuid2), ]
 ```
+```{r, eval = FALSE}
+write.csv(pca_indiv_coord2, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/pheno_pca_coord.csv', row.names = F)
+```
+
 
 ###9. Calculate heritability estimates for principal components
 ```{r}

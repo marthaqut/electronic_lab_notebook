@@ -1,0 +1,75 @@
+---
+title: Estimating heritability of principal components using GCTA
+author: Martha Aquino
+date: '2018-09-05'
+slug: estimating-heritability-of-principal-components-using-gcta
+categories:
+  - Coding
+  - Experiments
+tags:
+  - GCTA
+  - Genomic Data
+  - Heritability
+---
+
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>After trying GCTA for estimating the heritability of individual traits and comparing its results with results obtained from gaston, the heritability of the phenotypic PCs need to be estimated as well.</p>
+</div>
+<div id="methods-and-results" class="section level1">
+<h1>Methods and Results</h1>
+<div id="prepare-principal-component-results" class="section level3">
+<h3>1. Prepare principal component results</h3>
+<p>GCTA requires the phenotypic input file to be a plain text file and have the family and UUID in the first two columns and it does not recognise headers. I converted the csv file to text file, removed the headers, and added a family ID column.</p>
+</div>
+<div id="apply-loop-to-perform-function-for-estimating-heritability" class="section level3">
+<h3>2. Apply loop to perform function for estimating heritability</h3>
+<pre class="bash"><code>for i in {1..9}
+do  ./gcta64 --reml --grm gcta_output/merged_nies_grm --pheno pheno_pca_coord.txt --mpheno $i --reml-pred-rand          --qcovar gcta_output/merged_nies_pca.eigenvec --out gcta_output/$i.pc.est
+
+    head gcta_output/$i.pc.est.hsq &gt;&gt; pc.heritability.gcta.txt
+done
+</code></pre>
+<pre class="r"><code>read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gcta_output/pc_heritability_gcta.csv&#39;)</code></pre>
+<pre><code>##   PC       h2    LRT     pval
+## 1  1 0.622134 19.655 4.64e-06
+## 2  2 0.219030  2.022 7.75e-02
+## 3  3 0.253975  4.680 1.52e-02
+## 4  4 0.477213 13.662 1.09e-04
+## 5  5 0.000000  0.000 5.00e-01
+## 6  6 0.137624  1.287 1.28e-01
+## 7  7 0.279968  4.734 1.48e-02
+## 8  8 0.226968  5.234 1.11e-02
+## 9  9 0.000000  0.000 5.00e-01</code></pre>
+<p>The results indicate that five principal components are heritable (p-val &lt; 0.05) and the most heritable principal component is 1.</p>
+</div>
+<div id="list-significantly-heritable-traits-in-order-of-estimates" class="section level3">
+<h3>3. List significantly heritable traits in order of estimates</h3>
+<pre class="r"><code>read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gcta_output/all_heritability_gcta.csv&#39;)</code></pre>
+<pre><code>##             Trait       h2    LRT     Pval
+## 1       R K-val V 0.756885 28.886 3.84e-08
+## 2    L Pachimetry 0.667679 23.898 5.08e-07
+## 3               1 0.622134 19.655 4.64e-06
+## 4    R Pachimetry 0.600582 19.815 4.27e-06
+## 5           R CDR 0.596660 18.296 9.45e-06
+## 6       L K-val V 0.593822 16.975 1.89e-05
+## 7           R Cyl 0.559755 17.911 1.16e-05
+## 8           L CDR 0.540132 14.500 7.01e-05
+## 9       R K-val H 0.518472 14.657 6.45e-05
+## 10              4 0.477213 13.662 1.09e-04
+## 11     Total UVAF 0.458766 10.262 6.79e-04
+## 12 R Axial Length 0.370540  7.356 3.34e-03
+## 13 L Axial Length 0.353147  6.614 5.06e-03
+## 14          R ACD 0.312516  6.960 4.17e-03
+## 15      L K-val H 0.294400  4.182 2.04e-02
+## 16          L ACD 0.293333  6.386 5.75e-03
+## 17              7 0.279968  4.734 1.48e-02
+## 18          R IOP 0.265188  4.139 2.09e-02
+## 19              3 0.253975  4.680 1.52e-02
+## 20              8 0.226968  5.234 1.11e-02
+## 21          L IOP 0.216258  3.149 3.80e-02</code></pre>
+<p>Listing the traits by heritability estimates will allow me to prioritise the traits for GWAS.</p>
+</div>
+</div>

@@ -1,0 +1,44 @@
+---
+title: Estimating heritability of principal components using GCTA
+author: Martha Aquino
+date: '2018-09-05'
+slug: estimating-heritability-of-principal-components-using-gcta
+categories:
+  - Coding
+  - Experiments
+tags:
+  - GCTA
+  - Genomic Data
+  - Heritability
+---
+
+#Introduction
+After trying GCTA for estimating the heritability of individual traits and comparing its results with results obtained from gaston, the heritability of the phenotypic PCs need to be estimated as well. 
+
+#Methods and Results 
+
+###1. Prepare principal component results 
+GCTA requires the phenotypic input file to be a plain text file and have the family and UUID in the first two columns and it does not recognise headers. I converted the csv file to text file, removed the headers, and added a family ID column. 
+
+###2. Apply loop to perform function for estimating heritability 
+```{bash, eval = FALSE}
+for i in {1..9}
+do  ./gcta64 --reml --grm gcta_output/merged_nies_grm --pheno pheno_pca_coord.txt --mpheno $i --reml-pred-rand          --qcovar gcta_output/merged_nies_pca.eigenvec --out gcta_output/$i.pc.est
+
+    head gcta_output/$i.pc.est.hsq >> pc.heritability.gcta.txt
+done
+
+```
+
+```{r}
+read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gcta_output/pc_heritability_gcta.csv')
+```
+
+The results indicate that five principal components are heritable (p-val < 0.05) and the most heritable principal component is 1. 
+
+###3. List significantly heritable traits in order of estimates 
+```{r}
+read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gcta_output/all_heritability_gcta.csv')
+```
+
+Listing the traits by heritability estimates will allow me to prioritise the traits for GWAS. 

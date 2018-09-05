@@ -501,6 +501,7 @@ coord &lt;- c(&quot;UUID&quot;,&quot;coord.Dim.1&quot;, &quot;coord.Dim.2&quot;,
            &quot;coord.Dim.8&quot;, &quot;coord.Dim.9&quot;)
 pca_indiv_coord &lt;- pca_indiv[coord]
 pca_indiv_coord2 &lt;- pca_indiv_coord[pca_indiv_coord$UUID %in% c(geno_data_uuid2), ]</code></pre>
+<pre class="r"><code>write.csv(pca_indiv_coord2, &#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/pheno_pca_coord.csv&#39;, row.names = F)</code></pre>
 </div>
 <div id="calculate-heritability-estimates-for-principal-components" class="section level3">
 <h3>9. Calculate heritability estimates for principal components</h3>
