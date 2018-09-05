@@ -8,6 +8,11 @@
   </url>
   
   <url>
+    <loc>/posts/mlma-gwas-for-most-heritable-trait/</loc>
+    <lastmod>2018-09-05T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/posts/trying-gcta-to-perform-heritability-analysis/</loc>
     <lastmod>2018-09-03T00:00:00+00:00</lastmod>
   </url>
@@ -241,6 +246,18 @@
   </url>
   
   <url>
+    <loc>/tags/greml/</loc>
+    <lastmod>2018-09-05T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/gwas/</loc>
+    <lastmod>2018-09-05T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/tags/heritability/</loc>
     <lastmod>2018-09-05T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -254,7 +271,13 @@
   
   <url>
     <loc>/tags/linux/</loc>
-    <lastmod>2018-09-03T00:00:00+00:00</lastmod>
+    <lastmod>2018-09-05T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>/tags/mlma/</loc>
+    <lastmod>2018-09-05T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   

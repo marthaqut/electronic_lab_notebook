@@ -1,0 +1,65 @@
+---
+title: MLMA GWAS for most heritable trait
+author: Martha Aquino
+date: '2018-09-05'
+slug: mlma-gwas-for-most-heritable-trait
+categories:
+  - Coding
+  - Experiments
+tags:
+  - GCTA
+  - Genomic Data
+  - GWAS
+  - MLMA
+  - GREML
+  - Linux
+---
+
+#Introduction
+After obtaining heritability estimates for all traits and principal components, I can prioritise the traits for GWAS. There are different methods for performing GWAS and analysing GWAS results in GCTA. In particular, I am interested in the MLMA method which is mixed linear model associations (https://www.ncbi.nlm.nih.gov/pubmed/24473328). 
+
+
+#Methods and Results 
+
+###1. Run GWAS-MLMA on R K-value V
+```{bash, eval = FALSE}
+./gcta64 --mlma --bfile merged_nies/merged_nies_geno_210818 --grm gcta_output/merged_nies_grm --pheno nies_pheno_020918.txt --mpheno 11 --out gcta_output/r_kval_mlma
+```
+
+```{r}
+r_kvalV_mlma <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gcta_output/r_kval_mlma.mlma', header = TRUE)
+
+head(r_kvalV_mlma)
+```
+
+###2.Run GWAS-MLMA on UVAF for comparison
+
+```{bash, eval = FALSE}
+./gcta64 --mlma --bfile merged_nies/merged_nies_geno_210818 --grm gcta_output/merged_nies_grm --pheno nies_pheno_020918.txt --mpheno 27 --out gcta_output/uvaf_mlma
+```
+
+```{r}
+uvaf_mlma <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gcta_output/uvaf_mlma.mlma', header = TRUE)
+
+head(uvaf_mlma)
+```
+
+###3. Re-run GWAS on UVAF with GRM and including 2PCs
+
+```{r}
+uvaf_2pcs_mlma <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gcta_output/uvaf_2pcs_mlma.mlma', header = TRUE)
+
+head(uvaf_2pcs_mlma)
+```
+
+###4. Generate manhattan plots for UVAF
+```{r}
+require(qqman)
+require(magrittr)
+require(dplyr)
+```
+```{r, eval=FALSE}
+manhattan(uvaf_mlma, chr="Chr", bp="bp", p="p", snp="SNP", main = "UVAF", ylim = c(0,10))
+```
+
+![UVAF not filtered](/images/uvaf_notfiltered.jpg)

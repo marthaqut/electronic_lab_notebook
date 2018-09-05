@@ -60,6 +60,24 @@
     </item>
     
     <item>
+      <title>Greml</title>
+      <link>/tags/greml/</link>
+      <pubDate>Wed, 05 Sep 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/tags/greml/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Gwas</title>
+      <link>/tags/gwas/</link>
+      <pubDate>Wed, 05 Sep 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/tags/gwas/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Heritability</title>
       <link>/tags/heritability/</link>
       <pubDate>Wed, 05 Sep 2018 00:00:00 +0000</pubDate>
@@ -80,9 +98,18 @@
     <item>
       <title>Linux</title>
       <link>/tags/linux/</link>
-      <pubDate>Mon, 03 Sep 2018 00:00:00 +0000</pubDate>
+      <pubDate>Wed, 05 Sep 2018 00:00:00 +0000</pubDate>
       <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
       <guid>/tags/linux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Mlma</title>
+      <link>/tags/mlma/</link>
+      <pubDate>Wed, 05 Sep 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/tags/mlma/</guid>
       <description></description>
     </item>
     
