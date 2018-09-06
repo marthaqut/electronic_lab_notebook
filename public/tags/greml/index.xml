@@ -9,7 +9,7 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Wed, 05 Sep 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 06 Sep 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/greml/index.xml" rel="self" type="application/rss+xml" />
     
@@ -17,7 +17,7 @@
     <item>
       <title>MLMA GWAS for most heritable trait</title>
       <link>/posts/mlma-gwas-for-most-heritable-trait/</link>
-      <pubDate>Wed, 05 Sep 2018 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 06 Sep 2018 00:00:00 +0000</pubDate>
       <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
       <guid>/posts/mlma-gwas-for-most-heritable-trait/</guid>
       <description>IntroductionAfter obtaining heritability estimates for all traits and principal components, I can prioritise the traits for GWAS. There are different methods for performing GWAS and analysing GWAS results in GCTA. In particular, I am interested in the MLMA method which is mixed linear model associations (https://www.ncbi.nlm.nih.gov/pubmed/24473328).

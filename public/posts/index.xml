@@ -9,10 +9,20 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Wed, 05 Sep 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 06 Sep 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>MLMA GWAS for most heritable trait</title>
+      <link>/posts/mlma-gwas-for-most-heritable-trait/</link>
+      <pubDate>Thu, 06 Sep 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/mlma-gwas-for-most-heritable-trait/</guid>
+      <description>IntroductionAfter obtaining heritability estimates for all traits and principal components, I can prioritise the traits for GWAS. There are different methods for performing GWAS and analysing GWAS results in GCTA. In particular, I am interested in the MLMA method which is mixed linear model associations (https://www.ncbi.nlm.nih.gov/pubmed/24473328).
+Methods and Results1. Run GWAS-MLMA on R K-value V./gcta64 --mlma --bfile merged_nies/merged_nies_geno_210818 --grm gcta_output/merged_nies_grm --pheno nies_pheno_020918.txt --mpheno 11 --out gcta_output/r_kval_mlmar_kvalV_mlma &amp;lt;- read.</description>
+    </item>
     
     <item>
       <title>Estimating heritability of principal components using GCTA</title>
@@ -22,16 +32,6 @@
       <guid>/posts/estimating-heritability-of-principal-components-using-gcta/</guid>
       <description>IntroductionAfter trying GCTA for estimating the heritability of individual traits and comparing its results with results obtained from gaston, the heritability of the phenotypic PCs need to be estimated as well.
 Methods and Results1. Prepare principal component resultsGCTA requires the phenotypic input file to be a plain text file and have the family and UUID in the first two columns and it does not recognise headers. I converted the csv file to text file, removed the headers, and added a family ID column.</description>
-    </item>
-    
-    <item>
-      <title>MLMA GWAS for most heritable trait</title>
-      <link>/posts/mlma-gwas-for-most-heritable-trait/</link>
-      <pubDate>Wed, 05 Sep 2018 00:00:00 +0000</pubDate>
-      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
-      <guid>/posts/mlma-gwas-for-most-heritable-trait/</guid>
-      <description>IntroductionAfter obtaining heritability estimates for all traits and principal components, I can prioritise the traits for GWAS. There are different methods for performing GWAS and analysing GWAS results in GCTA. In particular, I am interested in the MLMA method which is mixed linear model associations (https://www.ncbi.nlm.nih.gov/pubmed/24473328).
-Methods and Results1. Run GWAS-MLMA on R K-value V./gcta64 --mlma --bfile merged_nies/merged_nies_geno_210818 --grm gcta_output/merged_nies_grm --pheno nies_pheno_020918.txt --mpheno 11 --out gcta_output/r_kval_mlmar_kvalV_mlma &amp;lt;- read.</description>
     </item>
     
     <item>
