@@ -68,7 +68,7 @@ head(nies_heritable_pheno)
 
 I compiled the data for the heritable traits into a new spreadsheet (loaded above). 
 
-```{r, eval = FALSE}
+```{r}
 pheno_gwas <- NULL
 for (i in c(2:ncol(nies_heritable_pheno))){
   pheno_colnames <- colnames(nies_heritable_pheno[i])
@@ -89,7 +89,7 @@ The loop above generates manhattan plots for the GWAS results of all 21 heritabl
 
 I tried adding an annotation argument to the loop above to annotate hits that passed the genome-wide significance threshold. However, since not all manhattan plots had significant hits, the argument caused an error. I removed the argument from the loop and it was successful in generating all 21 manhattan plots. Of these, approximately 9 plots have significant hits and therefore require annotation. 
 
-```{r, eval = FALSE}
+```{r}
 ###uvaf
 uvaf_gwas <- association.test(merged_nies_210818, nies_heritable_pheno$totaluvafmm, method="lmm", test = "lrt", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
 uvaf_gwas <- na.omit(uvaf_gwas)

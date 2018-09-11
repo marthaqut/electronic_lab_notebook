@@ -9,10 +9,19 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Fri, 07 Sep 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 11 Sep 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Annotating signficant GWAS hits</title>
+      <link>/posts/annotating-signficant-gwas-hits/</link>
+      <pubDate>Tue, 11 Sep 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/annotating-signficant-gwas-hits/</guid>
+      <description>IntroductionThe pedigree-based GWAS identified 9 heritable traits with significant hits (i.e. SNPs that pass genome-wide significance threshold, p &amp;lt; 1.84e-7). The number of significant hits within each trait highly varied. To identify the most robust hits, SNPs that pass the genome-wide signficance threshold would ideally have adjacent SNPs that pass the suggestive threshold. Therefore, I will attempt to filter the significant hits/loci based on the presence of significant (suggestive) SNPs.</description>
+    </item>
     
     <item>
       <title>Performing GWAS on heritable traits</title>
@@ -20,7 +29,7 @@
       <pubDate>Fri, 07 Sep 2018 00:00:00 +0000</pubDate>
       <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
       <guid>/posts/performing-gwas-on-heritable-traits/</guid>
-      <description>require(magrittr)## Loading required package: magrittrrequire(dplyr)## Loading required package: dplyr## ## Attaching package: &amp;#39;dplyr&amp;#39;## The following objects are masked from &amp;#39;package:stats&amp;#39;:## ## filter, lag## The following objects are masked from &amp;#39;package:base&amp;#39;:## ## intersect, setdiff, setequal, unionrequire(magrittr)require(dplyr)IntroductionAfter running GWAS parallel in GCTA and gaston, we were concerned that GCTA was over burdening the test because the program was developed to deal with very large amounts of data.</description>
+      <description>require(magrittr)## Loading required package: magrittrrequire(dplyr)## Loading required package: dplyr## ## Attaching package: &amp;#39;dplyr&amp;#39;## The following objects are masked from &amp;#39;package:stats&amp;#39;:## ## filter, lag## The following objects are masked from &amp;#39;package:base&amp;#39;:## ## intersect, setdiff, setequal, unionrequire(gaston)## Loading required package: gaston## Loading required package: Rcpp## Loading required package: RcppParallel## ## Attaching package: &amp;#39;RcppParallel&amp;#39;## The following object is masked from &amp;#39;package:Rcpp&amp;#39;:## ## LdFlags## Gaston set number of threads to 2.</description>
     </item>
     
     <item>

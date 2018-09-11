@@ -28,8 +28,37 @@ tags:
 <pre><code>## The following objects are masked from &#39;package:base&#39;:
 ## 
 ##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>require(magrittr)
-require(dplyr)</code></pre>
+<pre class="r"><code>require(gaston)</code></pre>
+<pre><code>## Loading required package: gaston</code></pre>
+<pre><code>## Loading required package: Rcpp</code></pre>
+<pre><code>## Loading required package: RcppParallel</code></pre>
+<pre><code>## 
+## Attaching package: &#39;RcppParallel&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:Rcpp&#39;:
+## 
+##     LdFlags</code></pre>
+<pre><code>## Gaston set number of threads to 2. Use setThreadOptions() to modify this.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;gaston&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     sigma</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     cbind, rbind</code></pre>
+<pre class="r"><code>require(qqman)</code></pre>
+<pre><code>## Loading required package: qqman</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## For example usage please run: vignette(&#39;qqman&#39;)</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## Citation appreciated but not required:</code></pre>
+<pre><code>## Turner, S.D. qqman: an R package for visualizing GWAS results using Q-Q and manhattan plots. biorXiv DOI: 10.1101/005165 (2014).</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## 
+## Attaching package: &#39;qqman&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:gaston&#39;:
+## 
+##     manhattan</code></pre>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>After running GWAS parallel in GCTA and gaston, we were concerned that GCTA was over burdening the test because the program was developed to deal with very large amounts of data. Considering our sample size was very small, random effects that may be in the GCTA models could have very significant effects on the GWAS results. This was evident on the manhattan plots generated for the same data, with the same adjustments between GCTA and gaston. In light of this, we have decided to move the GWAS analysis back to gaston.</p>
@@ -87,5 +116,127 @@ head(nies_pheno_020918)</code></pre>
 </div>
 <div id="load-genomic-data-bedbimfam" class="section level3">
 <h3>2. Load genomic data (bed/bim/fam)</h3>
+<pre class="r"><code>merged_nies_210818 &lt;- read.bed.matrix(&quot;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.bed&quot;)</code></pre>
+<pre><code>## Reading C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.fam 
+## Reading C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.bim 
+## Reading C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.bed 
+## ped stats and snps stats have been set. 
+## &#39;p&#39; has been set. 
+## &#39;mu&#39; and &#39;sigma&#39; have been set.</code></pre>
+</div>
+<div id="generate-grm-eigenk-and-principal-components" class="section level3">
+<h3>3. Generate GRM, eigenK, and principal components</h3>
+<pre class="r"><code>merged_nies_GRM &lt;- GRM(merged_nies_210818)
+merged_nies_eiK &lt;- eigen(merged_nies_GRM)
+merged_nies_eiK$values[ merged_nies_eiK$values &lt; 0] &lt;- 0
+merged_nies_PC &lt;- sweep(merged_nies_eiK$vectors, 2, sqrt(merged_nies_eiK$values), &quot;*&quot;)</code></pre>
+<p>The genetic relationship matrix (GRM) will be used to account for the degree of relatedness among individuals, and the principal components will be used to correct for hiden population structure. Both of these ensure that any associations detected are not due to relatedness or hidden structures in the data i.e. they are true phenotypic-variant associations.</p>
+</div>
+<div id="perform-gwas-on-r-k-value-v-most-heritable-trait" class="section level3">
+<h3>4. Perform GWAS on R K-value V (most heritable trait)</h3>
+<pre class="r"><code>r_kvalV_gwas &lt;- association.test(merged_nies_210818, nies_pheno_020918$R.K.value.V, method=&quot;lmm&quot;, test = &quot;lrt&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+r_kvalV_gwas &lt;- na.omit(r_kvalV_gwas)
+r_kvalV_gwas_filtered &lt;- r_kvalV_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+qqman::manhattan(x = r_kvalV_gwas_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,10), genomewideline = -log10(1.84e-7), main = &quot;R K-value V&quot;, annotatePval = 1.84e-7)</code></pre>
+<p><img src="/posts/2018-09-07-performing-gwas-on-heritable-traits_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="repeat-gwas-on-other-heritable-traits" class="section level3">
+<h3>5. Repeat GWAS on other heritable traits</h3>
+<pre class="r"><code>nies_heritable_pheno &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_heritable_pheno.csv&#39;, header = T)
+head(nies_heritable_pheno)</code></pre>
+<pre><code>##     UUID R.K.value.V L.Pachimetry coord.Dim.1 R.Pachimetry R.CDR
+## 1 219960       43.00          554  -1.3318012          532   0.9
+## 2 313180       42.25          612  -3.7993478          608   0.9
+## 3 320511       43.50          512  -0.4961408          499   0.4
+## 4 400011       43.25          601  -0.7904275          602   0.6
+## 5 400013       43.00          550   0.4462229          552   0.4
+## 6 316131       44.00          588   0.2319576          583   0.3
+##   L.K.value.V R.Cyl..pre.dilate. L.CDR R.K.value.H coord.Dim.4 totaluvafmm
+## 1       43.50               0.00   0.9       42.00   0.8399155         0.0
+## 2       42.00              -0.75   0.7       41.25   2.0776045        74.4
+## 3       42.50               0.00   0.4       42.50  -0.9796890        27.5
+## 4       43.25              -0.25   0.6       42.50   1.5424175        47.0
+## 5       43.00              -0.25   0.4       43.00   0.4965415        20.1
+## 6       43.50              -1.00   0.3       42.75  -0.4216580        12.9
+##   R.Axial.Length L.Axial.Length R.AC.Depth L.K.value.H L.AC.Depth
+## 1          24.31          24.10       3.09       42.50       3.03
+## 2          25.02          25.21       3.38       41.50       3.92
+## 3          23.37          23.65       3.29       42.00       3.08
+## 4          23.32          23.34       3.81       42.75       3.83
+## 5          22.93          22.70       3.22       42.75       3.13
+## 6          23.49          23.54       3.24       43.00       3.04
+##   coord.Dim.7 R.IOP.mmHg coord.Dim.3 coord.Dim.8 L.IOP.mmHg
+## 1   2.8552892         14  0.75849347  -1.0126837         14
+## 2   2.2543673         16  0.41111735   0.3400838         15
+## 3  -1.1828388         17 -0.62633667   0.1104747         18
+## 4   2.2077992         15 -1.18429936   1.5903830         17
+## 5  -0.5839491         18 -0.03864912  -0.2245313         18
+## 6   1.1946733         12  0.16696557  -0.8347539         12</code></pre>
+<p>I compiled the data for the heritable traits into a new spreadsheet (loaded above).</p>
+<pre class="r"><code>pheno_gwas &lt;- NULL
+for (i in c(2:ncol(nies_heritable_pheno))){
+  pheno_colnames &lt;- colnames(nies_heritable_pheno[i])
+  her_pheno_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno[,i], method = &quot;lmm&quot;, 
+                                     test = &quot;lrt&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p =2)
+  her_pheno_gwas &lt;- na.omit(her_pheno_gwas)
+  pheno_gwas_filtered &lt;- her_pheno_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+  tiff(paste(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_plot_&#39;, pheno_colnames, &#39;_&#39;, &#39;.png&#39;), width = 800, height = 500, res = 150, compression = &#39;lzw&#39;)
+  qqman::manhattan(x = pheno_gwas_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, genomewideline = -log10(1.84e-7), main = paste(pheno_colnames))
+  dev.off()
+  pheno_gwas &lt;- pheno_gwas_filtered
+}</code></pre>
+<p>The loop above generates manhattan plots for the GWAS results of all 21 heritable traits.</p>
+</div>
+<div id="annotate-manhattan-plots-with-significant-hits" class="section level3">
+<h3>6. Annotate manhattan plots with significant hits</h3>
+<p>I tried adding an annotation argument to the loop above to annotate hits that passed the genome-wide significance threshold. However, since not all manhattan plots had significant hits, the argument caused an error. I removed the argument from the loop and it was successful in generating all 21 manhattan plots. Of these, approximately 9 plots have significant hits and therefore require annotation.</p>
+<pre class="r"><code>###uvaf
+uvaf_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno$totaluvafmm, method=&quot;lmm&quot;, test = &quot;lrt&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+uvaf_gwas &lt;- na.omit(uvaf_gwas)
+uvaf_gwas_filtered &lt;- uvaf_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+manhattan(x = uvaf_gwas_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,10), genomewideline = -log10(1.84e-7), main = &quot;Ultraviolet Autofluorescence&quot;, annotatePval = 1.84e-7)</code></pre>
+<p><img src="/posts/2018-09-07-performing-gwas-on-heritable-traits_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>###PC3 
+pc3_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno$coord.Dim.3, method=&quot;lmm&quot;, test = &quot;lrt&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+pc3_gwas &lt;- na.omit(pc3_gwas)
+pc3_gwas_filtered &lt;- pc3_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+manhattan(x = pc3_gwas_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,10), genomewideline = -log10(1.84e-7), main = &quot;Component 3&quot;, annotatePval = 1.84e-7)</code></pre>
+<p><img src="/posts/2018-09-07-performing-gwas-on-heritable-traits_files/figure-html/unnamed-chunk-8-2.png" width="672" /></p>
+<pre class="r"><code>###PC8
+pc8_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno$coord.Dim.8, method=&quot;lmm&quot;, test = &quot;lrt&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+pc8_gwas &lt;- na.omit(pc8_gwas)
+pc8_gwas_filtered &lt;- pc8_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+manhattan(x = pc8_gwas_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,10), genomewideline = -log10(1.84e-7), main = &quot;Component 8&quot;, annotatePval = 1.84e-7)</code></pre>
+<p><img src="/posts/2018-09-07-performing-gwas-on-heritable-traits_files/figure-html/unnamed-chunk-8-3.png" width="672" /></p>
+<pre class="r"><code>###L ACD
+l_acd_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno$L.AC.Depth, method=&quot;lmm&quot;, test = &quot;lrt&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+l_acd_gwas &lt;- na.omit(l_acd_gwas)
+l_acd_gwas_filtered &lt;- l_acd_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+manhattan(x = l_acd_gwas_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,10), genomewideline = -log10(1.84e-7), main = &quot;Left Anterior Chamber Depth&quot;, annotatePval = 1.84e-7)</code></pre>
+<p><img src="/posts/2018-09-07-performing-gwas-on-heritable-traits_files/figure-html/unnamed-chunk-8-4.png" width="672" /></p>
+<pre class="r"><code>###L CDR
+l_cdr_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno$L.CDR, method=&quot;lmm&quot;, test = &quot;lrt&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+l_cdr_gwas &lt;- na.omit(l_cdr_gwas)
+l_cdr_gwas_filtered &lt;- l_cdr_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+manhattan(x = l_cdr_gwas_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,10), genomewideline = -log10(1.84e-7), main = &quot;Left Cup-to-Disc Ratio&quot;, annotatePval = 1.84e-7)</code></pre>
+<p><img src="/posts/2018-09-07-performing-gwas-on-heritable-traits_files/figure-html/unnamed-chunk-8-5.png" width="672" /></p>
+<pre class="r"><code>###L Kval H
+l_KvalH_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno$L.K.value.H, method=&quot;lmm&quot;, test = &quot;lrt&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+l_KvalH_gwas &lt;- na.omit(l_KvalH_gwas)
+l_KvalH_gwas_filtered &lt;- l_KvalH_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+manhattan(x = l_KvalH_gwas_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,10), genomewideline = -log10(1.84e-7), main = &quot;Left Horizontal K-value&quot;, annotatePval = 1.84e-7)</code></pre>
+<p><img src="/posts/2018-09-07-performing-gwas-on-heritable-traits_files/figure-html/unnamed-chunk-8-6.png" width="672" /></p>
+<pre class="r"><code>###R ACD 
+r_acd_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno$R.AC.Depth, method=&quot;lmm&quot;, test = &quot;lrt&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+r_acd_gwas &lt;- na.omit(r_acd_gwas)
+r_acd_gwas_filtered &lt;- r_acd_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+manhattan(x = r_acd_gwas_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,10), genomewideline = -log10(1.84e-7), main = &quot;Right Anterior Chamber Depth&quot;, annotatePval = 1.84e-7)</code></pre>
+<p><img src="/posts/2018-09-07-performing-gwas-on-heritable-traits_files/figure-html/unnamed-chunk-8-7.png" width="672" /></p>
+<pre class="r"><code>###R Cyl
+r_cyl_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno$R.Cyl..pre.dilate, method=&quot;lmm&quot;, test = &quot;lrt&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+r_cyl_gwas &lt;- na.omit(r_cyl_gwas)
+r_cyl_gwas_filtered &lt;- r_cyl_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+manhattan(x = r_cyl_gwas_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,15), genomewideline = -log10(1.84e-7), main = &quot;Right Cylindrical Pre-Dilate Refractive Error&quot;, annotatePval = 1.84e-7)</code></pre>
+<p><img src="/posts/2018-09-07-performing-gwas-on-heritable-traits_files/figure-html/unnamed-chunk-8-8.png" width="672" /></p>
 </div>
 </div>

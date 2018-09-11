@@ -1,0 +1,17 @@
+---
+title: Annotating signficant GWAS hits
+author: Martha Aquino
+date: '2018-09-11'
+slug: annotating-signficant-gwas-hits
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Genomic Data
+  - GWAS
+---
+
+#Introduction
+The pedigree-based GWAS identified 9 heritable traits with significant hits (i.e. SNPs that pass genome-wide significance threshold, p < 1.84e-7). The number of significant hits within each trait highly varied. To identify the most robust hits, SNPs that pass the genome-wide signficance threshold would ideally have adjacent SNPs that pass the suggestive threshold. Therefore, I will attempt to filter the significant hits/loci based on the presence of significant (suggestive) SNPs. 
+
+#Methods and Results 

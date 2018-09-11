@@ -20,7 +20,7 @@
       <pubDate>Fri, 07 Sep 2018 00:00:00 +0000</pubDate>
       <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
       <guid>/posts/performing-gwas-on-heritable-traits/</guid>
-      <description>require(magrittr)## Loading required package: magrittrrequire(dplyr)## Loading required package: dplyr## ## Attaching package: &amp;#39;dplyr&amp;#39;## The following objects are masked from &amp;#39;package:stats&amp;#39;:## ## filter, lag## The following objects are masked from &amp;#39;package:base&amp;#39;:## ## intersect, setdiff, setequal, unionrequire(magrittr)require(dplyr)IntroductionAfter running GWAS parallel in GCTA and gaston, we were concerned that GCTA was over burdening the test because the program was developed to deal with very large amounts of data.</description>
+      <description>require(magrittr)## Loading required package: magrittrrequire(dplyr)## Loading required package: dplyr## ## Attaching package: &amp;#39;dplyr&amp;#39;## The following objects are masked from &amp;#39;package:stats&amp;#39;:## ## filter, lag## The following objects are masked from &amp;#39;package:base&amp;#39;:## ## intersect, setdiff, setequal, unionrequire(gaston)## Loading required package: gaston## Loading required package: Rcpp## Loading required package: RcppParallel## ## Attaching package: &amp;#39;RcppParallel&amp;#39;## The following object is masked from &amp;#39;package:Rcpp&amp;#39;:## ## LdFlags## Gaston set number of threads to 2.</description>
     </item>
     
     <item>
