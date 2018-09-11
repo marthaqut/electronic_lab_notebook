@@ -3,8 +3,8 @@
 <head>
   
   <meta charset="utf-8">
-  <title>Tags</title>
-  <meta name="description" content="Tags">
+  <title>Performing GWAS on heritable traits</title>
+  <meta name="description" content="Performing GWAS on heritable traits">
   <meta name="author" content="Martha Aquino">
   
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -420,8 +420,6 @@ based on dark.css by Ivan Sagalaev
 
   
   
-  <link href="/tags/index.xml" rel="alternate" type="application/rss+xml" title="Electronic Lab Notebook Feed" />
-  
 
   <meta name="generator" content="Hugo 0.40.3" />
 
@@ -486,98 +484,129 @@ based on dark.css by Ivan Sagalaev
     <div class="pure-u-1-24 pure-u-md-1-6"></div>
 </div>
 
+
 <div class="pure-g">
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
   <div class="pure-u-11-12 pure-u-md-2-3">
-    <p class="posts-name">Tags:</p>
-    <div class="post-content">
-      <ul class="posts">
+    <div class="post">
+
+      <div class="post-title">
+        <p class="footnote">
+        <time class="">09-07-2018</time>
         
         
-        <li>
-          <a href="genomic-data">genomic-data</a>
-          <span>&#40;24&#41;</span>
-        </li>
+        |
         
-        <li>
-          <a href="r">r</a>
-          <span>&#40;21&#41;</span>
-        </li>
         
-        <li>
-          <a href="data-cleaning">data-cleaning</a>
-          <span>&#40;19&#41;</span>
-        </li>
+        tags: [ <a href="/tags/gaston">Gaston</a> <a href="/tags/gcta">GCTA</a> <a href="/tags/genomic-data">Genomic Data</a> <a href="/tags/gwas">GWAS</a> <a href="/tags/heritability">Heritability</a> ]
         
-        <li>
-          <a href="plink">plink</a>
-          <span>&#40;18&#41;</span>
-        </li>
+
         
-        <li>
-          <a href="linux">linux</a>
-          <span>&#40;15&#41;</span>
-        </li>
+        categories: [<a href="/categories/coding">Coding</a> <a href="/categories/experiments">Experiments</a> ]
         
-        <li>
-          <a href="pca">pca</a>
-          <span>&#40;10&#41;</span>
-        </li>
+
         
-        <li>
-          <a href="imputation">imputation</a>
-          <span>&#40;7&#41;</span>
-        </li>
-        
-        <li>
-          <a href="heritability">heritability</a>
-          <span>&#40;5&#41;</span>
-        </li>
-        
-        <li>
-          <a href="gaston">gaston</a>
-          <span>&#40;4&#41;</span>
-        </li>
-        
-        <li>
-          <a href="gcta">gcta</a>
-          <span>&#40;4&#41;</span>
-        </li>
-        
-        <li>
-          <a href="ocular-biometry">ocular-biometry</a>
-          <span>&#40;3&#41;</span>
-        </li>
-        
-        <li>
-          <a href="bivariate-correlations">bivariate-correlations</a>
-          <span>&#40;2&#41;</span>
-        </li>
-        
-        <li>
-          <a href="gwas">gwas</a>
-          <span>&#40;2&#41;</span>
-        </li>
-        
-        <li>
-          <a href="greml">greml</a>
-          <span>&#40;1&#41;</span>
-        </li>
-        
-        <li>
-          <a href="mlma">mlma</a>
-          <span>&#40;1&#41;</span>
-        </li>
-        
-        <li>
-          <a href="reading">reading</a>
-          <span>&#40;1&#41;</span>
-        </li>
-        
-      </ul>
+        </p>
+        <h1>Performing GWAS on heritable traits</h1>
+      </div>
+
+      <div class="post-content">
+        <pre class="r"><code>require(magrittr)</code></pre>
+<pre><code>## Loading required package: magrittr</code></pre>
+<pre class="r"><code>require(dplyr)</code></pre>
+<pre><code>## Loading required package: dplyr</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>require(magrittr)
+require(dplyr)</code></pre>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>After running GWAS parallel in GCTA and gaston, we were concerned that GCTA was over burdening the test because the program was developed to deal with very large amounts of data. Considering our sample size was very small, random effects that may be in the GCTA models could have very significant effects on the GWAS results. This was evident on the manhattan plots generated for the same data, with the same adjustments between GCTA and gaston. In light of this, we have decided to move the GWAS analysis back to gaston.</p>
+<p>I will be performing GWAS on 21 heritable traits (16 individual phenotypes and 5 principal components). I will be using the likelihood ratio test (LRT) as opposed to the wald test and score test as it is the most commonly used in GWAS and is suitable for smaller sample sizes (<a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4547377/" class="uri">https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4547377/</a>). I will also be correcting for any effects of population stratification by including two prinicipal components as I have done with the heritability estimates.</p>
+<p>For the Norfolk Island population, we set a genome-wide signficance threshold of p &lt; 1.84e-7 rather than the general p &lt; 5e-8 because that was calculated specifically for the sample size in the study.</p>
+</div>
+<div id="methods-and-results" class="section level1">
+<h1>Methods and Results</h1>
+<div id="load-phenotypic-data" class="section level3">
+<h3>1. Load phenotypic data</h3>
+<pre class="r"><code>nies_pheno_020918 &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_pheno_020918.csv&#39;, header = T)
+head(nies_pheno_020918)</code></pre>
+<pre><code>##   Fam.ID   UUID R.Logmar.VA L.Logmar.VA R.Sph..pre.dilate.
+## 1      1 219960        0.02       -0.04               0.25
+## 2      1 313180        0.10        0.16               0.00
+## 3      1 320511       -0.06        0.02               1.00
+## 4      1 400011       -0.14       -0.10               0.75
+## 5      1 400013        0.30        0.30               1.50
+## 6      1 316131        0.08        0.26               2.00
+##   R.Cyl..pre.dilate. R.Axis..pre.dilate. L.Sph..pre.dilate.
+## 1               0.00                   0               0.25
+## 2              -0.75                  28              -0.50
+## 3               0.00                   0               1.25
+## 4              -0.25                 157               1.25
+## 5              -0.25                  82               1.75
+## 6              -1.00                  69               1.00
+##   L.Cyl..pre.dilate. L.Axis..pre.dilate. R.K.value.H R.K.Value.H.Axis
+## 1              -0.50                  79       42.00                2
+## 2              -0.25                 164       41.25                7
+## 3              -0.25                  29       42.50              177
+## 4              -0.50                  20       42.50              165
+## 5              -0.50                 100       43.00                0
+## 6              -1.00                 114       42.75               63
+##   R.K.value.V R.K.value.V.Axis L.K.value.H L.K.value.H.Axis L.K.value.V
+## 1       43.00               92       42.50                5       43.50
+## 2       42.25               97       41.50              168       42.00
+## 3       43.50               87       42.00              170       42.50
+## 4       43.25               75       42.75               17       43.25
+## 5       43.00               90       42.75              111       43.00
+## 6       44.00              153       43.00              115       43.50
+##   L.K.value.V.Axis R.Pachimetry L.Pachimetry R.Axial.Length L.Axial.Length
+## 1               95          532          554          24.31          24.10
+## 2               78          608          612          25.02          25.21
+## 3               80          499          512          23.37          23.65
+## 4              107          602          601          23.32          23.34
+## 5               21          552          550          22.93          22.70
+## 6               25          583          588          23.49          23.54
+##   R.AC.Depth L.AC.Depth R.IOP.mmHg L.IOP.mmHg R.CDR L.CDR totaluvafmm
+## 1       3.09       3.03         14         14   0.9   0.9         0.0
+## 2       3.38       3.92         16         15   0.9   0.7        74.4
+## 3       3.29       3.08         17         18   0.4   0.4        27.5
+## 4       3.81       3.83         15         17   0.6   0.6        47.0
+## 5       3.22       3.13         18         18   0.4   0.4        20.1
+## 6       3.24       3.04         12         12   0.3   0.3        12.9</code></pre>
+</div>
+<div id="load-genomic-data-bedbimfam" class="section level3">
+<h3>2. Load genomic data (bed/bim/fam)</h3>
+</div>
+</div>
+
+      </div>
+      
+      <div class="post-content">
+        <div id="disqus_thread"></div>
+<script>
+(function() {
+var d = document, s = d.createElement('script');
+s.src = 'https://http-martha-labbook-netlify-com.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      </div>
+      
     </div>
   </div>
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
+</div>
+
+
 <div class="footer pure-g">
   <div class="pure-u-1-24 pure-u-md-1-6"></div>
   <div class="pure-u-11-12 pure-u-md-2-3">
@@ -655,4 +684,6 @@ based on dark.css by Ivan Sagalaev
 
 </body>
 </html>
+
+
 
