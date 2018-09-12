@@ -76,9 +76,7 @@ for (i in c(2:ncol(nies_heritable_pheno))){
                                      test = "lrt", K = merged_nies_GRM, eigenK = merged_nies_eiK, p =2)
   her_pheno_gwas <- na.omit(her_pheno_gwas)
   pheno_gwas_filtered <- her_pheno_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
-  tiff(paste('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_plot_', pheno_colnames, '_', '.png'), width = 800, height = 500, res = 150, compression = 'lzw')
   qqman::manhattan(x = pheno_gwas_filtered, chr = "chr", bp = "pos", p = "p", snp = "id", genomewideline = -log10(1.84e-7), main = paste(pheno_colnames))
-  dev.off()
   pheno_gwas <- pheno_gwas_filtered
 }
 ```

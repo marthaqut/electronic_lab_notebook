@@ -15,3 +15,302 @@ tags:
 The pedigree-based GWAS identified 9 heritable traits with significant hits (i.e. SNPs that pass genome-wide significance threshold, p < 1.84e-7). The number of significant hits within each trait highly varied. To identify the most robust hits, SNPs that pass the genome-wide signficance threshold would ideally have adjacent SNPs that pass the suggestive threshold. Therefore, I will attempt to filter the significant hits/loci based on the presence of significant (suggestive) SNPs. 
 
 #Methods and Results 
+
+```{r, message=FALSE}
+require(magrittr)
+require(dplyr)
+require(gaston)
+require(qqman)
+```
+
+
+###Load relevant data 
+```{r}
+nies_heritable_pheno <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_heritable_pheno.csv', header = T)
+
+merged_nies_210818 <- read.bed.matrix("C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.bed")
+
+merged_nies_GRM <- GRM(merged_nies_210818)
+merged_nies_eiK <- eigen(merged_nies_GRM)
+merged_nies_eiK$values[ merged_nies_eiK$values < 0] <- 0
+merged_nies_PC <- sweep(merged_nies_eiK$vectors, 2, sqrt(merged_nies_eiK$values), "*")
+```
+
+
+###1. Perform GWAS
+```{r}
+r_kvalV_gwas <- association.test(merged_nies_210818, nies_heritable_pheno$R.K.value.V, method="lmm", test = "lrt", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+r_kvalV_gwas <- na.omit(r_kvalV_gwas)
+r_kvalV_filtered <- r_kvalV_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+```
+
+###2. Identify significant hits (passing genome-wide threshold)
+```{r}
+r_kvalV_meff <- r_kvalV_filtered %>% filter(p < 1.84e-7)
+
+head(r_kvalV_meff)
+```
+
+113 SNPs pass genome-wide threshold.
+
+###3. Identify the most significant SNP per chromosome
+
+```{r}
+r_kvalV_sig <- do.call(rbind, lapply(split(r_kvalV_meff,r_kvalV_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+head(r_kvalV_sig)
+```
+
+3 SNPs are identified (chr 1, 4, 15).
+
+###4. Determine number of significant SNPs within 100kb of most significant hits
+
+```{r}
+r_kvalV_res <- NULL
+for (i in r_kvalV_sig$id) {
+  snpID <- i
+  snpCHR <- r_kvalV_filtered[r_kvalV_filtered$id == snpID,]$chr
+  snpPOS <- r_kvalV_filtered[r_kvalV_filtered$id ==snpID,]$pos
+  
+  sig.peak <- r_kvalV_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  r_kvalV_res <- rbind(r_kvalV_res, sig.peak)
+}
+
+r_kvalV_res
+```
+
+40 SNPs are identified. Supporting SNPs are present for peaks/index SNPs on chr 1 and 4, but not index SNP on chr 1. This suggests that "true" peak is present on chr 1 and 4, but not on chr 15. 
+
+###5. Repeat filtering for 8 other significant traits 
+
+####Component 8
+```{r}
+pc8_gwas <- association.test(merged_nies_210818, nies_heritable_pheno$coord.Dim.8, method="lmm", test = "lrt", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+pc8_gwas <- na.omit(pc8_gwas)
+pc8_filtered <- pc8_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+pc8_meff <- pc8_filtered %>% filter(p < 1.84e-7)
+pc8_sig <- do.call(rbind, lapply(split(pc8_meff,pc8_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+pc8_res <- NULL
+for (i in pc8_sig$id) {
+  snpID <- i
+  snpCHR <- pc8_filtered[pc8_filtered$id == snpID,]$chr
+  snpPOS <- pc8_filtered[pc8_filtered$id ==snpID,]$pos
+  
+  sig.peak <- pc8_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  pc8_res <- rbind(pc8_res, sig.peak)
+}
+
+pc8_res
+```
+
+8 SNPs pass genome-wide significance, 1 index SNP identified (chr 9), 7 SNPs support the index.
+
+####L ACD 
+```{r}
+l_acd_gwas <- association.test(merged_nies_210818, nies_heritable_pheno$L.AC.Depth, method="lmm", test = "lrt", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+l_acd_gwas <- na.omit(l_acd_gwas)
+l_acd_filtered <- l_acd_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+l_acd_meff <- l_acd_filtered %>% filter(p < 1.84e-7)
+l_acd_sig <- do.call(rbind, lapply(split(l_acd_meff,l_acd_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+l_acd_res <- NULL
+for (i in l_acd_sig$id) {
+  snpID <- i
+  snpCHR <- l_acd_filtered[l_acd_filtered$id == snpID,]$chr
+  snpPOS <- l_acd_filtered[l_acd_filtered$id ==snpID,]$pos
+  
+  sig.peak <- l_acd_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  l_acd_res <- rbind(l_acd_res, sig.peak)
+}
+
+l_acd_res
+```
+
+24 SNPs pass genome-wide significance, 1 index SNP identified (chr 11), no supporting SNPs. 
+
+####L CDR 
+```{r}
+l_cdr_gwas <- association.test(merged_nies_210818, nies_heritable_pheno$L.CDR, method="lmm", test = "lrt", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+l_cdr_gwas <- na.omit(l_cdr_gwas)
+l_cdr_filtered <- l_cdr_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+l_cdr_meff <- l_cdr_filtered %>% filter(p < 1.84e-7)
+l_cdr_sig <- do.call(rbind, lapply(split(l_cdr_meff,l_cdr_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+l_cdr_res <- NULL
+for (i in l_cdr_sig$id) {
+  snpID <- i
+  snpCHR <- l_cdr_filtered[l_cdr_filtered$id == snpID,]$chr
+  snpPOS <- l_cdr_filtered[l_cdr_filtered$id ==snpID,]$pos
+  
+  sig.peak <- l_cdr_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  l_cdr_res <- rbind(l_cdr_res, sig.peak)
+}
+
+l_cdr_res
+```
+
+2 SNPs pass genome-wide significance, 2 index SNPs identified (chr 4, 17), no supporting peaks 
+
+####L K-value H
+```{r}
+l_KvalH_gwas <- association.test(merged_nies_210818, nies_heritable_pheno$L.K.value.H, method="lmm", test = "lrt", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+l_KvalH_gwas <- na.omit(l_KvalH_gwas)
+l_kvalH_filtered <- l_KvalH_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+l_kvalH_meff <- l_kvalH_filtered %>% filter(p < 1.84e-7)
+l_kvalH_sig <- do.call(rbind, lapply(split(l_kvalH_meff,l_kvalH_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+l_kvalH_res <- NULL
+for (i in l_kvalH_sig$id) {
+  snpID <- i
+  snpCHR <- l_kvalH_filtered[l_kvalH_filtered$id == snpID,]$chr
+  snpPOS <- l_kvalH_filtered[l_kvalH_filtered$id ==snpID,]$pos
+  
+  sig.peak <- l_kvalH_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  l_kvalH_res <- rbind(l_kvalH_res, sig.peak)
+}
+
+l_kvalH_res
+```
+
+147 SNPs pass genome-wide significance, 5 index SNPs identified (chr 2, 3,6, 10, 16), supporting SNPs identified for index SNPs on chr 2 and 6.
+
+####Component 3
+```{r}
+pc3_gwas <- association.test(merged_nies_210818, nies_heritable_pheno$coord.Dim.3, method="lmm", test = "lrt", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+pc3_gwas <- na.omit(pc3_gwas)
+pc3_filtered <- pc3_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+pc3_meff <- pc3_filtered %>% filter(p < 1.84e-7)
+pc3_sig <- do.call(rbind, lapply(split(pc3_meff,pc3_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+pc3_res <- NULL
+for (i in pc3_sig$id) {
+  snpID <- i
+  snpCHR <- pc3_filtered[pc3_filtered$id == snpID,]$chr
+  snpPOS <- pc3_filtered[pc3_filtered$id ==snpID,]$pos
+  
+  sig.peak <- pc3_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  pc3_res <- rbind(pc3_res, sig.peak)
+}
+
+pc3_res
+```
+
+245 SNPs pass genome-wide significance, 8 index SNPs identified (chr 1-5, 8, 12, 14), supporting SNPs are present for index on chr 1, 4, 5, 8.
+
+####R ACD
+```{r}
+r_acd_gwas <- association.test(merged_nies_210818, nies_heritable_pheno$R.AC.Depth, method="lmm", test = "lrt", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+r_acd_gwas <- na.omit(r_acd_gwas)
+r_acd_filtered <- r_acd_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+r_acd_meff <- r_acd_filtered %>% filter(p < 1.84e-7)
+r_acd_sig <- do.call(rbind, lapply(split(r_acd_meff,r_acd_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+r_acd_res <- NULL
+for (i in r_acd_sig$id) {
+  snpID <- i
+  snpCHR <- r_acd_filtered[r_acd_filtered$id == snpID,]$chr
+  snpPOS <- r_acd_filtered[r_acd_filtered$id ==snpID,]$pos
+  
+  sig.peak <- r_acd_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  r_acd_res <- rbind(r_acd_res, sig.peak)
+}
+
+r_acd_res
+```
+
+1 SNP passed genome-wide significance, which is the index SNP, and no supporting SNPs are present. 
+
+####R Cyl Pre-dilate
+```{r}
+r_cyl_gwas <- association.test(merged_nies_210818, nies_heritable_pheno$R.Cyl..pre.dilate, method="lmm", test = "lrt", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+r_cyl_gwas <- na.omit(r_cyl_gwas)
+r_cyl_filtered <- r_cyl_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+r_cyl_meff <- r_cyl_filtered %>% filter(p < 1.84e-7)
+r_cyl_sig <- do.call(rbind, lapply(split(r_cyl_meff,r_cyl_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+r_cyl_res <- NULL
+for (i in r_cyl_sig$id) {
+  snpID <- i
+  snpCHR <- r_cyl_filtered[r_cyl_filtered$id == snpID,]$chr
+  snpPOS <- r_cyl_filtered[r_cyl_filtered$id ==snpID,]$pos
+  
+  sig.peak <- r_cyl_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  r_cyl_res <- rbind(r_cyl_res, sig.peak)
+}
+
+r_cyl_res
+```
+
+394 SNPs pass genome-wide significance, 19 index SNPs identified (chr 1-5, 7-14, 16-20, 22), supporting SNPs present for index on chr 1, 2, 4, 8, 9, 10, 11, 12, 13, 14, 20. 
+
+####UVAF
+```{r}
+uvaf_gwas <- association.test(merged_nies_210818, nies_heritable_pheno$totaluvafmm, method="lmm", test = "lrt", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+uvaf_gwas <- na.omit(uvaf_gwas)
+uvaf_filtered <- uvaf_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+uvaf_meff <- uvaf_filtered %>% filter(p < 1.84e-7)
+uvaf_sig <- do.call(rbind, lapply(split(uvaf_meff,uvaf_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+uvaf_res <- NULL
+for (i in uvaf_sig$id) {
+  snpID <- i
+  snpCHR <- uvaf_filtered[uvaf_filtered$id == snpID,]$chr
+  snpPOS <- uvaf_filtered[uvaf_filtered$id ==snpID,]$pos
+  
+  sig.peak <- uvaf_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  uvaf_res <- rbind(uvaf_res, sig.peak)
+}
+
+uvaf_res
+write.csv(uvaf_res, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter/uvaf_res.csv')
+```
+
+7 SNPs pass genome-wide significance, 4 index SNPs identified (chr 7, 8, 9, 10), supporting SNPs present for index on chr 8, 9, 10.
+
+By identifying the index SNPs that have supporting SNPs passing the suggestive line (p < 1e-5), I eliminated three traits: L ACD, L CDR, and R ACD. Evidently, even in the other traits, not all index SNPs have supporting SNPs. Although the lack of supporting SNPs does not necessarily mean that they are false positives, their presence indicates robustness of the signigicant SNPs. And for the scope of this project, we do not have the capacity to determine whether any of the other significant hits without supporting SNPs are true. Therefore, I am only reporting the index SNPs that are well-supported. 
