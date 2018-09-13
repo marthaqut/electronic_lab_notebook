@@ -237,5 +237,6 @@ r_cyl_gwas &lt;- na.omit(r_cyl_gwas)
 r_cyl_gwas_filtered &lt;- r_cyl_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
 manhattan(x = r_cyl_gwas_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,15), genomewideline = -log10(1.84e-7), main = &quot;Right Cylindrical Pre-Dilate Refractive Error&quot;, annotatePval = 1.84e-7)</code></pre>
 <p><img src="/posts/2018-09-07-performing-gwas-on-heritable-traits_files/figure-html/unnamed-chunk-8-8.png" width="672" /></p>
+<p>These manhattan plots display significant SNPs that pass the genome-wide significance threshold. Although this indicates significant association with traits, they may not all be “true”. Typically, robust associations, or significant results have supporting SNPs surrounding the most significant peak. Therefore, I will apply a filter on these results.</p>
 </div>
 </div>

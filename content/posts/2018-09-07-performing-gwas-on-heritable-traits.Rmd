@@ -138,4 +138,5 @@ manhattan(x = r_cyl_gwas_filtered, chr = "chr", bp = "pos", p = "p", snp = "id",
 
 ```
 
-
+These manhattan plots display significant SNPs that pass the genome-wide significance threshold. 
+Although this indicates significant association with traits, they may not all be "true". Typically, robust associations, or significant results have supporting SNPs surrounding the most significant peak. Therefore, I will apply a filter on these results. 
