@@ -1,0 +1,262 @@
+---
+title: SNP heritability
+author: Martha Aquino
+date: '2018-09-19'
+slug: snp-heritability
+categories:
+  - Experiments
+  - Coding
+tags:
+  - Gaston
+  - GCTA
+  - Genomic Data
+  - GWAS
+  - Heritability
+  - MLMA
+---
+
+#Introduction
+SNP heritability of index SNPs are non-sense. The numbers I am obtaining are either too high or too low. 
+
+#Methods and Results 
+
+```{r, message=FALSE}
+require(magrittr)
+require(dplyr)
+require(gaston)
+require(qqman)
+```
+
+
+###Load relevant data 
+```{r}
+nies_heritable_pheno <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_heritable_pheno.csv', header = T)
+
+merged_nies_210818 <- read.bed.matrix("C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.bed")
+
+merged_nies_GRM <- GRM(merged_nies_210818)
+merged_nies_eiK <- eigen(merged_nies_GRM)
+merged_nies_eiK$values[ merged_nies_eiK$values < 0] <- 0
+merged_nies_PC <- sweep(merged_nies_eiK$vectors, 2, sqrt(merged_nies_eiK$values), "*")
+```
+
+
+####1. GWAS using lmm and lrt 
+```{r}
+l_KvalH_gwas <- association.test(merged_nies_210818, nies_heritable_pheno$L.K.value.H, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+l_KvalH_gwas <- na.omit(l_KvalH_gwas)
+l_kvalH_filtered <- l_KvalH_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+l_kvalH_meff <- l_kvalH_filtered %>% filter(p < 1.84e-7)
+l_kvalH_sig <- do.call(rbind, lapply(split(l_kvalH_meff,l_kvalH_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+l_kvalH_res <- NULL
+for (i in l_kvalH_sig$id) {
+  snpID <- i
+  snpCHR <- l_kvalH_filtered[l_kvalH_filtered$id == snpID,]$chr
+  snpPOS <- l_kvalH_filtered[l_kvalH_filtered$id ==snpID,]$pos
+  
+  sig.peak <- l_kvalH_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  l_kvalH_res <- rbind(l_kvalH_res, sig.peak)
+}
+
+l_kvalH_res
+
+manhattan(x = l_kvalH_filtered, chr = "chr", bp = "pos", p = "p", snp = "id", ylim = c(0,12), genomewideline = -log10(1.84e-7), main = "L K-value H (LRT)", annotatePval = 1.84e-7)
+
+```
+
+####2. GWAS using lm and wald 
+```{r}
+l_KvalH_wald <- association.test(merged_nies_210818, nies_heritable_pheno$L.K.value.H, method="lm", test = "wald", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+l_KvalH_wald <- na.omit(l_KvalH_wald)
+l_kvalH_Wfilt <- l_KvalH_wald %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+l_kvalH_Wmeff <- l_kvalH_Wfilt %>% filter(p < 1.84e-7)
+l_kvalH_Wsig <- do.call(rbind, lapply(split(l_kvalH_Wmeff,l_kvalH_Wmeff$chr), function(x) {return(x[which.min(x$p),])}))
+
+l_kvalH_Wres <- NULL
+for (i in l_kvalH_sig$id) {
+  snpID <- i
+  snpCHR <- l_kvalH_Wfilt[l_kvalH_Wfilt$id == snpID,]$chr
+  snpPOS <- l_kvalH_Wfilt[l_kvalH_Wfilt$id ==snpID,]$pos
+  
+  sig.peak <- l_kvalH_Wfilt %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  l_kvalH_Wres <- rbind(l_kvalH_Wres, sig.peak)
+}
+
+l_kvalH_Wres
+
+manhattan(x = l_kvalH_Wfilt, chr = "chr", bp = "pos", p = "p", snp = "id", ylim = c(0,12), genomewideline = -log10(1.84e-7), main = "L K-value H (Wald)", annotatePval = 1.84e-7)
+```
+
+####3. Test GWAS on R K-value V
+```{r}
+r_kvalV_gwas <- association.test(merged_nies_210818, nies_heritable_pheno$R.K.value.V, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+r_kvalV_gwas <- na.omit(r_kvalV_gwas)
+r_kvalV_filtered <- r_kvalV_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+r_kvalV_meff <- r_kvalV_filtered %>% filter(p < 1.84e-7)
+r_kvalV_sig <- do.call(rbind, lapply(split(r_kvalV_meff,r_kvalV_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+r_kvalV_res <- NULL
+for (i in r_kvalV_sig$id) {
+  snpID <- i
+  snpCHR <- r_kvalV_filtered[r_kvalV_filtered$id == snpID,]$chr
+  snpPOS <- r_kvalV_filtered[r_kvalV_filtered$id ==snpID,]$pos
+  
+  sig.peak <- r_kvalV_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  r_kvalV_res <- rbind(r_kvalV_res, sig.peak)
+}
+
+r_kvalV_res
+
+manhattan(x = r_kvalV_filtered, chr = "chr", bp = "pos", p = "p", snp = "id", ylim = c(0,12), genomewideline = -log10(1.84e-7), main = "R K-value V (LRT)", annotatePval = 1.84e-7)
+```
+
+
+```{r}
+r_kvalV_wald <- association.test(merged_nies_210818, nies_heritable_pheno$R.K.value.V, method="lm", test = "wald", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+r_kvalV_wald <- na.omit(r_kvalV_wald)
+r_kvalV_Wfilt <- r_kvalV_wald %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+r_kvalV_Wmeff <- r_kvalV_Wfilt %>% filter(p < 1.84e-7)
+r_kvalV_Wsig <- do.call(rbind, lapply(split(r_kvalV_Wmeff,r_kvalV_Wmeff$chr), function(x) {return(x[which.min(x$p),])}))
+
+r_kvalV_Wres <- NULL
+for (i in r_kvalV_sig$id) {
+  snpID <- i
+  snpCHR <- r_kvalV_Wfilt[r_kvalV_Wfilt$id == snpID,]$chr
+  snpPOS <- r_kvalV_Wfilt[r_kvalV_Wfilt$id ==snpID,]$pos
+  
+  sig.peak <- r_kvalV_Wfilt %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  r_kvalV_Wres <- rbind(r_kvalV_Wres, sig.peak)
+}
+
+r_kvalV_Wres
+
+manhattan(x = r_kvalV_Wfilt, chr = "chr", bp = "pos", p = "p", snp = "id", ylim = c(0,12), genomewideline = -log10(1.84e-7), main = "R K-value V (Wald)", annotatePval = 1.84e-7)
+```
+
+####4. GWAS on component 3
+
+```{r}
+pc3_gwas <- association.test(merged_nies_210818, nies_heritable_pheno$coord.Dim.3, method="lmm", test = "lrt", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+pc3_gwas <- na.omit(pc3_gwas)
+pc3_filtered <- pc3_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+pc3_meff <- pc3_filtered %>% filter(p < 1.84e-7)
+pc3_sig <- do.call(rbind, lapply(split(pc3_meff,pc3_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+pc3_res <- NULL
+for (i in pc3_sig$id) {
+  snpID <- i
+  snpCHR <- pc3_filtered[pc3_filtered$id == snpID,]$chr
+  snpPOS <- pc3_filtered[pc3_filtered$id ==snpID,]$pos
+  
+  sig.peak <- pc3_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  pc3_res <- rbind(pc3_res, sig.peak)
+}
+
+pc3_res
+
+manhattan(x = pc3_filtered, chr = "chr", bp = "pos", p = "p", snp = "id", ylim = c(0,12), genomewideline = -log10(1.84e-7), main = "Component 3 (LRT)", annotatePval = 1.84e-7)
+```
+
+```{r}
+pc3_wald <- association.test(merged_nies_210818, nies_heritable_pheno$coord.Dim.3, method="lm", test = "wald", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+pc3_wald <- na.omit(pc3_wald)
+pc3_Wfilt <- pc3_wald %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+pc3_Wmeff <- pc3_Wfilt %>% filter(p < 1.84e-7)
+pc3_Wsig <- do.call(rbind, lapply(split(pc3_Wmeff,pc3_Wmeff$chr), function(x) {return(x[which.min(x$p),])}))
+
+pc3_Wres <- NULL
+for (i in pc3_sig$id) {
+  snpID <- i
+  snpCHR <- pc3_Wfilt[pc3_Wfilt$id == snpID,]$chr
+  snpPOS <- pc3_Wfilt[pc3_Wfilt$id ==snpID,]$pos
+  
+  sig.peak <- pc3_Wfilt %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  pc3_Wres <- rbind(pc3_Wres, sig.peak)
+}
+
+pc3_Wres
+
+manhattan(x = pc3_Wfilt, chr = "chr", bp = "pos", p = "p", snp = "id", ylim = c(0,12), genomewideline = -log10(1.84e-7), main = "Component 3 (Wald)", annotatePval = 1.84e-7)
+```
+
+Wald test appears to identify more significant SNPs 
+
+####5. Generate example Q-Q plots. 
+
+For componenet 3
+```{r}
+pc3_rare_out <- pc3_gwas %>% filter(freqA2 < 0.99)
+qqplot.pvalues(pc3_rare_out$p, main = "Component 3 QQ plot of p-values")
+```
+
+For component 3 (Wald)
+```{r}
+qqplot.pvalues(pc3_wald$p)
+```
+
+
+For R K-value V
+```{r}
+qqplot.pvalues(r_kvalV_gwas$p)
+```
+
+For R Kvalue V (wald)
+```{r}
+qqplot.pvalues(r_kvalV_wald$p)
+```
+
+```{r}
+l_kvalV_gwas <- association.test(merged_nies_210818, nies_heritable_pheno$L.K.value.V, method="lmm", test = "lrt", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+l_kvalV_gwas <- na.omit(l_kvalV_gwas)
+l_kvalV_filtered <- l_kvalV_gwas %>% filter(freqA2 < 0.99)
+
+qqplot.pvalues(l_kvalV_filtered)
+```
+
+####6. Generate QQ plots for all manhattan plots regardless of presence of significant loci 
+
+```{r, eval=FALSE}
+pheno_qqplot <- NULL
+for (i in c(2:ncol(nies_heritable_pheno))){
+  pheno_colnames <- colnames(nies_heritable_pheno[i])
+  her_pheno_gwas <- association.test(merged_nies_210818, nies_heritable_pheno[,i], method = "lmm", 
+                                     test = "lrt", K = merged_nies_GRM, eigenK = merged_nies_eiK, p =2)
+  her_pheno_gwas <- na.omit(her_pheno_gwas)
+  pheno_gwas_filtered <- her_pheno_gwas  %>% filter(freqA2 < 0.99)
+  tiff(paste('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_plots/', pheno_colnames, '_qqplot.png'), width = 800, height = 500, res = 150, compression = 'lzw')
+  gaston:: qqplot.pvalues(pheno_gwas_filtered$p, main = paste(pheno_colnames))
+  dev.off()
+}
+```
+

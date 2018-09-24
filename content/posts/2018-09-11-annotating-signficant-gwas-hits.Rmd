@@ -41,6 +41,7 @@ merged_nies_PC <- sweep(merged_nies_eiK$vectors, 2, sqrt(merged_nies_eiK$values)
 ```{r}
 r_kvalV_gwas <- association.test(merged_nies_210818, nies_heritable_pheno$R.K.value.V, method="lmm", test = "lrt", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
 r_kvalV_gwas <- na.omit(r_kvalV_gwas)
+head(r_kvalV_gwas)
 r_kvalV_filtered <- r_kvalV_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
 ```
 
@@ -314,3 +315,30 @@ write.csv(uvaf_res, 'C:/Users/Martha/Documents/Honours/Project/honours.project/D
 7 SNPs pass genome-wide significance, 4 index SNPs identified (chr 7, 8, 9, 10), supporting SNPs present for index on chr 8, 9, 10.
 
 By identifying the index SNPs that have supporting SNPs passing the suggestive line (p < 1e-5), I eliminated three traits: L ACD, L CDR, and R ACD. Evidently, even in the other traits, not all index SNPs have supporting SNPs. Although the lack of supporting SNPs does not necessarily mean that they are false positives, their presence indicates robustness of the signigicant SNPs. And for the scope of this project, we do not have the capacity to determine whether any of the other significant hits without supporting SNPs are true. Therefore, I am only reporting the index SNPs that are well-supported. 
+
+
+```{r}
+l_KvalH_gwas <- association.test(merged_nies_210818, nies_heritable_pheno$L.K.value.H, method="lm", test = "wald", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+l_KvalH_gwas <- na.omit(l_KvalH_gwas)
+l_kvalH_filtered <- l_KvalH_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+l_kvalH_meff <- l_kvalH_filtered %>% filter(p < 1.84e-7)
+l_kvalH_sig <- do.call(rbind, lapply(split(l_kvalH_meff,l_kvalH_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+l_kvalH_res <- NULL
+for (i in l_kvalH_sig$id) {
+  snpID <- i
+  snpCHR <- l_kvalH_filtered[l_kvalH_filtered$id == snpID,]$chr
+  snpPOS <- l_kvalH_filtered[l_kvalH_filtered$id ==snpID,]$pos
+  
+  sig.peak <- l_kvalH_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  l_kvalH_res <- rbind(l_kvalH_res, sig.peak)
+}
+
+l_kvalH_res
+```
+

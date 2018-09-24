@@ -1,0 +1,105 @@
+---
+title: 'Adding age and sex as covariates '
+author: Martha Aquino
+date: '2018-09-21'
+slug: adding-age-and-sex-as-covariates
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Gaston
+  - GCTA
+  - Genomic Data
+  - GREML
+  - Heritability
+---
+
+```{r}
+require(magicfor)
+require(magrittr)
+require(dplyr)
+require(gaston)
+require(qqman)
+```
+
+#Introduction 
+
+The QQ plots indicate that the GWAS results may be inflated. Typically, this inflation is observed because of population structure, an underpowered study, applying the wrong statistical test, or other hidden factors. I have corrected for population structure by including two principal components, the thresholds applied to the analyses are based on this specific population, and a stringent test is applied to the data set. Therefore, most probable causes for inflation have been accounted for. However, we have not included age and sex as covariates in these analyses because we had concerns about over burdening the model and potentially missing true associations. However, in light of these QQ plots, I will include age and sex as covariates to ensure that the results inflation are not due to these factors. 
+
+#Methods and Results 
+
+####Load data 
+```{r}
+NIES_master <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv', header = T)
+covar_col <- c("UUID", "Gender", "Age.excel")
+nies_master_covar <- NIES_master[covar_col]
+
+nies_final_uuid <- nies_heritable_pheno$UUID
+
+nies_covar <- nies_master_covar[nies_master_covar$UUID %in% nies_final_uuid,]
+nies_covar <- as.matrix(nies_covar)
+write.csv(nies_covar, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_covar.csv')
+
+nies_pheno_020918 <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_pheno_020918.csv', header = T)
+
+nies_heritable_pheno <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_heritable_pheno.csv', header = T)
+
+nies_heritable_pheno220918 <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_heritable_pheno220918.csv', header = TRUE)
+
+merged_nies_210818 <- read.bed.matrix("C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.bed")
+
+merged_nies_GRM <- GRM(merged_nies_210818)
+merged_nies_eiK <- eigen(merged_nies_GRM)
+merged_nies_eiK$values[ merged_nies_eiK$values < 0] <- 0
+merged_nies_PC <- sweep(merged_nies_eiK$vectors, 2, sqrt(merged_nies_eiK$values), "*")
+```
+
+####1. Heritability analyses in GCTA 
+```{bash, eval = FALSE}
+for i in {1..27}
+do ./gcta64 --reml --grm gcta_output/merged_nies_grm --pheno nies_pheno_020918.txt --mpheno $i --reml-pred-rand --covar nies_sex_covar.txt --qcovar nies_pca_age_covar.txt --out gcta_output/$i.covar.est
+head gcta_output/$i.covar.est.hsq >> trait.her.covar.gcta.txt
+done
+
+for i in {1..9}
+do ./gcta64 --reml --grm gcta_output/merged_nies_grm --pheno pheno_pca_coord.txt --mpheno $i --reml-pred-rand --covar nies_sex_covar.txt --qcovar nies_pca_age_covar.txt --out gcta_output/$i.pc.covar.est
+head gcta_output/$i.pc.covar.est.hsq >> pc.her.covar.gcta.txt
+done
+```
+```{r}
+heritability_covar_gcta <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/heritability_covar_gcta2.csv', header = TRUE)
+
+heritability_covar_gcta
+```
+
+
+These heritability estimates differ from the previous estimates suggesting that sex and age have a significant influence on the outcome of the analyses. All traits that are statistically significant (p < 0.05) will be prioritised for pedigree-based GWAS. However, I would also like to confirm these values with gaston since it is the tool I will be using for the GWAS.
+
+####2. Perform GWAS using lmm and LRT 
+
+```{r}
+nies_covar <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_covar.csv', header =T)
+nies_heritable_pheno240918 <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_heritable_pheno240918.csv', header = TRUE)
+
+for (i in c(2:ncol(nies_heritable_pheno240918))){
+  pheno_colnames <- colnames(nies_heritable_pheno240918[i])
+  her_pheno_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918[,i], X = nies_covar, method = "lmm", test = "lrt", K = merged_nies_GRM, eigenK = merged_nies_eiK, p =2)
+  her_pheno_gwas <- na.omit(her_pheno_gwas)
+  pheno_gwas_filtered <- her_pheno_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+  qqman::manhattan(x = pheno_gwas_filtered, chr = "chr", bp = "pos", p = "p", snp = "id", genomewideline = -log10(1.84e-7), main = paste(pheno_colnames), ylim = c(0,10))
+}
+```
+
+####3. Generate QQ plots for GWAS resutls 
+
+```{r}
+for (i in c(2:ncol(nies_heritable_pheno240918))){
+  pheno_colnames <- colnames(nies_heritable_pheno240918[i])
+  her_pheno_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918[,i], method = "lmm", 
+                                     test = "lrt", K = merged_nies_GRM, eigenK = merged_nies_eiK, p =2)
+  her_pheno_gwas <- na.omit(her_pheno_gwas)
+  pheno_gwas_filtered <- her_pheno_gwas  %>% filter(freqA2 < 0.99)
+  gaston:: qqplot.pvalues(pheno_gwas_filtered$p, main = paste(pheno_colnames))
+}
+```
+
