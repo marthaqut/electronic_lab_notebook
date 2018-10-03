@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  <meta charset="utf-8">
+  <title>Adding age and sex as covariates </title>
+  <meta name="description" content="Adding age and sex as covariates ">
+  <meta name="author" content="Martha Aquino">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <noscript>
+    <link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/fonts.css">
+  </noscript>
+  
+  
+  <style type="text/css" media="screen">
+    /*!
+Pure v1.0.0
+Copyright 2013 Yahoo!
+Licensed under the BSD License.
+https://github.com/yahoo/pure/blob/master/LICENSE.md
+*/
+/*!
+normalize.css v^3.0 | MIT License | git.io/normalize
+Copyright (c) Nicolas Gallagher and Jonathan Neal
+*/
+/*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */img,legend{border:0}legend,td,th{padding:0}html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{margin:0}article,aside,details,figcaption,figure,footer,header,hgroup,main,menu,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block;vertical-align:baseline}audio:not([controls]){display:none;height:0}[hidden],template{display:none}a{background-color:transparent}a:active,a:hover{outline:0}abbr[title]{border-bottom:1px dotted}b,optgroup,strong{font-weight:700}dfn{font-style:italic}h1{font-size:2em;margin:.67em 0}mark{background:#ff0;color:#000}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sup{top:-.5em}sub{bottom:-.25em}svg:not(:root){overflow:hidden}figure{margin:1em 40px}hr{box-sizing:content-box;height:0}pre,textarea{overflow:auto}code,kbd,pre,samp{font-family:monospace,monospace;font-size:1em}button,input,optgroup,select,textarea{color:inherit;font:inherit;margin:0}button{overflow:visible}button,select{text-transform:none}button,html input[type=button],input[type=reset],input[type=submit]{-webkit-appearance:button;cursor:pointer}button[disabled],html input[disabled]{cursor:default}button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}input{line-height:normal}input[type=checkbox],input[type=radio]{box-sizing:border-box;padding:0}input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{height:auto}input[type=search]{-webkit-appearance:textfield;box-sizing:content-box}input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-search-decoration{-webkit-appearance:none}fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}table{border-collapse:collapse;border-spacing:0}.hidden,[hidden]{display:none!important}.pure-img{max-width:100%;height:auto;display:block}
+  </style>
+  <style type="text/css" media="screen">
+    /*!
+Pure v1.0.0
+Copyright 2013 Yahoo!
+Licensed under the BSD License.
+https://github.com/yahoo/pure/blob/master/LICENSE.md
+*/
+.pure-menu{box-sizing:border-box}.pure-menu-fixed{position:fixed;left:0;top:0;z-index:3}.pure-menu-item,.pure-menu-list{position:relative}.pure-menu-list{list-style:none;margin:0;padding:0}.pure-menu-item{padding:0;margin:0;height:100%}.pure-menu-heading,.pure-menu-link{display:block;text-decoration:none;white-space:nowrap}.pure-menu-horizontal{width:100%;white-space:normal}.pure-menu-horizontal .pure-menu-list{display:inline-block}.pure-menu-horizontal .pure-menu-heading,.pure-menu-horizontal .pure-menu-item,.pure-menu-horizontal .pure-menu-separator{display:inline-block;zoom:1;vertical-align:middle}.pure-menu-item .pure-menu-item{display:block}.pure-menu-children{display:none;position:absolute;left:100%;top:0;margin:0;padding:0;z-index:3}.pure-menu-horizontal .pure-menu-children{left:0;top:auto;width:inherit}.pure-menu-active>.pure-menu-children,.pure-menu-allow-hover:hover>.pure-menu-children{display:block;position:absolute}.pure-menu-has-children>.pure-menu-link:after{padding-left:.5em;content:"\25B8";font-size:small}.pure-menu-horizontal .pure-menu-has-children>.pure-menu-link:after{content:"\25BE"}.pure-menu-scrollable{overflow-y:scroll;overflow-x:hidden}.pure-menu-scrollable .pure-menu-list{display:block}.pure-menu-horizontal.pure-menu-scrollable .pure-menu-list{display:inline-block}.pure-menu-horizontal.pure-menu-scrollable{white-space:nowrap;overflow-y:hidden;overflow-x:auto;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;padding:.5em 0}.pure-menu-horizontal.pure-menu-scrollable::-webkit-scrollbar{display:none}.pure-menu-horizontal .pure-menu-children .pure-menu-separator,.pure-menu-separator{background-color:#ccc;height:1px;margin:.3em 0}.pure-menu-horizontal .pure-menu-separator{width:1px;height:1.3em;margin:0 .3em}.pure-menu-horizontal .pure-menu-children .pure-menu-separator{display:block;width:auto}.pure-menu-heading{text-transform:uppercase;color:#565d64}.pure-menu-link{color:#777}.pure-menu-children{background-color:#fff}.pure-menu-disabled,.pure-menu-heading,.pure-menu-link{padding:.5em 1em}.pure-menu-disabled{opacity:.5}.pure-menu-disabled .pure-menu-link:hover{background-color:transparent}.pure-menu-active>.pure-menu-link,.pure-menu-link:focus,.pure-menu-link:hover{background-color:#eee}.pure-menu-selected .pure-menu-link,.pure-menu-selected .pure-menu-link:visited{color:#000}
+
+  </style>
+  <style type="text/css" media="screen">
+    /*!
+Pure v1.0.0
+Copyright 2013 Yahoo!
+Licensed under the BSD License.
+https://github.com/yahoo/pure/blob/master/LICENSE.md
+*/
+.pure-g{letter-spacing:-.31em;text-rendering:optimizespeed;font-family:FreeSans,Arimo,"Droid Sans",Helvetica,Arial,sans-serif;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-flow:row wrap;-ms-flex-flow:row wrap;flex-flow:row wrap;-webkit-align-content:flex-start;-ms-flex-line-pack:start;align-content:flex-start}@media all and (-ms-high-contrast:none),(-ms-high-contrast:active){table .pure-g{display:block}}.opera-only :-o-prefocus,.pure-g{word-spacing:-.43em}.pure-u,.pure-u-1,.pure-u-1-1,.pure-u-1-12,.pure-u-1-2,.pure-u-1-24,.pure-u-1-3,.pure-u-1-4,.pure-u-1-5,.pure-u-1-6,.pure-u-1-8,.pure-u-10-24,.pure-u-11-12,.pure-u-11-24,.pure-u-12-24,.pure-u-13-24,.pure-u-14-24,.pure-u-15-24,.pure-u-16-24,.pure-u-17-24,.pure-u-18-24,.pure-u-19-24,.pure-u-2-24,.pure-u-2-3,.pure-u-2-5,.pure-u-20-24,.pure-u-21-24,.pure-u-22-24,.pure-u-23-24,.pure-u-24-24,.pure-u-3-24,.pure-u-3-4,.pure-u-3-5,.pure-u-3-8,.pure-u-4-24,.pure-u-4-5,.pure-u-5-12,.pure-u-5-24,.pure-u-5-5,.pure-u-5-6,.pure-u-5-8,.pure-u-6-24,.pure-u-7-12,.pure-u-7-24,.pure-u-7-8,.pure-u-8-24,.pure-u-9-24{display:inline-block;zoom:1;letter-spacing:normal;word-spacing:normal;vertical-align:top;text-rendering:auto}.pure-g [class*=pure-u]{font-family:sans-serif}.pure-u-1-24{width:4.1667%}.pure-u-1-12,.pure-u-2-24{width:8.3333%}.pure-u-1-8,.pure-u-3-24{width:12.5%}.pure-u-1-6,.pure-u-4-24{width:16.6667%}.pure-u-1-5{width:20%}.pure-u-5-24{width:20.8333%}.pure-u-1-4,.pure-u-6-24{width:25%}.pure-u-7-24{width:29.1667%}.pure-u-1-3,.pure-u-8-24{width:33.3333%}.pure-u-3-8,.pure-u-9-24{width:37.5%}.pure-u-2-5{width:40%}.pure-u-10-24,.pure-u-5-12{width:41.6667%}.pure-u-11-24{width:45.8333%}.pure-u-1-2,.pure-u-12-24{width:50%}.pure-u-13-24{width:54.1667%}.pure-u-14-24,.pure-u-7-12{width:58.3333%}.pure-u-3-5{width:60%}.pure-u-15-24,.pure-u-5-8{width:62.5%}.pure-u-16-24,.pure-u-2-3{width:66.6667%}.pure-u-17-24{width:70.8333%}.pure-u-18-24,.pure-u-3-4{width:75%}.pure-u-19-24{width:79.1667%}.pure-u-4-5{width:80%}.pure-u-20-24,.pure-u-5-6{width:83.3333%}.pure-u-21-24,.pure-u-7-8{width:87.5%}.pure-u-11-12,.pure-u-22-24{width:91.6667%}.pure-u-23-24{width:95.8333%}.pure-u-1,.pure-u-1-1,.pure-u-24-24,.pure-u-5-5{width:100%}
+  </style>
+  
+  
+  <style type="text/css" media="screen">
+    /*!
+Pure v1.0.0
+Copyright 2013 Yahoo!
+Licensed under the BSD License.
+https://github.com/yahoo/pure/blob/master/LICENSE.md
+*/
+@media screen and (min-width:35.5em){.pure-u-sm-1,.pure-u-sm-1-1,.pure-u-sm-1-12,.pure-u-sm-1-2,.pure-u-sm-1-24,.pure-u-sm-1-3,.pure-u-sm-1-4,.pure-u-sm-1-5,.pure-u-sm-1-6,.pure-u-sm-1-8,.pure-u-sm-10-24,.pure-u-sm-11-12,.pure-u-sm-11-24,.pure-u-sm-12-24,.pure-u-sm-13-24,.pure-u-sm-14-24,.pure-u-sm-15-24,.pure-u-sm-16-24,.pure-u-sm-17-24,.pure-u-sm-18-24,.pure-u-sm-19-24,.pure-u-sm-2-24,.pure-u-sm-2-3,.pure-u-sm-2-5,.pure-u-sm-20-24,.pure-u-sm-21-24,.pure-u-sm-22-24,.pure-u-sm-23-24,.pure-u-sm-24-24,.pure-u-sm-3-24,.pure-u-sm-3-4,.pure-u-sm-3-5,.pure-u-sm-3-8,.pure-u-sm-4-24,.pure-u-sm-4-5,.pure-u-sm-5-12,.pure-u-sm-5-24,.pure-u-sm-5-5,.pure-u-sm-5-6,.pure-u-sm-5-8,.pure-u-sm-6-24,.pure-u-sm-7-12,.pure-u-sm-7-24,.pure-u-sm-7-8,.pure-u-sm-8-24,.pure-u-sm-9-24{display:inline-block;zoom:1;letter-spacing:normal;word-spacing:normal;vertical-align:top;text-rendering:auto}.pure-u-sm-1-24{width:4.1667%}.pure-u-sm-1-12,.pure-u-sm-2-24{width:8.3333%}.pure-u-sm-1-8,.pure-u-sm-3-24{width:12.5%}.pure-u-sm-1-6,.pure-u-sm-4-24{width:16.6667%}.pure-u-sm-1-5{width:20%}.pure-u-sm-5-24{width:20.8333%}.pure-u-sm-1-4,.pure-u-sm-6-24{width:25%}.pure-u-sm-7-24{width:29.1667%}.pure-u-sm-1-3,.pure-u-sm-8-24{width:33.3333%}.pure-u-sm-3-8,.pure-u-sm-9-24{width:37.5%}.pure-u-sm-2-5{width:40%}.pure-u-sm-10-24,.pure-u-sm-5-12{width:41.6667%}.pure-u-sm-11-24{width:45.8333%}.pure-u-sm-1-2,.pure-u-sm-12-24{width:50%}.pure-u-sm-13-24{width:54.1667%}.pure-u-sm-14-24,.pure-u-sm-7-12{width:58.3333%}.pure-u-sm-3-5{width:60%}.pure-u-sm-15-24,.pure-u-sm-5-8{width:62.5%}.pure-u-sm-16-24,.pure-u-sm-2-3{width:66.6667%}.pure-u-sm-17-24{width:70.8333%}.pure-u-sm-18-24,.pure-u-sm-3-4{width:75%}.pure-u-sm-19-24{width:79.1667%}.pure-u-sm-4-5{width:80%}.pure-u-sm-20-24,.pure-u-sm-5-6{width:83.3333%}.pure-u-sm-21-24,.pure-u-sm-7-8{width:87.5%}.pure-u-sm-11-12,.pure-u-sm-22-24{width:91.6667%}.pure-u-sm-23-24{width:95.8333%}.pure-u-sm-1,.pure-u-sm-1-1,.pure-u-sm-24-24,.pure-u-sm-5-5{width:100%}}@media screen and (min-width:48em){.pure-u-md-1,.pure-u-md-1-1,.pure-u-md-1-12,.pure-u-md-1-2,.pure-u-md-1-24,.pure-u-md-1-3,.pure-u-md-1-4,.pure-u-md-1-5,.pure-u-md-1-6,.pure-u-md-1-8,.pure-u-md-10-24,.pure-u-md-11-12,.pure-u-md-11-24,.pure-u-md-12-24,.pure-u-md-13-24,.pure-u-md-14-24,.pure-u-md-15-24,.pure-u-md-16-24,.pure-u-md-17-24,.pure-u-md-18-24,.pure-u-md-19-24,.pure-u-md-2-24,.pure-u-md-2-3,.pure-u-md-2-5,.pure-u-md-20-24,.pure-u-md-21-24,.pure-u-md-22-24,.pure-u-md-23-24,.pure-u-md-24-24,.pure-u-md-3-24,.pure-u-md-3-4,.pure-u-md-3-5,.pure-u-md-3-8,.pure-u-md-4-24,.pure-u-md-4-5,.pure-u-md-5-12,.pure-u-md-5-24,.pure-u-md-5-5,.pure-u-md-5-6,.pure-u-md-5-8,.pure-u-md-6-24,.pure-u-md-7-12,.pure-u-md-7-24,.pure-u-md-7-8,.pure-u-md-8-24,.pure-u-md-9-24{display:inline-block;zoom:1;letter-spacing:normal;word-spacing:normal;vertical-align:top;text-rendering:auto}.pure-u-md-1-24{width:4.1667%}.pure-u-md-1-12,.pure-u-md-2-24{width:8.3333%}.pure-u-md-1-8,.pure-u-md-3-24{width:12.5%}.pure-u-md-1-6,.pure-u-md-4-24{width:16.6667%}.pure-u-md-1-5{width:20%}.pure-u-md-5-24{width:20.8333%}.pure-u-md-1-4,.pure-u-md-6-24{width:25%}.pure-u-md-7-24{width:29.1667%}.pure-u-md-1-3,.pure-u-md-8-24{width:33.3333%}.pure-u-md-3-8,.pure-u-md-9-24{width:37.5%}.pure-u-md-2-5{width:40%}.pure-u-md-10-24,.pure-u-md-5-12{width:41.6667%}.pure-u-md-11-24{width:45.8333%}.pure-u-md-1-2,.pure-u-md-12-24{width:50%}.pure-u-md-13-24{width:54.1667%}.pure-u-md-14-24,.pure-u-md-7-12{width:58.3333%}.pure-u-md-3-5{width:60%}.pure-u-md-15-24,.pure-u-md-5-8{width:62.5%}.pure-u-md-16-24,.pure-u-md-2-3{width:66.6667%}.pure-u-md-17-24{width:70.8333%}.pure-u-md-18-24,.pure-u-md-3-4{width:75%}.pure-u-md-19-24{width:79.1667%}.pure-u-md-4-5{width:80%}.pure-u-md-20-24,.pure-u-md-5-6{width:83.3333%}.pure-u-md-21-24,.pure-u-md-7-8{width:87.5%}.pure-u-md-11-12,.pure-u-md-22-24{width:91.6667%}.pure-u-md-23-24{width:95.8333%}.pure-u-md-1,.pure-u-md-1-1,.pure-u-md-24-24,.pure-u-md-5-5{width:100%}}@media screen and (min-width:64em){.pure-u-lg-1,.pure-u-lg-1-1,.pure-u-lg-1-12,.pure-u-lg-1-2,.pure-u-lg-1-24,.pure-u-lg-1-3,.pure-u-lg-1-4,.pure-u-lg-1-5,.pure-u-lg-1-6,.pure-u-lg-1-8,.pure-u-lg-10-24,.pure-u-lg-11-12,.pure-u-lg-11-24,.pure-u-lg-12-24,.pure-u-lg-13-24,.pure-u-lg-14-24,.pure-u-lg-15-24,.pure-u-lg-16-24,.pure-u-lg-17-24,.pure-u-lg-18-24,.pure-u-lg-19-24,.pure-u-lg-2-24,.pure-u-lg-2-3,.pure-u-lg-2-5,.pure-u-lg-20-24,.pure-u-lg-21-24,.pure-u-lg-22-24,.pure-u-lg-23-24,.pure-u-lg-24-24,.pure-u-lg-3-24,.pure-u-lg-3-4,.pure-u-lg-3-5,.pure-u-lg-3-8,.pure-u-lg-4-24,.pure-u-lg-4-5,.pure-u-lg-5-12,.pure-u-lg-5-24,.pure-u-lg-5-5,.pure-u-lg-5-6,.pure-u-lg-5-8,.pure-u-lg-6-24,.pure-u-lg-7-12,.pure-u-lg-7-24,.pure-u-lg-7-8,.pure-u-lg-8-24,.pure-u-lg-9-24{display:inline-block;zoom:1;letter-spacing:normal;word-spacing:normal;vertical-align:top;text-rendering:auto}.pure-u-lg-1-24{width:4.1667%}.pure-u-lg-1-12,.pure-u-lg-2-24{width:8.3333%}.pure-u-lg-1-8,.pure-u-lg-3-24{width:12.5%}.pure-u-lg-1-6,.pure-u-lg-4-24{width:16.6667%}.pure-u-lg-1-5{width:20%}.pure-u-lg-5-24{width:20.8333%}.pure-u-lg-1-4,.pure-u-lg-6-24{width:25%}.pure-u-lg-7-24{width:29.1667%}.pure-u-lg-1-3,.pure-u-lg-8-24{width:33.3333%}.pure-u-lg-3-8,.pure-u-lg-9-24{width:37.5%}.pure-u-lg-2-5{width:40%}.pure-u-lg-10-24,.pure-u-lg-5-12{width:41.6667%}.pure-u-lg-11-24{width:45.8333%}.pure-u-lg-1-2,.pure-u-lg-12-24{width:50%}.pure-u-lg-13-24{width:54.1667%}.pure-u-lg-14-24,.pure-u-lg-7-12{width:58.3333%}.pure-u-lg-3-5{width:60%}.pure-u-lg-15-24,.pure-u-lg-5-8{width:62.5%}.pure-u-lg-16-24,.pure-u-lg-2-3{width:66.6667%}.pure-u-lg-17-24{width:70.8333%}.pure-u-lg-18-24,.pure-u-lg-3-4{width:75%}.pure-u-lg-19-24{width:79.1667%}.pure-u-lg-4-5{width:80%}.pure-u-lg-20-24,.pure-u-lg-5-6{width:83.3333%}.pure-u-lg-21-24,.pure-u-lg-7-8{width:87.5%}.pure-u-lg-11-12,.pure-u-lg-22-24{width:91.6667%}.pure-u-lg-23-24{width:95.8333%}.pure-u-lg-1,.pure-u-lg-1-1,.pure-u-lg-24-24,.pure-u-lg-5-5{width:100%}}@media screen and (min-width:80em){.pure-u-xl-1,.pure-u-xl-1-1,.pure-u-xl-1-12,.pure-u-xl-1-2,.pure-u-xl-1-24,.pure-u-xl-1-3,.pure-u-xl-1-4,.pure-u-xl-1-5,.pure-u-xl-1-6,.pure-u-xl-1-8,.pure-u-xl-10-24,.pure-u-xl-11-12,.pure-u-xl-11-24,.pure-u-xl-12-24,.pure-u-xl-13-24,.pure-u-xl-14-24,.pure-u-xl-15-24,.pure-u-xl-16-24,.pure-u-xl-17-24,.pure-u-xl-18-24,.pure-u-xl-19-24,.pure-u-xl-2-24,.pure-u-xl-2-3,.pure-u-xl-2-5,.pure-u-xl-20-24,.pure-u-xl-21-24,.pure-u-xl-22-24,.pure-u-xl-23-24,.pure-u-xl-24-24,.pure-u-xl-3-24,.pure-u-xl-3-4,.pure-u-xl-3-5,.pure-u-xl-3-8,.pure-u-xl-4-24,.pure-u-xl-4-5,.pure-u-xl-5-12,.pure-u-xl-5-24,.pure-u-xl-5-5,.pure-u-xl-5-6,.pure-u-xl-5-8,.pure-u-xl-6-24,.pure-u-xl-7-12,.pure-u-xl-7-24,.pure-u-xl-7-8,.pure-u-xl-8-24,.pure-u-xl-9-24{display:inline-block;zoom:1;letter-spacing:normal;word-spacing:normal;vertical-align:top;text-rendering:auto}.pure-u-xl-1-24{width:4.1667%}.pure-u-xl-1-12,.pure-u-xl-2-24{width:8.3333%}.pure-u-xl-1-8,.pure-u-xl-3-24{width:12.5%}.pure-u-xl-1-6,.pure-u-xl-4-24{width:16.6667%}.pure-u-xl-1-5{width:20%}.pure-u-xl-5-24{width:20.8333%}.pure-u-xl-1-4,.pure-u-xl-6-24{width:25%}.pure-u-xl-7-24{width:29.1667%}.pure-u-xl-1-3,.pure-u-xl-8-24{width:33.3333%}.pure-u-xl-3-8,.pure-u-xl-9-24{width:37.5%}.pure-u-xl-2-5{width:40%}.pure-u-xl-10-24,.pure-u-xl-5-12{width:41.6667%}.pure-u-xl-11-24{width:45.8333%}.pure-u-xl-1-2,.pure-u-xl-12-24{width:50%}.pure-u-xl-13-24{width:54.1667%}.pure-u-xl-14-24,.pure-u-xl-7-12{width:58.3333%}.pure-u-xl-3-5{width:60%}.pure-u-xl-15-24,.pure-u-xl-5-8{width:62.5%}.pure-u-xl-16-24,.pure-u-xl-2-3{width:66.6667%}.pure-u-xl-17-24{width:70.8333%}.pure-u-xl-18-24,.pure-u-xl-3-4{width:75%}.pure-u-xl-19-24{width:79.1667%}.pure-u-xl-4-5{width:80%}.pure-u-xl-20-24,.pure-u-xl-5-6{width:83.3333%}.pure-u-xl-21-24,.pure-u-xl-7-8{width:87.5%}.pure-u-xl-11-12,.pure-u-xl-22-24{width:91.6667%}.pure-u-xl-23-24{width:95.8333%}.pure-u-xl-1,.pure-u-xl-1-1,.pure-u-xl-24-24,.pure-u-xl-5-5{width:100%}}
+  </style>
+  
+
+  
+  <style type="text/css" media="screen">
+    html {
+	min-height:100%;
+	width:100%;
+	position:relative;
+}
+
+body {
+	background-color: rgb(252,252,252);
+	color: #484848;
+}
+
+.nav-menu {
+  margin-top: 5px;
+  padding-bottom: 5px;
+	border-bottom: 1px solid #e3e3e3;
+}
+
+.pure-menu-heading {
+  text-transform: none;
+  font-size: large;
+}
+
+.header {
+	text-align: left;
+	color: #484848;
+	margin-bottom: .5em;
+}
+
+.header ul li {
+		height: auto;
+}
+
+.header ul li a {
+	font-weight: bold;
+	color: #484848;
+	font-family: "Source Sans Pro", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.header {
+	font-weight: bold;
+	color: #484848;
+	font-family: "Source Sans Pro", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.site-title {
+	color: #484848;
+  text-transform: none;
+  font-weight: normal;
+	font-family: "Source Sans Pro", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.pull-right {
+	float: right;
+}
+
+.posts-name {
+	text-transform: capitalize;
+	font-weight: bold;
+	padding-left: 1em;
+	margin-top: 1em;
+	font-family: "Source Sans Pro", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.posts {
+	font-family: verdana,arial,helvetica,sans-serif;
+	list-style-type:none;
+	padding-left: 1em;
+}
+
+.posts li p {
+	margin-top: 0;
+}
+
+.posts li {
+	margin-bottom: 1em;
+}
+
+.posts li a {
+	color:#369;
+	text-decoration:none;
+}
+
+.post-list {
+  font-size: large;
+}
+
+.footnote {
+	font-family: verdana,arial,helvetica,sans-serif;
+	color:#888;
+	font-size:x-small;
+	margin-bottom:0;
+}
+
+.footnote a {
+	color: #888 !important
+}
+
+.footnote a:hover{
+	text-decoration:underline;
+	color:#369;
+}
+
+.footer {
+	position:absolute;
+	z-index:2;
+	height:auto;
+	width:100%;
+	bottom:0;
+}
+
+.footer-content {
+	border-top: 1px solid #e3e3e3;
+	font-size: 80%;
+	color: #bbb;
+}
+
+.footer-content a {
+	color: #bbb;
+}
+
+.footer-content ul {
+	height: auto;
+	margin-top: 0;
+	margin-bottom: 0;
+	display: inline-block;
+	padding-left: 0;
+}
+
+#gototop-btn {
+	display: inline-block;
+}
+
+#foot-name {
+  color: #484848;
+	text-transform: none;
+}
+
+#foot-copyright {
+	padding-left: 1em;
+	padding-bottom: 0.5em;
+	margin: 0;
+}
+
+.post {
+	font-family: proxima-nova,"Helvetica Neue",Helvetica,Roboto,Arial,sans-serif;
+	color:#484848;
+	letter-spacing:normal;
+	padding-left: .5em;
+}
+
+.post h1,h2,h3,h4,h5,h6 {
+	font-weight: bold;
+	letter-spacing:normal;
+}
+
+.post-content {
+	z-index:9;
+	overflow:auto;
+	padding:0;
+	padding-bottom:3em;
+	font-size:16px;
+	line-height:1.4;
+}
+
+.post-content img {
+	max-width: 100%;
+	height: auto;
+}
+
+/* these sections screw up other themes */ 
+/*.post-content code {
+  background-color: #EEE;
+}
+
+.post code {
+  background-color: #EEE;
+} */
+/* to here */
+
+.post a {
+	color:#c05b4d;
+	text-decoration: none;
+}
+
+.post a:hover {
+	color:#a5473a;
+	text-decoration: underline;
+}
+
+.post h1 {
+	font-size:28px;
+}
+
+.post h2 {
+	font-size:25px;
+}
+
+.post h3 {
+	font-size:23px;
+}
+
+.post h4 {
+	font-size:21px;
+}
+
+.post h5 {
+	font-size:19px;
+}
+
+.post h6 {
+	font-size:18px;
+}
+
+.post-title{
+		margin-top: 0;
+		margin-bottom: 2em;
+}
+
+.post-title h1 {
+	font-weight:bold;
+	font-size:39px;
+	line-height: 40px;
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+@media screen and (max-width:767px){
+	.desktop {
+		display: none;
+	}
+	.mobile {
+		display: block;
+	}
+	#toggle-btn {
+		display: inline-block;
+		float: right;
+		padding: .5em 1em;
+		text-decoration: none;
+		color: #484848;
+		font-weight: bold;
+	}
+	#toggle-content li {
+		clear: both;
+		height: auto;
+		background-color: rgb(249,249,249);
+	}
+	#toggle-home {
+		display: inline-block;
+	}
+}
+
+@media screen and (min-width:768px){
+	.mobile {
+		display:none;
+	}
+	.desktop {
+		display: block;
+	}
+}
+
+  </style>
+  
+  <style type="text/css" media="screen"> 
+    
+      /*
+
+Zenburn style from voldmar.ru (c) Vladimir Epifanov <voldmar@voldmar.ru>
+based on dark.css by Ivan Sagalaev
+
+*/
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0.5em;
+  background: #3f3f3f;
+  color: #dcdcdc;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-tag {
+  color: #e3ceab;
+}
+
+.hljs-template-tag {
+  color: #dcdcdc;
+}
+
+.hljs-number {
+  color: #8cd0d3;
+}
+
+.hljs-variable,
+.hljs-template-variable,
+.hljs-attribute {
+  color: #efdcbc;
+}
+
+.hljs-literal {
+  color: #efefaf;
+}
+
+.hljs-subst {
+  color: #8f8f8f;
+}
+
+.hljs-title,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-section,
+.hljs-type {
+  color: #efef8f;
+}
+
+.hljs-symbol,
+.hljs-bullet,
+.hljs-link {
+  color: #dca3a3;
+}
+
+.hljs-deletion,
+.hljs-string,
+.hljs-built_in,
+.hljs-builtin-name {
+  color: #cc9393;
+}
+
+.hljs-addition,
+.hljs-comment,
+.hljs-quote,
+.hljs-meta {
+  color: #7f9f7f;
+}
+
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+ 
+    
+  </style>
+  
+
+  
+  <link rel="shortcut icon" 
+   
+    href="/img/favicon.ico"
+  
+  type="image/x-icon">
+
+  
+  
+
+  <meta name="generator" content="Hugo 0.40.3" />
+
+  
+  
+</head>
+<body>
+
+<div class="header pure-g">
+    <div class="pure-u-1-24 pure-u-md-1-6"></div>
+    <div class="pure-u-11-12 pure-u-md-2-3">
+        <div class="desktop pure-menu pure-menu-horizontal nav-menu">
+            
+            <a href="/" class="site-title pure-menu-heading">Electronic Lab Notebook</a>
+            <ul class="pure-menu-list pull-right">
+				
+                
+                <li class="pure-menu-item">
+                    <a href="/categories/coding" class="pure-menu-link">Coding</a>
+                </li>
+                
+                <li class="pure-menu-item">
+                    <a href="/categories/experiments" class="pure-menu-link">Experiments</a>
+                </li>
+                
+                <li class="pure-menu-item">
+                    <a href="/categories/reading" class="pure-menu-link">Reading</a>
+                </li>
+                
+				
+                <li class="pure-menu-item">
+                    <a href="/about/" class="pure-menu-link">About</a>
+                </li>
+            </ul>
+        </div>
+        <div class="mobile pure-menu nav-menu">
+            <a href="/" class="site-title pure-menu-heading" id="toggle-home">Electronic Lab Notebook</a>
+            <a href="#" id="toggle-btn">&#9776;</a>
+            <ul class="pure-menu-list" id="toggle-content" style="display:none;">
+                
+				
+                
+                <li class="pure-menu-item">
+                    <a href="/categories/coding" class="pure-menu-link">Coding</a>
+                </li>
+                
+                <li class="pure-menu-item">
+                    <a href="/categories/experiments" class="pure-menu-link">Experiments</a>
+                </li>
+                
+                <li class="pure-menu-item">
+                    <a href="/categories/reading" class="pure-menu-link">Reading</a>
+                </li>
+                
+				
+                <li class="pure-menu-item">
+                    <a href="/about" class="pure-menu-link">About</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="pure-u-1-24 pure-u-md-1-6"></div>
+</div>
+
+
+<div class="pure-g">
+  <div class="pure-u-1-24 pure-u-md-1-6"></div>
+  <div class="pure-u-11-12 pure-u-md-2-3">
+    <div class="post">
+
+      <div class="post-title">
+        <p class="footnote">
+        <time class="">09-21-2018</time>
+        
+        
+        |
+        
+        
+        tags: [ <a href="/tags/gaston">Gaston</a> <a href="/tags/gcta">GCTA</a> <a href="/tags/genomic-data">Genomic Data</a> <a href="/tags/greml">GREML</a> <a href="/tags/heritability">Heritability</a> ]
+        
+
+        
+        categories: [<a href="/categories/coding">Coding</a> <a href="/categories/experiments">Experiments</a> ]
+        
+
+        
+        </p>
+        <h1>Adding age and sex as covariates </h1>
+      </div>
+
+      <div class="post-content">
+        <pre class="r"><code>require(magicfor)</code></pre>
+<pre><code>## Loading required package: magicfor</code></pre>
+<pre class="r"><code>require(magrittr)</code></pre>
+<pre><code>## Loading required package: magrittr</code></pre>
+<pre class="r"><code>require(dplyr)</code></pre>
+<pre><code>## Loading required package: dplyr</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>require(gaston)</code></pre>
+<pre><code>## Loading required package: gaston</code></pre>
+<pre><code>## Loading required package: Rcpp</code></pre>
+<pre><code>## Loading required package: RcppParallel</code></pre>
+<pre><code>## 
+## Attaching package: &#39;RcppParallel&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:Rcpp&#39;:
+## 
+##     LdFlags</code></pre>
+<pre><code>## Gaston set number of threads to 2. Use setThreadOptions() to modify this.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;gaston&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     sigma</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     cbind, rbind</code></pre>
+<pre class="r"><code>require(qqman)</code></pre>
+<pre><code>## Loading required package: qqman</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## For example usage please run: vignette(&#39;qqman&#39;)</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## Citation appreciated but not required:</code></pre>
+<pre><code>## Turner, S.D. qqman: an R package for visualizing GWAS results using Q-Q and manhattan plots. biorXiv DOI: 10.1101/005165 (2014).</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## 
+## Attaching package: &#39;qqman&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:gaston&#39;:
+## 
+##     manhattan</code></pre>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>The QQ plots indicate that the GWAS results may be inflated. Typically, this inflation is observed because of population structure, an underpowered study, applying the wrong statistical test, or other hidden factors. I have corrected for population structure by including two principal components, the thresholds applied to the analyses are based on this specific population, and a stringent test is applied to the data set. Therefore, most probable causes for inflation have been accounted for. However, we have not included age and sex as covariates in these analyses because we had concerns about over burdening the model and potentially missing true associations. However, in light of these QQ plots, I will include age and sex as covariates to ensure that the results inflation are not due to these factors.</p>
+</div>
+<div id="methods-and-results" class="section level1">
+<h1>Methods and Results</h1>
+<div id="load-data" class="section level4">
+<h4>Load data</h4>
+<pre class="r"><code>NIES_master &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv&#39;, header = T)
+covar_col &lt;- c(&quot;UUID&quot;, &quot;Gender&quot;, &quot;Age.excel&quot;)
+nies_master_covar &lt;- NIES_master[covar_col]
+
+nies_heritable_pheno &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_heritable_pheno.csv&#39;, header = T)
+
+nies_heritable_pheno220918 &lt;-read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_heritable_pheno220918.csv&#39;, header = TRUE)
+
+nies_pheno_020918 &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_pheno_020918.csv&#39;, header = T)
+
+nies_final_uuid &lt;- nies_heritable_pheno$UUID
+
+nies_covar &lt;- nies_master_covar[nies_master_covar$UUID %in% nies_final_uuid,]
+nies_covar &lt;- as.matrix(nies_covar)
+
+
+merged_nies_210818 &lt;- read.bed.matrix(&quot;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.bed&quot;)</code></pre>
+<pre><code>## Reading C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.fam 
+## Reading C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.bim 
+## Reading C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.bed 
+## ped stats and snps stats have been set. 
+## &#39;p&#39; has been set. 
+## &#39;mu&#39; and &#39;sigma&#39; have been set.</code></pre>
+<pre class="r"><code>merged_nies_GRM &lt;- GRM(merged_nies_210818)
+merged_nies_eiK &lt;- eigen(merged_nies_GRM)
+merged_nies_eiK$values[ merged_nies_eiK$values &lt; 0] &lt;- 0
+merged_nies_PC &lt;- sweep(merged_nies_eiK$vectors, 2, sqrt(merged_nies_eiK$values), &quot;*&quot;)</code></pre>
+</div>
+<div id="heritability-analyses-in-gcta" class="section level4">
+<h4>1. Heritability analyses in GCTA</h4>
+<pre class="bash"><code>for i in {1..27}
+do ./gcta64 --reml --grm gcta_output/merged_nies_grm --pheno nies_pheno_020918.txt --mpheno $i --reml-pred-rand --covar nies_sex_covar.txt --qcovar nies_pca_age_covar.txt --out gcta_output/$i.covar.est
+head gcta_output/$i.covar.est.hsq &gt;&gt; trait.her.covar.gcta.txt
+done
+
+for i in {1..9}
+do ./gcta64 --reml --grm gcta_output/merged_nies_grm --pheno pheno_pca_coord.txt --mpheno $i --reml-pred-rand --covar nies_sex_covar.txt --qcovar nies_pca_age_covar.txt --out gcta_output/$i.pc.covar.est
+head gcta_output/$i.pc.covar.est.hsq &gt;&gt; pc.her.covar.gcta.txt
+done</code></pre>
+<pre class="r"><code>heritability_covar_gcta &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/heritability_covar_gcta2.csv&#39;, header = TRUE)
+
+heritability_covar_gcta</code></pre>
+<pre><code>##                  Trait       h2     pval  X PC     h2.1   pval.1 X.1
+## 1          R.K.value.V 0.732774 1.68e-07 NA  1 0.584877 1.47e-05  NA
+## 2         L.Pachimetry 0.672052 4.45e-07 NA  4 0.473562 9.97e-05  NA
+## 3         R.Pachimetry 0.622011 2.47e-06 NA  3 0.315501 5.14e-03  NA
+## 4   R.Cyl..pre.dilate. 0.595018 1.55e-06 NA  8 0.193069 2.94e-02  NA
+## 5          totaluvafmm 0.594148 2.06e-05 NA  7 0.239878 3.69e-02  NA
+## 6                R.CDR 0.590256 3.34e-05 NA  2 0.262234 5.35e-02  NA
+## 7          L.K.value.V 0.570662 2.97e-05 NA NA       NA       NA  NA
+## 8          R.K.value.H 0.500294 1.17e-04 NA  6 0.136592 1.32e-01  NA
+## 9                L.CDR 0.496006 7.02e-04 NA  9 0.006853 4.77e-01  NA
+## 10      L.Axial.Length 0.336035 6.72e-03 NA  5 0.000000 5.00e-01  NA
+## 11      R.Axial.Length 0.324886 8.16e-03 NA NA       NA       NA  NA
+## 12         L.K.value.H 0.285803 2.55e-02 NA NA       NA       NA  NA
+## 13          R.AC.Depth 0.267335 1.09e-02 NA NA       NA       NA  NA
+## 14          L.AC.Depth 0.266877 1.08e-02 NA NA       NA       NA  NA
+## 15          R.IOP.mmHg 0.244349 3.13e-02 NA NA       NA       NA  NA
+## 16          L.IOP.mmHg 0.205074 4.58e-02 NA NA       NA       NA  NA
+## 17 L.Axis..pre.dilate. 0.115745 1.96e-01 NA NA       NA       NA  NA
+## 18 R.Axis..pre.dilate. 0.038499 3.92e-01 NA NA       NA       NA  NA
+## 19         R.Logmar.VA 0.000000 5.00e-01 NA NA       NA       NA  NA
+## 20         L.Logmar.VA 0.000000 5.00e-01 NA NA       NA       NA  NA
+## 21  R.Sph..pre.dilate. 0.000000 5.00e-01 NA NA       NA       NA  NA
+## 22  L.Sph..pre.dilate. 0.000000 5.00e-01 NA NA       NA       NA  NA
+## 23  L.Cyl..pre.dilate. 0.000000 5.00e-01 NA NA       NA       NA  NA
+## 24    R.K.Value.H.Axis 0.000000 5.00e-01 NA NA       NA       NA  NA
+## 25    R.K.value.V.Axis 0.000000 5.00e-01 NA NA       NA       NA  NA
+## 26    L.K.value.H.Axis 0.000000 5.00e-01 NA NA       NA       NA  NA
+## 27    L.K.value.V.Axis 0.000000 5.00e-01 NA NA       NA       NA  NA
+##          X.2       X.3
+## 1        cct 0.6470315
+## 2    kvalue  0.5220000
+## 3        cdr 0.5431310
+## 4  ax length 0.3304605
+## 5        acd 0.2671060
+## 6        iop 0.2247115
+## 7       UVAF 0.5900000
+## 8                   NA
+## 9                   NA
+## 10                  NA
+## 11                  NA
+## 12                  NA
+## 13                  NA
+## 14                  NA
+## 15                  NA
+## 16                  NA
+## 17                  NA
+## 18                  NA
+## 19                  NA
+## 20                  NA
+## 21                  NA
+## 22                  NA
+## 23                  NA
+## 24                  NA
+## 25                  NA
+## 26                  NA
+## 27                  NA</code></pre>
+<p>These heritability estimates differ from the previous estimates suggesting that sex and age have a significant influence on the outcome of the analyses. All traits that are statistically significant (p &lt; 0.05) will be prioritised for pedigree-based GWAS. However, I would also like to confirm these values with gaston since it is the tool I will be using for the GWAS.</p>
+</div>
+<div id="perform-gwas-using-lmm-and-lrt" class="section level4">
+<h4>2. Perform GWAS using lmm and LRT</h4>
+<pre class="r"><code>nies_covar &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_covar.csv&#39;, header =T)
+nies_heritable_pheno240918 &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_heritable_pheno240918.csv&#39;, header = TRUE)
+
+for (i in c(2:ncol(nies_heritable_pheno240918))){
+  pheno_colnames &lt;- colnames(nies_heritable_pheno240918[i])
+  her_pheno_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno240918[,i], X = nies_covar, method = &quot;lmm&quot;, test = &quot;lrt&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p =2)
+  her_pheno_gwas &lt;- na.omit(her_pheno_gwas)
+  pheno_gwas_filtered &lt;- her_pheno_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+  qqman::manhattan(x = pheno_gwas_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, genomewideline = -log10(1.84e-7), main = paste(pheno_colnames), ylim = c(0,10))
+}</code></pre>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X
+
+## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-1.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-3.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-4.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-5.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-6.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-7.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-8.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-9.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-10.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-11.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-12.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-13.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-14.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-15.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-16.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-17.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-18.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-19.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-20.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-21.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-22.png" width="672" /></p>
+</div>
+<div id="generate-qq-plots-for-gwas-resutls" class="section level4">
+<h4>3. Generate QQ plots for GWAS resutls</h4>
+<pre class="r"><code>for (i in c(2:ncol(nies_heritable_pheno240918))){
+  pheno_colnames &lt;- colnames(nies_heritable_pheno240918[i])
+  her_pheno_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno240918[,i], method = &quot;lmm&quot;, 
+                                     test = &quot;lrt&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p =2)
+  her_pheno_gwas &lt;- na.omit(her_pheno_gwas)
+  pheno_gwas_filtered &lt;- her_pheno_gwas  %&gt;% filter(freqA2 &lt; 0.99)
+  gaston:: qqplot.pvalues(pheno_gwas_filtered$p, main = paste(pheno_colnames))
+}</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-1.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-2.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-3.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-4.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-5.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-6.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-7.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-8.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-9.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-10.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-11.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-12.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-13.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-14.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-15.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-16.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-17.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-18.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-19.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-20.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-21.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-22.png" width="672" /></p>
+</div>
+</div>
+
+      </div>
+      
+      <div class="post-content">
+        <div id="disqus_thread"></div>
+<script>
+(function() {
+var d = document, s = d.createElement('script');
+s.src = 'https://http-martha-labbook-netlify-com.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      </div>
+      
+    </div>
+  </div>
+  <div class="pure-u-1-24 pure-u-md-1-6"></div>
+</div>
+
+
+<div class="footer pure-g">
+  <div class="pure-u-1-24 pure-u-md-1-6"></div>
+  <div class="pure-u-11-12 pure-u-md-2-3">
+    <div class="footer-content">
+      <div class="pure-menu pure-menu-horizontal">
+        <ul>
+          
+          <li class="pure-menu-item" id="foot-name">© Martha Aquino</li>
+          
+
+          
+          <li class="pure-menu-item">
+            <a href="mailto:eunise.aquino@connect.qut.edu.au" class="pure-menu-link">Email</a>
+          </li>
+          
+
+          
+          <li class="pure-menu-item">
+            <a href="https://github.com/https://github.com/marthaqut/electronic_lab_notebook" class="pure-menu-link">GitHub</a>
+          </li>
+          
+
+          
+
+          
+
+        </ul>
+        <a href="#" class="pure-menu-link pull-right" id="gototop-btn">↑↑</a>
+        
+      </div>
+      
+      <p id="foot-copyright">(c) 2018 -- All rights reserved.</p>
+      
+    </div>
+  </div>
+  <div class="pure-u-1-24 pure-u-md-1-6"></div>
+</div>
+
+
+
+  <script src="/highlight/highlight.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/go.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/vim.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/shell.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/bash.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/markdown.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/python.min.js"></script>
+   
+  <script>hljs.initHighlighting();</script>
+
+
+<script type="text/javascript">
+  go();
+  window.addEventListener('resize', go);
+  function go(){
+    var d=document.querySelector(".desktop")
+    if(document.documentElement.clientWidth > 768) {
+      d.style.display="";
+    } else {
+      d.style.display="none";
+    }
+  }
+</script>
+<script type="text/javascript">
+  var a=document.querySelector("#toggle-btn"),b=document.querySelector("#toggle-content");a.addEventListener("click",function(){""==b.style.display?(b.style.display="none",a.innerHTML="☰"):(b.style.display="",a.innerHTML="X")});</script>
+
+
+</body>
+</html>
+
+
+

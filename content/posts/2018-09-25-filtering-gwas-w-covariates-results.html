@@ -1,0 +1,1524 @@
+---
+title: 'Filtering GWAS (w/ covariates) results '
+author: Martha Aquino
+date: '2018-09-25'
+slug: filtering-gwas-w-covariates-results
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Gaston
+  - Genomic Data
+  - GWAS
+  - Heritability
+---
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The addition of covariates to the heritability and GWAS models significantly changed my results. As such, I need to filter for robust peaks in my new GWAS results and obtaining beta-values for the signiicant peaks.</p>
+</div>
+<div id="methods-and-results" class="section level1">
+<h1>Methods and Results</h1>
+<div id="load-packages" class="section level4">
+<h4>Load packages</h4>
+<pre class="r"><code>require(magicfor)</code></pre>
+<pre><code>## Loading required package: magicfor</code></pre>
+<pre class="r"><code>require(magrittr)</code></pre>
+<pre><code>## Loading required package: magrittr</code></pre>
+<pre class="r"><code>require(dplyr)</code></pre>
+<pre><code>## Loading required package: dplyr</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>require(gaston)</code></pre>
+<pre><code>## Loading required package: gaston</code></pre>
+<pre><code>## Loading required package: Rcpp</code></pre>
+<pre><code>## Loading required package: RcppParallel</code></pre>
+<pre><code>## 
+## Attaching package: &#39;RcppParallel&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:Rcpp&#39;:
+## 
+##     LdFlags</code></pre>
+<pre><code>## Gaston set number of threads to 2. Use setThreadOptions() to modify this.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;gaston&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     sigma</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     cbind, rbind</code></pre>
+<pre class="r"><code>require(qqman)</code></pre>
+<pre><code>## Loading required package: qqman</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## For example usage please run: vignette(&#39;qqman&#39;)</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## Citation appreciated but not required:</code></pre>
+<pre><code>## Turner, S.D. qqman: an R package for visualizing GWAS results using Q-Q and manhattan plots. biorXiv DOI: 10.1101/005165 (2014).</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## 
+## Attaching package: &#39;qqman&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:gaston&#39;:
+## 
+##     manhattan</code></pre>
+</div>
+<div id="load-data" class="section level4">
+<h4>Load data</h4>
+<pre class="r"><code>nies_heritable_pheno240918 &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_heritable_pheno240918.csv&#39;, header = TRUE)
+
+nies_covar &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_covar.csv&#39;, header = T)
+head(nies_covar)</code></pre>
+<pre><code>##     UUID Sex Age
+## 1 219960   1  53
+## 2 313180   1  55
+## 3 320511   2  60
+## 4 400011   1  23
+## 5 400013   1  50
+## 6 316131   2  77</code></pre>
+<pre class="r"><code>merged_nies_210818 &lt;- read.bed.matrix(&quot;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.bed&quot;)</code></pre>
+<pre><code>## Reading C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.fam 
+## Reading C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.bim 
+## Reading C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.bed 
+## ped stats and snps stats have been set. 
+## &#39;p&#39; has been set. 
+## &#39;mu&#39; and &#39;sigma&#39; have been set.</code></pre>
+<pre class="r"><code>merged_nies_GRM &lt;- GRM(merged_nies_210818)
+merged_nies_eiK &lt;- eigen(merged_nies_GRM)
+merged_nies_eiK$values[ merged_nies_eiK$values &lt; 0] &lt;- 0
+merged_nies_PC &lt;- sweep(merged_nies_eiK$vectors, 2, sqrt(merged_nies_eiK$values), &quot;*&quot;)</code></pre>
+</div>
+<div id="filter-l-k-value-h" class="section level4">
+<h4>1. Filter L K-value H</h4>
+<pre class="r"><code>l_KvalH_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno240918$L.K.value.H, X = nies_covar, method=&quot;lmm&quot;, test = &quot;lrt&quot;, response = &quot;quantitative&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)</code></pre>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<pre class="r"><code>l_KvalH_gwas &lt;- na.omit(l_KvalH_gwas)
+l_kvalH_filtered &lt;- l_KvalH_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+l_kvalH_meff &lt;- l_kvalH_filtered %&gt;% filter(p &lt; 1.84e-7)
+l_kvalH_sig &lt;- do.call(rbind, lapply(split(l_kvalH_meff,l_kvalH_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+l_kvalH_res &lt;- NULL
+for (i in l_kvalH_sig$id) {
+  snpID &lt;- i
+  snpCHR &lt;- l_kvalH_filtered[l_kvalH_filtered$id == snpID,]$chr
+  snpPOS &lt;- l_kvalH_filtered[l_kvalH_filtered$id ==snpID,]$pos
+  
+  sig.peak &lt;- l_kvalH_filtered %&gt;%
+    filter(chr == snpCHR) %&gt;%
+    filter(pos &gt; snpPOS - 50000) %&gt;%
+    filter(pos &lt; snpPOS + 50000) %&gt;%
+    filter(p &lt; 1e-5)
+  
+  l_kvalH_res &lt;- rbind(l_kvalH_res, sig.peak)
+}
+
+write.csv(l_kvalH_res, &#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/l_kvalH_res.csv&#39;)
+l_kvalH_res</code></pre>
+<pre><code>##    chr       pos          id A1 A2    freqA2         h2      LRT
+## 1    2 176830012  rs72940750  C  T 0.9898551 0.01237732 35.81496
+## 2    2 176831387   rs7576095  A  G 0.9898551 0.01237732 35.81496
+## 3    2 176832679   rs6758571  G  A 0.9898551 0.01237732 35.81496
+## 4    2 176833429 rs139727961  G  A 0.9898551 0.01237732 35.81496
+## 5    2 176839936  rs72940766  A  T 0.9898551 0.01237732 35.81496
+## 6    2 176840625  rs72940776  T  C 0.9898551 0.01237732 35.81496
+## 7    2 176840683  rs72940781  C  G 0.9898551 0.01237732 35.81496
+## 8    2 176841189   rs6715723  T  A 0.9898551 0.01237732 35.81496
+## 9    3  77739700   rs1163757  A  G 0.9869565 0.01781775 33.16277
+## 10   6  82425908  rs73481987  C  T 0.9753623 0.00000000 20.24474
+## 11   6  82442490 rs114928787  T  C 0.9855072 0.00000000 45.19722
+## 12   6  82442833 rs116172930  C  A 0.9855072 0.00000000 45.19722
+## 13   6  82443802  rs74436554  C  T 0.9855072 0.00000000 45.19722
+## 14   6  82444791  rs78056249  C  G 0.9855072 0.00000000 45.19722
+## 15   6  82445716  rs77941466  C  T 0.9855072 0.00000000 45.19722
+## 16   6  82447004 rs116461493  T  C 0.9855072 0.00000000 45.19722
+## 17   6  82447732  rs77666578  G  A 0.9855072 0.00000000 45.19722
+## 18   6  82451563  rs75189229  A  G 0.9855072 0.00000000 45.19722
+## 19   6  82453938 rs117178778  A  G 0.9855072 0.00000000 45.19722
+## 20   6  82454058 rs116246536  T  G 0.9855072 0.00000000 45.19722
+## 21   6  82454140  rs78427866  A  G 0.9855072 0.00000000 45.19722
+## 22   6  82454380 rs147257041  A  G 0.9855072 0.00000000 45.19722
+## 23   6  82454449 rs140711073  T  C 0.9855072 0.00000000 45.19722
+## 24   6  82454505 rs142248448  T  C 0.9855072 0.00000000 45.19722
+## 25   6  82454620 rs114442506  A  G 0.9855072 0.00000000 45.19722
+## 26   6  82456537 rs145558293  A  G 0.9855072 0.00000000 45.19722
+## 27   6  82458393  rs77391407  C  T 0.9855072 0.00000000 45.19722
+## 28   6  82458546  rs77103853  G  C 0.9855072 0.00000000 45.19722
+## 29   6  82459011 rs115096710  T  C 0.9855072 0.00000000 45.19722
+## 30   6  82459713  rs77245672  G  C 0.9855072 0.00000000 45.19722
+## 31   6  82459810  rs77599496  T  A 0.9855072 0.00000000 45.19722
+## 32   6  82459890  rs77598967  G  A 0.9855072 0.00000000 45.19722
+## 33   6  82460167 rs115847999  C  G 0.9855072 0.00000000 45.19722
+## 34   6  82460379 rs116730626  G  A 0.9855072 0.00000000 45.19722
+## 35   6  82460650 rs149355051  G  T 0.9855072 0.00000000 45.19722
+## 36   6  82462126  rs76856243  T  C 0.9855072 0.00000000 45.19722
+## 37   6  82462603   rs6933239  C  T 0.9855072 0.00000000 45.19722
+## 38   6  82462992   rs6911216  A  C 0.9855072 0.00000000 45.19722
+## 39   6  82465617   rs6928806  A  C 0.9855072 0.00000000 45.19722
+## 40   6  82466574  rs74404091  C  T 0.9855072 0.00000000 45.19722
+## 41   6  82466715  rs79358384  G  A 0.9855072 0.00000000 45.19722
+## 42   6  82467200  rs77721025  A  C 0.9855072 0.00000000 45.19722
+## 43   6  82467706 rs116423281  A  G 0.9855072 0.00000000 45.19722
+## 44   6  82467953 rs142216660  T  C 0.9855072 0.00000000 45.19722
+## 45   6  82467988 rs140099919  A  G 0.9855072 0.00000000 45.19722
+## 46   6  82468668  rs78941585  G  A 0.9855072 0.00000000 45.19722
+## 47   6  82468774  rs75228268  A  T 0.9855072 0.00000000 45.19722
+## 48   6  82469116  rs77552654  T  A 0.9855072 0.00000000 45.19722
+## 49   6  82470649 rs149706908  G  T 0.9855072 0.00000000 45.19722
+## 50   6  82470651 rs144623191  T  C 0.9855072 0.00000000 45.19722
+## 51   6  82470859 rs192614396  C  A 0.9855072 0.00000000 45.19722
+## 52   6  82471119 rs151156468  C  T 0.9855072 0.00000000 45.19722
+## 53   6  82471338 rs140554533  A  G 0.9855072 0.00000000 45.19722
+## 54   6  82471381 rs150446760  C  G 0.9855072 0.00000000 45.19722
+## 55   6  82471679 rs138339145  T  C 0.9855072 0.00000000 45.19722
+## 56   6  82472140 rs142089466  T  C 0.9855072 0.00000000 45.19722
+## 57   6  82473676 rs147151928  G  C 0.9855072 0.00000000 45.19722
+## 58   6  82473679 rs140298049  C  T 0.9855072 0.00000000 45.19722
+## 59   6  82473688 rs149655171  A  G 0.9855072 0.00000000 45.19722
+## 60   6  82474468 rs146864360  T  C 0.9855072 0.00000000 45.19722
+## 61   6  82474648 rs140520501  C  T 0.9855072 0.00000000 45.19722
+## 62   6  82474867 rs150394443  T  C 0.9855072 0.00000000 45.19722
+## 63   6  82475320 rs143579868  A  T 0.9855072 0.00000000 45.19722
+## 64   6  82475696 rs115741750  C  T 0.9855072 0.00000000 45.19722
+## 65   6  82477810  rs77406497  T  C 0.9855072 0.00000000 45.19722
+## 66   6  82478378 rs115813741  T  G 0.9855072 0.00000000 45.19722
+## 67   6  82478650  rs78900243  G  A 0.9855072 0.00000000 45.19722
+## 68   6  82478870  rs76557363  T  G 0.9855072 0.00000000 45.19722
+## 69   6  82479264  rs77943130  T  G 0.9855072 0.00000000 45.19722
+## 70   6  82479546 rs115245280  A  G 0.9855072 0.00000000 45.19722
+## 71   6  82479664  rs75910615  A  G 0.9855072 0.00000000 45.19722
+## 72   6  82480370  rs76438934  A  G 0.9855072 0.00000000 45.19722
+## 73   6  82481986 rs115034961  A  C 0.9855072 0.00000000 45.19722
+## 74   6  82482183  rs79967481  G  A 0.9855072 0.00000000 45.19722
+## 75   6  82482254 rs116699765  T  C 0.9855072 0.00000000 45.19722
+## 76   6  82483125  rs78639250  T  C 0.9855072 0.00000000 45.19722
+## 77   6  82483522  rs75763492  A  G 0.9855072 0.00000000 45.19722
+## 78   6  82483898  rs76617768  T  C 0.9855072 0.00000000 45.19722
+## 79   6  82484287  rs76652063  C  A 0.9855072 0.00000000 45.19722
+## 80   6  82484758 rs114024754  A  G 0.9855072 0.00000000 45.19722
+## 81   6  82485370  rs79031996  C  G 0.9855072 0.00000000 45.19722
+## 82   6  82485916  rs77517398  C  T 0.9855072 0.00000000 45.19722
+## 83   6  82486863  rs80252551  A  T 0.9855072 0.00000000 45.19722
+## 84   6  82488997 rs114963095  G  T 0.9855072 0.00000000 45.19722
+## 85   6  82489053  rs77561386  C  T 0.9855072 0.00000000 45.19722
+## 86   6  82489164  rs76602861  A  G 0.9855072 0.00000000 45.19722
+## 87   6  82490178  rs79435750  A  G 0.9855072 0.00000000 45.19722
+## 88   6  82490367  rs80347071  C  G 0.9855072 0.00000000 45.19722
+## 89   6  82492170  rs74785531  C  T 0.9855072 0.00000000 45.19722
+## 90   6  82492233  rs74361967  C  T 0.9855072 0.00000000 45.19722
+## 91   6  82492321  rs75373608  A  T 0.9855072 0.00000000 45.19722
+## 92  10  64099069  rs74804993  G  A 0.9826087 0.27039317 31.70206
+## 93  16  13935176   rs1800067  A  G 0.9550725 0.27378980 33.23207
+## 94  18  48853167 rs151115377  A  G 0.9840580 0.28905661 28.59857
+##               p
+## 1  2.169754e-09
+## 2  2.169754e-09
+## 3  2.169754e-09
+## 4  2.169754e-09
+## 5  2.169754e-09
+## 6  2.169754e-09
+## 7  2.169754e-09
+## 8  2.169754e-09
+## 9  8.475773e-09
+## 10 6.814066e-06
+## 11 1.781574e-11
+## 12 1.781574e-11
+## 13 1.781574e-11
+## 14 1.781574e-11
+## 15 1.781574e-11
+## 16 1.781574e-11
+## 17 1.781574e-11
+## 18 1.781574e-11
+## 19 1.781574e-11
+## 20 1.781574e-11
+## 21 1.781574e-11
+## 22 1.781574e-11
+## 23 1.781574e-11
+## 24 1.781574e-11
+## 25 1.781574e-11
+## 26 1.781574e-11
+## 27 1.781574e-11
+## 28 1.781574e-11
+## 29 1.781574e-11
+## 30 1.781574e-11
+## 31 1.781574e-11
+## 32 1.781574e-11
+## 33 1.781574e-11
+## 34 1.781574e-11
+## 35 1.781574e-11
+## 36 1.781574e-11
+## 37 1.781574e-11
+## 38 1.781574e-11
+## 39 1.781574e-11
+## 40 1.781574e-11
+## 41 1.781574e-11
+## 42 1.781574e-11
+## 43 1.781574e-11
+## 44 1.781574e-11
+## 45 1.781574e-11
+## 46 1.781574e-11
+## 47 1.781574e-11
+## 48 1.781574e-11
+## 49 1.781574e-11
+## 50 1.781574e-11
+## 51 1.781574e-11
+## 52 1.781574e-11
+## 53 1.781574e-11
+## 54 1.781574e-11
+## 55 1.781574e-11
+## 56 1.781574e-11
+## 57 1.781574e-11
+## 58 1.781574e-11
+## 59 1.781574e-11
+## 60 1.781574e-11
+## 61 1.781574e-11
+## 62 1.781574e-11
+## 63 1.781574e-11
+## 64 1.781574e-11
+## 65 1.781574e-11
+## 66 1.781574e-11
+## 67 1.781574e-11
+## 68 1.781574e-11
+## 69 1.781574e-11
+## 70 1.781574e-11
+## 71 1.781574e-11
+## 72 1.781574e-11
+## 73 1.781574e-11
+## 74 1.781574e-11
+## 75 1.781574e-11
+## 76 1.781574e-11
+## 77 1.781574e-11
+## 78 1.781574e-11
+## 79 1.781574e-11
+## 80 1.781574e-11
+## 81 1.781574e-11
+## 82 1.781574e-11
+## 83 1.781574e-11
+## 84 1.781574e-11
+## 85 1.781574e-11
+## 86 1.781574e-11
+## 87 1.781574e-11
+## 88 1.781574e-11
+## 89 1.781574e-11
+## 90 1.781574e-11
+## 91 1.781574e-11
+## 92 1.797316e-08
+## 93 8.179025e-09
+## 94 8.904774e-08</code></pre>
+<pre class="r"><code>manhattan(x = l_kvalH_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,10), genomewideline = -log10(1.84e-7), main = &quot;L K-value H&quot;, annotatePval = 1.84e-7)</code></pre>
+<p><img src="/posts/2018-09-25-filtering-gwas-w-covariates-results_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="filter-l-acd" class="section level4">
+<h4>2. Filter L ACD</h4>
+<pre class="r"><code>l_acd_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno240918$L.AC.Depth, X = nies_covar, method=&quot;lmm&quot;, test = &quot;lrt&quot;, response = &quot;quantitative&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)</code></pre>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<pre class="r"><code>l_acd_gwas &lt;- na.omit(l_acd_gwas)
+l_acd_filtered &lt;- l_acd_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+l_acd_meff &lt;- l_acd_filtered %&gt;% filter(p &lt; 1.84e-7)
+l_acd_sig &lt;- do.call(rbind, lapply(split(l_acd_meff,l_acd_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+l_acd_res &lt;- NULL
+for (i in l_acd_sig$id) {
+  snpID &lt;- i
+  snpCHR &lt;- l_acd_filtered[l_acd_filtered$id == snpID,]$chr
+  snpPOS &lt;- l_acd_filtered[l_acd_filtered$id ==snpID,]$pos
+  
+  sig.peak &lt;- l_acd_filtered %&gt;%
+    filter(chr == snpCHR) %&gt;%
+    filter(pos &gt; snpPOS - 50000) %&gt;%
+    filter(pos &lt; snpPOS + 50000) %&gt;%
+    filter(p &lt; 1e-5)
+  
+  l_acd_res &lt;- rbind(l_acd_res, sig.peak)
+}
+
+write.csv(l_acd_res, &#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/l_acd.csv&#39;)
+l_acd_res</code></pre>
+<pre><code>##   chr      pos         id A1 A2    freqA2         h2      LRT            p
+## 1  11 87921800 rs17151049  C  T 0.9362319 0.04134164 34.86515 3.533494e-09</code></pre>
+<pre class="r"><code>manhattan(x = l_acd_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,10), genomewideline = -log10(1.84e-7), main = &quot;Left Anterior Chamber Depth&quot;, annotatePval = 1.84e-7)</code></pre>
+<p><img src="/posts/2018-09-25-filtering-gwas-w-covariates-results_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="l-cdr" class="section level4">
+<h4>3. L CDR</h4>
+<pre class="r"><code>l_cdr_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno240918$L.CDR, X = nies_covar, method=&quot;lmm&quot;, test = &quot;lrt&quot;, response = &quot;quantitative&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)</code></pre>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<pre class="r"><code>l_cdr_gwas &lt;- na.omit(l_cdr_gwas)
+l_cdr_filtered &lt;- l_cdr_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+l_cdr_meff &lt;- l_cdr_filtered %&gt;% filter(p &lt; 1.84e-7)
+l_cdr_sig &lt;- do.call(rbind, lapply(split(l_cdr_meff,l_cdr_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+l_cdr_res &lt;- NULL
+for (i in l_cdr_sig$id) {
+  snpID &lt;- i
+  snpCHR &lt;- l_cdr_filtered[l_cdr_filtered$id == snpID,]$chr
+  snpPOS &lt;- l_cdr_filtered[l_cdr_filtered$id ==snpID,]$pos
+  
+  sig.peak &lt;- l_cdr_filtered %&gt;%
+    filter(chr == snpCHR) %&gt;%
+    filter(pos &gt; snpPOS - 50000) %&gt;%
+    filter(pos &lt; snpPOS + 50000) %&gt;%
+    filter(p &lt; 1e-5)
+  
+  l_cdr_res &lt;- rbind(l_cdr_res, sig.peak)
+}
+
+write.csv(l_cdr_res, &#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/l_cdr_res.csv&#39;)
+l_cdr_res</code></pre>
+<pre><code>##   chr      pos          id A1 A2    freqA2        h2      LRT            p
+## 1   4 52923518 rs115266839  A  G 0.9884058 0.7137481 28.51051 9.319103e-08
+## 2  17 67425699 rs191190284  T  A 0.9869565 0.7285248 31.57717 1.916699e-08</code></pre>
+<pre class="r"><code>manhattan(x = l_cdr_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,10), genomewideline = -log10(1.84e-7), main = &quot;Left Cup-to-Disc Ratio&quot;, annotatePval = 1.84e-7)</code></pre>
+<p><img src="/posts/2018-09-25-filtering-gwas-w-covariates-results_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="l-iop" class="section level4">
+<h4>4. L IOP</h4>
+<pre class="r"><code>l_iop_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno240918$L.IOP.mmHg, X = nies_covar, method=&quot;lmm&quot;, test = &quot;lrt&quot;, response = &quot;quantitative&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)</code></pre>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<pre class="r"><code>l_iop_gwas &lt;- na.omit(l_iop_gwas)
+l_iop_filtered &lt;- l_iop_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+l_iop_meff &lt;- l_iop_filtered %&gt;% filter(p &lt; 1.84e-7)
+l_iop_sig &lt;- do.call(rbind, lapply(split(l_iop_meff,l_iop_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+l_iop_res &lt;- NULL
+for (i in l_iop_sig$id) {
+  snpID &lt;- i
+  snpCHR &lt;- l_iop_filtered[l_iop_filtered$id == snpID,]$chr
+  snpPOS &lt;- l_iop_filtered[l_iop_filtered$id ==snpID,]$pos
+  
+  sig.peak &lt;- l_iop_filtered %&gt;%
+    filter(chr == snpCHR) %&gt;%
+    filter(pos &gt; snpPOS - 50000) %&gt;%
+    filter(pos &lt; snpPOS + 50000) %&gt;%
+    filter(p &lt; 1e-5)
+  
+  l_iop_res &lt;- rbind(l_iop_res, sig.peak)
+}
+
+write.csv(l_iop_res, &#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/l_iop_res.csv&#39;)
+l_iop_res</code></pre>
+<pre><code>## NULL</code></pre>
+<pre class="r"><code>manhattan(x = l_iop_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,10), genomewideline = -log10(1.84e-7), main = &quot;Left Intraocular Pressure&quot;)</code></pre>
+<p><img src="/posts/2018-09-25-filtering-gwas-w-covariates-results_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+<div id="r-acd" class="section level4">
+<h4>5. R ACD</h4>
+<pre class="r"><code>r_acd_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno240918$R.AC.Depth, X = nies_covar, method=&quot;lmm&quot;, test = &quot;lrt&quot;, response = &quot;quantitative&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)</code></pre>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<pre class="r"><code>r_acd_gwas &lt;- na.omit(r_acd_gwas)
+r_acd_filtered &lt;- r_acd_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+r_acd_meff &lt;- r_acd_filtered %&gt;% filter(p &lt; 1.84e-7)
+r_acd_sig &lt;- do.call(rbind, lapply(split(r_acd_meff,r_acd_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+r_acd_res &lt;- NULL
+for (i in r_acd_sig$id) {
+  snpID &lt;- i
+  snpCHR &lt;- r_acd_filtered[r_acd_filtered$id == snpID,]$chr
+  snpPOS &lt;- r_acd_filtered[r_acd_filtered$id ==snpID,]$pos
+  
+  sig.peak &lt;- r_acd_filtered %&gt;%
+    filter(chr == snpCHR) %&gt;%
+    filter(pos &gt; snpPOS - 50000) %&gt;%
+    filter(pos &lt; snpPOS + 50000) %&gt;%
+    filter(p &lt; 1e-5)
+  
+  r_acd_res &lt;- rbind(r_acd_res, sig.peak)
+}
+
+write.csv(r_acd_res, &#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/r_acd_res.csv&#39;)
+r_acd_res</code></pre>
+<pre><code>##   chr      pos         id A1 A2    freqA2 h2      LRT            p
+## 1  11 87921800 rs17151049  C  T 0.9362319  0 36.69173 1.383648e-09</code></pre>
+<pre class="r"><code>manhattan(x = r_acd_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,10), genomewideline = -log10(1.84e-7), main = &quot;Right Anterior Chamber Depth&quot;, annotatePval = 1.84e-7)</code></pre>
+<p><img src="/posts/2018-09-25-filtering-gwas-w-covariates-results_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+</div>
+<div id="r-axial-length" class="section level4">
+<h4>6. R Axial length</h4>
+<pre class="r"><code>r_axL_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno240918$R.Axial.Length, X = nies_covar, method=&quot;lmm&quot;, test = &quot;lrt&quot;, response = &quot;quantitative&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)</code></pre>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<pre class="r"><code>r_axL_gwas &lt;- na.omit(r_axL_gwas)
+r_axL_filtered &lt;- r_axL_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+r_axL_meff &lt;- r_axL_filtered %&gt;% filter(p &lt; 1.84e-7)
+r_axL_sig &lt;- do.call(rbind, lapply(split(r_axL_meff,r_axL_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+r_axL_res &lt;- NULL
+for (i in r_axL_sig$id) {
+  snpID &lt;- i
+  snpCHR &lt;- r_axL_filtered[r_axL_filtered$id == snpID,]$chr
+  snpPOS &lt;- r_axL_filtered[r_axL_filtered$id ==snpID,]$pos
+  
+  sig.peak &lt;- r_axL_filtered %&gt;%
+    filter(chr == snpCHR) %&gt;%
+    filter(pos &gt; snpPOS - 50000) %&gt;%
+    filter(pos &lt; snpPOS + 50000) %&gt;%
+    filter(p &lt; 1e-5)
+  
+  r_axL_res &lt;- rbind(r_axL_res, sig.peak)
+}
+
+write.csv(r_axL_res, &#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/r_axL_res.csv&#39;)
+r_axL_res</code></pre>
+<pre><code>##   chr      pos          id A1 A2    freqA2        h2      LRT            p
+## 1   3 19256649 rs151052496  T  C 0.9666667 0.3916311 28.21833 1.083735e-07</code></pre>
+<pre class="r"><code>manhattan(x = r_axL_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,10), genomewideline = -log10(1.84e-7), main = &quot;Right Axial Length&quot;, annotatePval = 1.84e-7)</code></pre>
+<p><img src="/posts/2018-09-25-filtering-gwas-w-covariates-results_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
+<div id="r-cdr" class="section level4">
+<h4>7. R CDR</h4>
+<pre class="r"><code>r_cdr_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno240918$R.CDR, X = nies_covar, method=&quot;lmm&quot;, test = &quot;lrt&quot;, response = &quot;quantitative&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)</code></pre>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<pre class="r"><code>r_cdr_gwas &lt;- na.omit(r_cdr_gwas)
+r_cdr_filtered &lt;- r_cdr_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+r_cdr_meff &lt;- r_cdr_filtered %&gt;% filter(p &lt; 1.84e-7)
+r_cdr_sig &lt;- do.call(rbind, lapply(split(r_cdr_meff,r_cdr_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+r_cdr_res &lt;- NULL
+for (i in r_cdr_sig$id) {
+  snpID &lt;- i
+  snpCHR &lt;- r_cdr_filtered[r_cdr_filtered$id == snpID,]$chr
+  snpPOS &lt;- r_cdr_filtered[r_cdr_filtered$id ==snpID,]$pos
+  
+  sig.peak &lt;- r_cdr_filtered %&gt;%
+    filter(chr == snpCHR) %&gt;%
+    filter(pos &gt; snpPOS - 50000) %&gt;%
+    filter(pos &lt; snpPOS + 50000) %&gt;%
+    filter(p &lt; 1e-5)
+  
+  r_cdr_res &lt;- rbind(r_cdr_res, sig.peak)
+}
+
+write.csv(r_cdr_res, &#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/r_cdr_res.csv&#39;)
+r_cdr_res</code></pre>
+<pre><code>## NULL</code></pre>
+<pre class="r"><code>manhattan(x = r_cdr_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,10), genomewideline = -log10(1.84e-7), main = &quot;Right Cup-to-Disc Ratio&quot;)</code></pre>
+<p><img src="/posts/2018-09-25-filtering-gwas-w-covariates-results_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
+<div id="r-cyl" class="section level4">
+<h4>8.R cyl</h4>
+<pre class="r"><code>r_cyl_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno240918$R.Cyl..pre.dilate, X = nies_covar, method=&quot;lmm&quot;, test = &quot;lrt&quot;, response = &quot;quantitative&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+r_cyl_gwas &lt;- na.omit(r_cyl_gwas)
+r_cyl_filtered &lt;- r_cyl_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+r_cyl_meff &lt;- r_cyl_filtered %&gt;% filter(p &lt; 1.84e-7)
+r_cyl_sig &lt;- do.call(rbind, lapply(split(r_cyl_meff,r_cyl_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+r_cyl_res &lt;- NULL
+for (i in r_cyl_sig$id) {
+  snpID &lt;- i
+  snpCHR &lt;- r_cyl_filtered[r_cyl_filtered$id == snpID,]$chr
+  snpPOS &lt;- r_cyl_filtered[r_cyl_filtered$id ==snpID,]$pos
+  
+  sig.peak &lt;- r_cyl_filtered %&gt;%
+    filter(chr == snpCHR) %&gt;%
+    filter(pos &gt; snpPOS - 50000) %&gt;%
+    filter(pos &lt; snpPOS + 50000) %&gt;%
+    filter(p &lt; 1e-5)
+  
+  r_cyl_res &lt;- rbind(r_cyl_res, sig.peak)
+}
+
+write.csv(r_cyl_res, &#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/r_cyl_res.csv&#39;)
+r_cyl_res</code></pre>
+<pre><code>##   chr      pos         id A1 A2    freqA2        h2      LRT            p
+## 1   9 78643317 rs12377322  T  A 0.8942029 0.5227802 31.15654 2.380362e-08
+## 2   9 78643821 rs11137782  T  C 0.8942029 0.5227802 31.15654 2.380362e-08
+## 3   9 78644279 rs10867228  C  T 0.8942029 0.5227802 31.15654 2.380362e-08
+## 4   9 78645867  rs9644983  A  T 0.8942029 0.5227802 31.15654 2.380362e-08
+## 5   9 78650464  rs7870042  G  T 0.8869565 0.5180705 30.20807 3.880911e-08</code></pre>
+<pre class="r"><code>manhattan(x = r_cyl_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,12), genomewideline = -log10(1.84e-7), main = &quot;Right Cyl Pre-dilate&quot;, annotatePval = 1.84e-7)</code></pre>
+<p><img src="/posts/2018-09-25-filtering-gwas-w-covariates-results_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+</div>
+<div id="r-iop" class="section level4">
+<h4>9. R IOP</h4>
+<pre class="r"><code>r_iop_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno240918$R.IOP.mmHg, X = nies_covar, method=&quot;lmm&quot;, test = &quot;lrt&quot;, response = &quot;quantitative&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)</code></pre>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<pre class="r"><code>r_iop_gwas &lt;- na.omit(r_iop_gwas)
+r_iop_filtered &lt;- r_iop_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+r_iop_meff &lt;- r_iop_filtered %&gt;% filter(p &lt; 1.84e-7)
+r_iop_sig &lt;- do.call(rbind, lapply(split(r_iop_meff,r_iop_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+r_iop_res &lt;- NULL
+for (i in r_iop_sig$id) {
+  snpID &lt;- i
+  snpCHR &lt;- r_iop_filtered[r_iop_filtered$id == snpID,]$chr
+  snpPOS &lt;- r_iop_filtered[r_iop_filtered$id ==snpID,]$pos
+  
+  sig.peak &lt;- r_iop_filtered %&gt;%
+    filter(chr == snpCHR) %&gt;%
+    filter(pos &gt; snpPOS - 50000) %&gt;%
+    filter(pos &lt; snpPOS + 50000) %&gt;%
+    filter(p &lt; 1e-5)
+  
+  r_iop_res &lt;- rbind(r_iop_res, sig.peak)
+}
+
+write.csv(r_iop_res, &#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/r_iop_res.csv&#39;)
+r_iop_res</code></pre>
+<pre><code>## NULL</code></pre>
+<pre class="r"><code>manhattan(x = r_iop_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,12), genomewideline = -log10(1.84e-7), main = &quot;Right Intraocular Pressure&quot;)</code></pre>
+<p><img src="/posts/2018-09-25-filtering-gwas-w-covariates-results_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+</div>
+<div id="r-kval-v" class="section level4">
+<h4>10. R Kval V</h4>
+<pre class="r"><code>r_kvalV_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno240918$R.K.value.V, X = nies_covar, method=&quot;lmm&quot;, test = &quot;lrt&quot;, response = &quot;quantitative&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)</code></pre>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<pre class="r"><code>r_kvalV_gwas &lt;- na.omit(r_kvalV_gwas)
+r_kvalV_filtered &lt;- r_kvalV_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+r_kvalV_meff &lt;- r_kvalV_filtered %&gt;% filter(p &lt; 1.84e-7)
+r_kvalV_sig &lt;- do.call(rbind, lapply(split(r_kvalV_meff,r_kvalV_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+r_kvalV_res &lt;- NULL
+for (i in r_kvalV_sig$id) {
+  snpID &lt;- i
+  snpCHR &lt;- r_kvalV_filtered[r_kvalV_filtered$id == snpID,]$chr
+  snpPOS &lt;- r_kvalV_filtered[r_kvalV_filtered$id ==snpID,]$pos
+  
+  sig.peak &lt;- r_kvalV_filtered %&gt;%
+    filter(chr == snpCHR) %&gt;%
+    filter(pos &gt; snpPOS - 50000) %&gt;%
+    filter(pos &lt; snpPOS + 50000) %&gt;%
+    filter(p &lt; 1e-5)
+  
+  r_kvalV_res &lt;- rbind(r_kvalV_res, sig.peak)
+}
+
+write.csv(r_kvalV_res, &#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/r_kvalV_res.csv&#39;)
+r_kvalV_res</code></pre>
+<pre><code>##    chr       pos          id A1 A2    freqA2        h2      LRT
+## 1    1 205916566  rs72752923  C  A 0.9782609 0.6629444 24.87971
+## 2    1 205916729  rs16830364  G  A 0.9782609 0.6629444 24.87971
+## 3    1 205916931  rs60255052  C  T 0.9811594 0.5937446 36.80908
+## 4    1 205917041  rs60716530  C  T 0.9782609 0.6629444 24.87971
+## 5    1 205917115  rs60644810  G  A 0.9782609 0.6629444 24.87971
+## 6    1 205917248  rs35694044  A  T 0.9782609 0.6629444 24.87971
+## 7    1 205917652  rs16830370  T  C 0.9782609 0.6629444 24.87971
+## 8    1 205918853  rs16856462  C  T 0.9782609 0.6629444 24.87971
+## 9    1 205919195  rs16856468  G  A 0.9782609 0.6629444 24.87971
+## 10   1 205919303  rs60001177  T  C 0.9782609 0.6629444 24.87971
+## 11   1 205919401  rs12723666  A  G 0.9782609 0.6629444 24.87971
+## 12   1 205920201  rs16856470  T  C 0.9811594 0.5937446 36.80908
+## 13   1 205920404  rs16856473  A  G 0.9811594 0.5937446 36.80908
+## 14   1 205922403  rs68189466  G  A 0.9797101 0.5975327 28.63845
+## 15   1 205922720  rs35648260  G  T 0.9797101 0.5975327 28.63845
+## 16   1 205922775  rs35360452  G  T 0.9797101 0.5975327 28.63845
+## 17   1 205925474  rs12727528  A  G 0.9797101 0.5975327 28.63845
+## 18   1 205935183   rs1891309  G  A 0.9782609 0.5942699 26.60640
+## 19   1 205935330   rs1891310  T  G 0.9782609 0.5942699 26.60640
+## 20   1 205936240   rs1473537  T  C 0.9739130 0.5975376 31.17921
+## 21   1 205942026  rs72752928  T  C 0.9782609 0.5942699 26.60640
+## 22   1 205943691  rs66593238  T  C 0.9782609 0.5942699 26.60640
+## 23   1 205944627   rs9438407  T  G 0.9782609 0.5942699 26.60640
+## 24   1 205945388  rs12741299  T  C 0.9782609 0.5942699 26.60640
+## 25   1 205946647  rs34265780  T  C 0.9782609 0.5942699 26.60640
+## 26   4 119321195  rs77203710  A  G 0.9855072 0.6483435 27.86200
+## 27   4 119322197   rs1397614  T  C 0.9855072 0.6483435 27.86200
+## 28   4 119362510 rs112314510  A  G 0.9855072 0.6483435 27.86200
+## 29   4 119362552 rs111968273  T  A 0.9855072 0.6483435 27.86200
+## 30   4 119367677 rs113059419  A  G 0.9869565 0.6382046 29.84634
+## 31   4 119372303 rs112760591  G  A 0.9855072 0.6483435 27.86200
+## 32   4 119372480 rs111609258  C  G 0.9855072 0.6483435 27.86200
+## 33   4 119378224 rs147602981  G  A 0.9855072 0.6483435 27.86200
+## 34   4 119381167 rs143847948  A  C 0.9855072 0.6483435 27.86200
+## 35   4 119390257 rs113224532  T  C 0.9855072 0.6483435 27.86200
+## 36   4 119392279 rs117856633  C  A 0.9855072 0.6483435 27.86200
+## 37   4 119398681 rs113825627  C  G 0.9855072 0.6483435 27.86200
+## 38   4 119403429 rs112414671  A  G 0.9869565 0.6382046 29.84634
+## 39   4 119404439 rs183181597  A  G 0.9855072 0.6483435 27.86200
+## 40   4 119404927 rs113317707  C  A 0.9855072 0.6483435 27.86200
+## 41   4 119408454 rs184703141  T  C 0.9855072 0.6483435 27.86200
+##               p
+## 1  6.102138e-07
+## 2  6.102138e-07
+## 3  1.302822e-09
+## 4  6.102138e-07
+## 5  6.102138e-07
+## 6  6.102138e-07
+## 7  6.102138e-07
+## 8  6.102138e-07
+## 9  6.102138e-07
+## 10 6.102138e-07
+## 11 6.102138e-07
+## 12 1.302822e-09
+## 13 1.302822e-09
+## 14 8.723252e-08
+## 15 8.723252e-08
+## 16 8.723253e-08
+## 17 8.723252e-08
+## 18 2.494165e-07
+## 19 2.494165e-07
+## 20 2.352724e-08
+## 21 2.494165e-07
+## 22 2.494165e-07
+## 23 2.494165e-07
+## 24 2.494165e-07
+## 25 2.494165e-07
+## 26 1.302832e-07
+## 27 1.302832e-07
+## 28 1.302832e-07
+## 29 1.302832e-07
+## 30 4.676781e-08
+## 31 1.302832e-07
+## 32 1.302832e-07
+## 33 1.302832e-07
+## 34 1.302832e-07
+## 35 1.302832e-07
+## 36 1.302832e-07
+## 37 1.302832e-07
+## 38 4.676781e-08
+## 39 1.302832e-07
+## 40 1.302832e-07
+## 41 1.302832e-07</code></pre>
+<pre class="r"><code>manhattan(x = r_kvalV_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,12), genomewideline = -log10(1.84e-7), main = &quot;Right K-value V&quot;, annotatePval = 1.84e-7)</code></pre>
+<p><img src="/posts/2018-09-25-filtering-gwas-w-covariates-results_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+</div>
+<div id="uvaf" class="section level4">
+<h4>11. UVAF</h4>
+<pre class="r"><code>uvaf_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno240918$totaluvafmm, X = nies_covar, method=&quot;lmm&quot;, test = &quot;lrt&quot;, response = &quot;quantitative&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)</code></pre>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<pre class="r"><code>uvaf_gwas &lt;- na.omit(uvaf_gwas)
+uvaf_filtered &lt;- uvaf_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+uvaf_meff &lt;- uvaf_filtered %&gt;% filter(p &lt; 1.84e-7)
+uvaf_sig &lt;- do.call(rbind, lapply(split(uvaf_meff,uvaf_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+uvaf_res &lt;- NULL
+for (i in uvaf_sig$id) {
+  snpID &lt;- i
+  snpCHR &lt;- uvaf_filtered[uvaf_filtered$id == snpID,]$chr
+  snpPOS &lt;- uvaf_filtered[uvaf_filtered$id ==snpID,]$pos
+  
+  sig.peak &lt;- uvaf_filtered %&gt;%
+    filter(chr == snpCHR) %&gt;%
+    filter(pos &gt; snpPOS - 50000) %&gt;%
+    filter(pos &lt; snpPOS + 50000) %&gt;%
+    filter(p &lt; 1e-5)
+  
+  uvaf_res &lt;- rbind(uvaf_res, sig.peak)
+}
+
+write.csv(uvaf_res, &#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/uvaf_res.csv&#39;)
+uvaf_res</code></pre>
+<pre><code>##    chr       pos          id A1 A2    freqA2        h2      LRT
+## 1    4  22963447  rs75555621  T  C 0.9753623 0.4146371 28.40614
+## 2    4  22968049    rs961611  G  C 0.9753623 0.4146371 28.40614
+## 3    4  22994702  rs77135796  C  A 0.9768116 0.4088979 26.77749
+## 4    7 107578936 rs191522213  G  C 0.9884058 0.4941277 33.16299
+## 5    8  34731289 rs116937259  C  T 0.9884058 0.4585009 28.19133
+## 6    8  34738629 rs141115618  C  G 0.9898551 0.4695116 21.02868
+## 7    8  34743083 rs192922472  T  C 0.9884058 0.4585009 28.19133
+## 8    9  68575580  rs34054758  A  G 0.9753623 0.4111507 24.90233
+## 9    9  68576337  rs35666199  G  C 0.9753623 0.4111507 24.90233
+## 10   9  68580538   rs6560237  C  T 0.9753623 0.4111507 24.90233
+## 11   9  68581265   rs7048633  T  C 0.9753623 0.4111507 24.90233
+## 12   9  68583308  rs71501771  T  A 0.9753623 0.4111507 24.90233
+## 13   9  68586048  rs35551873  T  C 0.9753623 0.4111507 24.90233
+## 14   9  68586254   rs7045561  G  A 0.9753623 0.4111507 24.90233
+## 15   9  68587181  rs13288798  G  T 0.9753623 0.4111507 24.90233
+## 16   9  68587313  rs13284137  G  A 0.9753623 0.4111507 24.90233
+## 17   9  68588522 rs139047286  C  T 0.9753623 0.4111507 24.90233
+## 18   9  68588999   rs7859065  C  T 0.9753623 0.4111507 24.90233
+## 19   9  68594362  rs13290124  A  G 0.9753623 0.4111507 24.90233
+## 20   9  68595978  rs10511959  A  G 0.9753623 0.4111507 24.90233
+## 21   9  68597806  rs34412731  T  C 0.9753623 0.4111507 24.90233
+## 22   9  68599834  rs12004993  G  A 0.9753623 0.4111507 24.90233
+## 23   9  68605388  rs76930250  G  C 0.9753623 0.4111507 24.90233
+## 24   9  68605806  rs13287094  A  G 0.9753623 0.4111507 24.90233
+## 25   9  68608085  rs34921768  G  A 0.9753623 0.4111507 24.90233
+## 26   9  68608420  rs13299492  A  G 0.9753623 0.4111507 24.90233
+## 27   9  68612655  rs34344868  A  G 0.9753623 0.4111507 24.90233
+## 28   9  68615281  rs34805084  A  G 0.9739130 0.4125906 22.36735
+## 29   9  68618011  rs71501772  G  C 0.9739130 0.4125906 22.36735
+## 30   9  68618330  rs34763246  T  C 0.9739130 0.4125906 22.36735
+## 31   9  68619315  rs34436601  T  C 0.9739130 0.4125906 22.36735
+## 32   9  68621728  rs13289515  C  G 0.9739130 0.4125906 22.36735
+## 33   9  68621879  rs13289852  A  G 0.9753623 0.4245203 19.55458
+## 34   9  68624185 rs117741244  T  C 0.9811594 0.3772754 32.16159
+## 35   9  68629924 rs117987088  T  C 0.9811594 0.3772754 32.16159
+##               p
+## 1  9.835299e-08
+## 2  9.835299e-08
+## 3  2.282816e-07
+## 4  8.474810e-09
+## 5  1.098960e-07
+## 6  4.524601e-06
+## 7  1.098960e-07
+## 8  6.030939e-07
+## 9  6.030939e-07
+## 10 6.030939e-07
+## 11 6.030939e-07
+## 12 6.030939e-07
+## 13 6.030939e-07
+## 14 6.030939e-07
+## 15 6.030939e-07
+## 16 6.030939e-07
+## 17 6.030939e-07
+## 18 6.030939e-07
+## 19 6.030939e-07
+## 20 6.030939e-07
+## 21 6.030939e-07
+## 22 6.030939e-07
+## 23 6.030939e-07
+## 24 6.030939e-07
+## 25 6.030939e-07
+## 26 6.030939e-07
+## 27 6.030939e-07
+## 28 2.251700e-06
+## 29 2.251700e-06
+## 30 2.251700e-06
+## 31 2.251700e-06
+## 32 2.251700e-06
+## 33 9.776623e-06
+## 34 1.418682e-08
+## 35 1.418682e-08</code></pre>
+<pre class="r"><code>manhattan(x = uvaf_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,12), genomewideline = -log10(1.84e-7), main = &quot;Ultraviolet Autofluorescence&quot;, annotatePval = 1.84e-7)</code></pre>
+<p><img src="/posts/2018-09-25-filtering-gwas-w-covariates-results_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+</div>
+<div id="component-1" class="section level4">
+<h4>12. Component 1</h4>
+<pre class="r"><code>pc1_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno240918$coord.Dim.1, X = nies_covar, method=&quot;lmm&quot;, test = &quot;lrt&quot;, response = &quot;quantitative&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+pc1_gwas &lt;- na.omit(pc1_gwas)
+pc1_filtered &lt;- pc1_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+pc1_meff &lt;- pc1_filtered %&gt;% filter(p &lt; 1.84e-7)
+pc1_sig &lt;- do.call(rbind, lapply(split(pc1_meff,pc1_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+pc1_res &lt;- NULL
+for (i in pc1_sig$id) {
+  snpID &lt;- i
+  snpCHR &lt;- pc1_filtered[pc1_filtered$id == snpID,]$chr
+  snpPOS &lt;- pc1_filtered[pc1_filtered$id ==snpID,]$pos
+  
+  sig.peak &lt;- pc1_filtered %&gt;%
+    filter(chr == snpCHR) %&gt;%
+    filter(pos &gt; snpPOS - 50000) %&gt;%
+    filter(pos &lt; snpPOS + 50000) %&gt;%
+    filter(p &lt; 1e-5)
+  
+  pc1_res &lt;- rbind(pc1_res, sig.peak)
+}
+
+write.csv(pc1_res, &#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/pc1_res.csv&#39;)
+pc1_res</code></pre>
+<pre><code>##    chr       pos          id A1 A2    freqA2        h2      LRT
+## 1    3  55984018   rs6797314  G  A 0.7434783 0.6586685 27.95227
+## 2    3  55987608   rs1458061  G  A 0.7434783 0.6586685 27.95227
+## 3    3  55993888  rs73086924  C  T 0.7434783 0.6586685 27.95227
+## 4    3  55999668  rs57141558  T  C 0.7434783 0.6586685 27.95227
+## 5    3  56001963  rs12631548  T  C 0.7434783 0.6586685 27.95227
+## 6    3  56008809   rs6779691  G  A 0.7434783 0.6586685 27.95227
+## 7    3  56012614   rs1458060  A  G 0.7434783 0.6586685 27.95227
+## 8    3  56013361  rs17216524  A  G 0.7434783 0.6586685 27.95227
+## 9    4 108787323   rs2880902  A  G 0.9478261 0.6113166 27.40749
+## 10   4 108790372   rs2123367  T  C 0.9478261 0.6113166 27.40749
+## 11   4 108801259  rs17039415  A  T 0.9492754 0.6103985 27.72720
+## 12   4 108803644  rs58390864  A  G 0.9521739 0.6122931 27.21106
+## 13   4 108805308  rs76953844  C  T 0.9521739 0.6122931 27.21106
+## 14   5 110018330   rs1563324  G  A 0.9637681 0.5676447 19.94451
+## 15   5 110027474   rs1455554  G  A 0.8782609 0.5647180 29.10011
+## 16   7   7976971  rs73049252  A  G 0.9376812 0.5770405 31.19643
+## 17   7   7978549   rs7804306  A  G 0.9304348 0.5752165 31.43087
+## 18   7   7978858  rs73049256  T  A 0.9376812 0.5770405 31.19643
+## 19   7   7979532  rs67343471  T  G 0.9275362 0.5747390 28.67310
+## 20   7   7981025  rs56073406  G  A 0.9304348 0.5752165 31.43087
+## 21   7   7981281 rs112270482  C  T 0.9376812 0.5770405 31.19643
+## 22   7   7981982   rs6975218  G  A 0.9304348 0.5752165 31.43087
+## 23   7   7982015  rs73049270  T  C 0.9376812 0.5770405 31.19643
+## 24   7   7982385  rs73049276  A  G 0.9376812 0.5770405 31.19643
+## 25   7   7985192 rs113537684  T  G 0.9376812 0.5770405 31.19643
+## 26   7   7985209  rs60466842  A  C 0.9188406 0.5777130 24.95373
+## 27   7   7992584  rs73049290  C  T 0.9376812 0.5770405 31.19643
+## 28   7   7993887  rs17566854  C  A 0.9376812 0.5770405 31.19643
+## 29   7   7995282  rs56017154  A  G 0.9376812 0.5770405 31.19643
+## 30   7   7997876 rs142269087  A  G 0.9376812 0.5770405 31.19643
+## 31   7   7999017  rs73049293  C  T 0.9376812 0.5770405 31.19643
+## 32   7   7999429  rs73049297  A  G 0.9376812 0.5770405 31.19643
+## 33   7   8001135 rs138912252  A  G 0.9376812 0.5770405 31.19643
+## 34   7   8001658 rs147420655  A  G 0.9376812 0.5770405 31.19643
+## 35   7   8002315  rs73049300  G  C 0.9376812 0.5770405 31.19643
+## 36   7   8010614  rs73050915  T  G 0.9376812 0.5770405 31.19643
+## 37   7   8011977 rs147455256  G  A 0.9101449 0.5998346 19.90503
+## 38   7   8012093 rs149303885  T  G 0.9376812 0.5770405 31.19643
+## 39   7   8012957  rs34746652  A  G 0.9101449 0.5998346 19.90503
+## 40   7   8016318  rs35509690  C  A 0.9101449 0.5998346 19.90503
+## 41   7   8016462 rs145954895  A  C 0.9376812 0.5770405 31.19643
+## 42   7   8017141  rs35143180  A  C 0.9101449 0.5998346 19.90503
+## 43   7   8019638  rs73050929  A  C 0.9376812 0.5770405 31.19643
+## 44   7   8027509  rs13225545  C  T 0.9101449 0.5998346 19.90503
+## 45   7   8027882  rs73050940  G  A 0.9376812 0.5770405 31.19643
+## 46   7   8028562  rs56142807  T  C 0.9376812 0.5770405 31.19643
+## 47   9  80083293  rs56681765  T  G 0.9753623 0.5989193 24.82235
+## 48   9  80083941  rs73465194  G  A 0.9753623 0.5989193 24.82235
+## 49   9  80085229  rs73465197  G  T 0.9753623 0.5989193 24.82235
+## 50   9  80087626  rs60135507  C  G 0.9753623 0.5989193 24.82235
+## 51   9  80089053  rs12340079  T  A 0.9753623 0.5989193 24.82235
+## 52   9  80090326  rs12005290  T  C 0.9275362 0.5992298 27.75820
+## 53   9  80090686 rs113228275  C  A 0.9753623 0.5989193 24.82235
+## 54  12 131726697  rs71470343  T  C 0.7565217 0.5488483 22.67821
+## 55  12 131727978  rs11612305  G  A 0.7565217 0.5488483 22.67821
+## 56  12 131732148  rs34459128  A  G 0.7565217 0.5488483 22.67821
+## 57  12 131733497  rs11246782  C  A 0.7565217 0.5488483 22.67821
+## 58  12 131735840  rs12426142  G  T 0.7565217 0.5488483 22.67821
+## 59  12 131740230  rs35811529  A  T 0.7565217 0.5488483 22.67821
+## 60  12 131741218  rs77720672  A  G 0.7565217 0.5488483 22.67821
+## 61  12 131750373  rs11613616  A  G 0.7565217 0.5488483 22.67821
+## 62  12 131751961  rs12814215  A  G 0.7565217 0.5488483 22.67821
+## 63  12 131753205   rs1051219  T  C 0.7550725 0.5423594 24.58083
+## 64  12 131755796   rs3741526  T  C 0.5246377 0.5707837 29.04004
+## 65  12 131757714  rs10902445  A  G 0.5246377 0.5707837 29.04004
+## 66  12 131759383  rs10751692  C  T 0.5231884 0.5683912 29.00795
+## 67  12 131780621  rs35769880  A  G 0.7565217 0.5499785 21.93496
+## 68  12 131782218  rs12824836  C  T 0.7579710 0.5474037 21.97864
+## 69  12 131788771  rs10751693  A  G 0.5260870 0.5692210 28.57329
+## 70  12 131789723  rs78792048  C  A 0.7579710 0.5474037 21.97864
+## 71  12 131790985   rs7302570  A  C 0.7579710 0.5474037 21.97864
+## 72  12 131792417   rs7972213  C  T 0.5362319 0.5669502 28.19673
+## 73  12 131793860  rs35198651  A  G 0.7579710 0.5474037 21.97864
+## 74  12 131794164  rs34705844  G  A 0.7579710 0.5474037 21.97864
+## 75  12 131805033  rs11615253  T  C 0.7550725 0.5490112 22.59556
+## 76  12 131805444  rs12319878  C  T 0.5188406 0.5715208 28.23844
+## 77  12 131805478   rs7963727  C  G 0.7550725 0.5490112 22.59556
+## 78  16  27016081  rs17705663  C  G 0.6507246 0.5446572 22.92850
+## 79  16  27016338   rs4787900  A  G 0.6507246 0.5446572 22.92850
+## 80  16  27016563   rs4787399  T  C 0.6507246 0.5446572 22.92850
+## 81  16  27016645   rs4787901  G  T 0.6507246 0.5446572 22.92850
+## 82  16  27016827   rs4787902  A  G 0.6405797 0.5346800 20.73884
+## 83  16  27016873  rs17638409  T  C 0.6507246 0.5446572 22.92850
+## 84  16  27016944  rs34531249  G  A 0.6507246 0.5446572 22.92850
+## 85  16  27016958  rs62031995  A  T 0.6507246 0.5446572 22.92850
+## 86  16  27017238  rs13335990  C  T 0.6507246 0.5446572 22.92850
+## 87  16  27020618   rs8052041  A  C 0.7478261 0.5491575 28.81302
+## 88  16  27021732   rs4787400  T  C 0.7478261 0.5491575 28.81302
+##               p
+## 1  1.243452e-07
+## 2  1.243452e-07
+## 3  1.243452e-07
+## 4  1.243452e-07
+## 5  1.243452e-07
+## 6  1.243452e-07
+## 7  1.243452e-07
+## 8  1.243452e-07
+## 9  1.647920e-07
+## 10 1.647920e-07
+## 11 1.396851e-07
+## 12 1.824121e-07
+## 13 1.824121e-07
+## 14 7.972263e-06
+## 15 6.873315e-08
+## 16 2.331949e-08
+## 17 2.066693e-08
+## 18 2.331949e-08
+## 19 8.568577e-08
+## 20 2.066693e-08
+## 21 2.331949e-08
+## 22 2.066693e-08
+## 23 2.331949e-08
+## 24 2.331949e-08
+## 25 2.331949e-08
+## 26 5.872267e-07
+## 27 2.331949e-08
+## 28 2.331949e-08
+## 29 2.331949e-08
+## 30 2.331949e-08
+## 31 2.331949e-08
+## 32 2.331949e-08
+## 33 2.331949e-08
+## 34 2.331949e-08
+## 35 2.331949e-08
+## 36 2.331949e-08
+## 37 8.138577e-06
+## 38 2.331949e-08
+## 39 8.138577e-06
+## 40 8.138577e-06
+## 41 2.331949e-08
+## 42 8.138577e-06
+## 43 2.331949e-08
+## 44 8.138577e-06
+## 45 2.331949e-08
+## 46 2.331949e-08
+## 47 6.286430e-07
+## 48 6.286430e-07
+## 49 6.286430e-07
+## 50 6.286430e-07
+## 51 6.286430e-07
+## 52 1.374645e-07
+## 53 6.286430e-07
+## 54 1.915270e-06
+## 55 1.915270e-06
+## 56 1.915270e-06
+## 57 1.915270e-06
+## 58 1.915270e-06
+## 59 1.915270e-06
+## 60 1.915270e-06
+## 61 1.915270e-06
+## 62 1.915270e-06
+## 63 7.125695e-07
+## 64 7.089778e-08
+## 65 7.089778e-08
+## 66 7.208182e-08
+## 67 2.820481e-06
+## 68 2.757022e-06
+## 69 9.021813e-08
+## 70 2.757022e-06
+## 71 2.757022e-06
+## 72 1.095896e-07
+## 73 2.757022e-06
+## 74 2.757022e-06
+## 75 1.999466e-06
+## 76 1.072535e-07
+## 77 1.999466e-06
+## 78 1.681401e-06
+## 79 1.681401e-06
+## 80 1.681401e-06
+## 81 1.681401e-06
+## 82 5.263742e-06
+## 83 1.681401e-06
+## 84 1.681401e-06
+## 85 1.681401e-06
+## 86 1.681401e-06
+## 87 7.971348e-08
+## 88 7.971348e-08</code></pre>
+<pre class="r"><code>manhattan(x = pc1_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,12), genomewideline = -log10(1.84e-7), main = &quot;Component 1&quot;, annotatePval = 1.84e-7)</code></pre>
+<p><img src="/posts/2018-09-25-filtering-gwas-w-covariates-results_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+</div>
+<div id="component-3" class="section level4">
+<h4>13. Component 3</h4>
+<pre class="r"><code>pc3_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno240918$coord.Dim.3, X = nies_covar, method=&quot;lmm&quot;, test = &quot;lrt&quot;, response = &quot;quantitative&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)</code></pre>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<pre class="r"><code>pc3_gwas &lt;- na.omit(pc3_gwas)
+pc3_filtered &lt;- pc3_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+pc3_meff &lt;- pc3_filtered %&gt;% filter(p &lt; 1.84e-7)
+pc3_sig &lt;- do.call(rbind, lapply(split(pc3_meff,pc3_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+pc3_res &lt;- NULL
+for (i in pc3_sig$id) {
+  snpID &lt;- i
+  snpCHR &lt;- pc3_filtered[pc3_filtered$id == snpID,]$chr
+  snpPOS &lt;- pc3_filtered[pc3_filtered$id ==snpID,]$pos
+  
+  sig.peak &lt;- pc3_filtered %&gt;%
+    filter(chr == snpCHR) %&gt;%
+    filter(pos &gt; snpPOS - 50000) %&gt;%
+    filter(pos &lt; snpPOS + 50000) %&gt;%
+    filter(p &lt; 1e-5)
+  
+  pc3_res &lt;- rbind(pc3_res, sig.peak)
+}
+
+write.csv(pc3_res, &#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/pc3_res.csv&#39;)
+pc3_res</code></pre>
+<pre><code>##     chr       pos          id A1 A2    freqA2          h2      LRT
+## 1     1 205916566  rs72752923  C  A 0.9782609 0.143088794 35.24216
+## 2     1 205916729  rs16830364  G  A 0.9782609 0.143088794 35.24216
+## 3     1 205916931  rs60255052  C  T 0.9811594 0.108712498 42.57820
+## 4     1 205917041  rs60716530  C  T 0.9782609 0.143088794 35.24216
+## 5     1 205917115  rs60644810  G  A 0.9782609 0.143088794 35.24216
+## 6     1 205917248  rs35694044  A  T 0.9782609 0.143088794 35.24216
+## 7     1 205917652  rs16830370  T  C 0.9782609 0.143088794 35.24216
+## 8     1 205918853  rs16856462  C  T 0.9782609 0.143088794 35.24216
+## 9     1 205919195  rs16856468  G  A 0.9782609 0.143088794 35.24216
+## 10    1 205919303  rs60001177  T  C 0.9782609 0.143088794 35.24216
+## 11    1 205919401  rs12723666  A  G 0.9782609 0.143088794 35.24216
+## 12    1 205920201  rs16856470  T  C 0.9811594 0.108712498 42.57820
+## 13    1 205920404  rs16856473  A  G 0.9811594 0.108712498 42.57820
+## 14    1 205922403  rs68189466  G  A 0.9797101 0.114606518 40.95377
+## 15    1 205922720  rs35648260  G  T 0.9797101 0.114606518 40.95377
+## 16    1 205922775  rs35360452  G  T 0.9797101 0.114606518 40.95377
+## 17    1 205925474  rs12727528  A  G 0.9797101 0.114606518 40.95377
+## 18    1 205935183   rs1891309  G  A 0.9782609 0.111957179 36.55094
+## 19    1 205935330   rs1891310  T  G 0.9782609 0.111957179 36.55094
+## 20    1 205936240   rs1473537  T  C 0.9739130 0.146103347 28.74682
+## 21    1 205942026  rs72752928  T  C 0.9782609 0.111957179 36.55094
+## 22    1 205943691  rs66593238  T  C 0.9782609 0.111957179 36.55094
+## 23    1 205944627   rs9438407  T  G 0.9782609 0.111957179 36.55094
+## 24    1 205945388  rs12741299  T  C 0.9782609 0.111957179 36.55094
+## 25    1 205946647  rs34265780  T  C 0.9782609 0.111957179 36.55094
+## 26    2  85686354   rs6759832  C  T 0.9884058 0.188036952 33.52783
+## 27    3  42006157  rs71315517  G  C 0.9869565 0.115130201 31.26507
+## 28    4 119362510 rs112314510  A  G 0.9855072 0.093109543 44.61575
+## 29    4 119362552 rs111968273  T  A 0.9855072 0.093109543 44.61575
+## 30    4 119367677 rs113059419  A  G 0.9869565 0.058720068 51.72960
+## 31    4 119372303 rs112760591  G  A 0.9855072 0.093109543 44.61575
+## 32    4 119372480 rs111609258  C  G 0.9855072 0.093109543 44.61575
+## 33    4 119378224 rs147602981  G  A 0.9855072 0.093109543 44.61575
+## 34    4 119381167 rs143847948  A  C 0.9855072 0.093109543 44.61575
+## 35    4 119390257 rs113224532  T  C 0.9855072 0.093109543 44.61575
+## 36    4 119392279 rs117856633  C  A 0.9855072 0.093109543 44.61575
+## 37    4 119398681 rs113825627  C  G 0.9855072 0.093109543 44.61575
+## 38    4 119403429 rs112414671  A  G 0.9869565 0.058720068 51.72960
+## 39    4 119403485 rs185357281  A  G 0.9869565 0.080424209 30.74033
+## 40    4 119404439 rs183181597  A  G 0.9855072 0.093109543 44.61575
+## 41    4 119404927 rs113317707  C  A 0.9855072 0.093109543 44.61575
+## 42    4 119408454 rs184703141  T  C 0.9855072 0.093109543 44.61575
+## 43    5  25293191 rs138955515  A  G 0.9855072 0.123321257 35.15979
+## 44    5  25300269 rs140158697  C  T 0.9855072 0.123321257 35.15979
+## 45    5  25331088 rs114133913  T  A 0.9855072 0.123321257 35.15979
+## 46    6 121261079 rs116936384  G  C 0.9898551 0.135566367 30.33235
+## 47    8  80306741 rs111864836  G  T 0.9884058 0.133289843 46.82630
+## 48    8  80306859 rs113627660  G  C 0.9884058 0.133289843 46.82630
+## 49    8  80306990   rs7825643  G  T 0.9724638 0.288636205 20.82125
+## 50    8  80307293   rs7845792  A  G 0.9884058 0.133289843 46.82630
+## 51    8  80307388   rs7845575  G  A 0.9869565 0.154786090 36.21982
+## 52    8  80307700 rs114654811  C  T 0.9884058 0.133289843 46.82630
+## 53    8  80307701 rs115278078  A  T 0.9884058 0.133289843 46.82630
+## 54    8  80307837  rs79018076  T  C 0.9884058 0.133289843 46.82630
+## 55    8  80308098 rs112501384  G  C 0.9884058 0.133289843 46.82630
+## 56    8  80309142  rs60539023  G  A 0.9724638 0.288636205 20.82125
+## 57    8  80309305  rs11996376  A  G 0.9884058 0.133289843 46.82630
+## 58    8  80309598  rs79431653  C  G 0.9884058 0.133289843 46.82630
+## 59    8  80309626  rs11996450  T  C 0.9884058 0.133289843 46.82630
+## 60    8  80310193  rs60741023  C  G 0.9884058 0.133289843 46.82630
+## 61    8  80310485   rs7844286  C  T 0.9884058 0.133289843 46.82630
+## 62    8  80310716   rs7844696  A  T 0.9884058 0.133289843 46.82630
+## 63    8  80310720   rs7826434  G  A 0.9884058 0.133289843 46.82630
+## 64    8  80311242  rs80031189  C  T 0.9884058 0.133289843 46.82630
+## 65    8  80311252 rs113823684  A  G 0.9884058 0.133289843 46.82630
+## 66    8  80311311  rs61300312  A  C 0.9724638 0.288636205 20.82125
+## 67    8  80311329 rs142907856  A  G 0.9884058 0.133289843 46.82630
+## 68    8  80311457 rs112582272  A  G 0.9884058 0.133289843 46.82630
+## 69    8  80311580 rs116773209  G  A 0.9884058 0.133289843 46.82630
+## 70    8  80311736 rs113314270  G  T 0.9884058 0.133289843 46.82630
+## 71    8  80311746  rs73261635  G  A 0.9724638 0.288636205 20.82125
+## 72    8  80311838 rs117693425  A  G 0.9884058 0.133289843 46.82630
+## 73    8  80312291  rs11988873  C  T 0.9884058 0.133289843 46.82630
+## 74    8  80312345  rs11988904  A  T 0.9884058 0.133289843 46.82630
+## 75    8  80312623  rs36051398  A  C 0.9884058 0.133289843 46.82630
+## 76    8  80313237  rs73261640  G  A 0.9724638 0.288636205 20.82125
+## 77    8  80313751 rs114426401  T  C 0.9884058 0.133289843 46.82630
+## 78    8  80314228  rs74981396  G  A 0.9884058 0.133289843 46.82630
+## 79    8  80317028  rs11998344  T  G 0.9884058 0.133289843 46.82630
+## 80    8  80317208 rs113244900  C  T 0.9884058 0.133289843 46.82630
+## 81    8  80318583  rs57246091  A  G 0.9884058 0.133289843 46.82630
+## 82    8  80318643 rs113901603  G  A 0.9884058 0.133289843 46.82630
+## 83    8  80319691 rs113718590  A  G 0.9884058 0.133289843 46.82630
+## 84    8  80319794 rs111833373  C  T 0.9724638 0.288636205 20.82125
+## 85    8  80320713  rs11987997  A  G 0.9884058 0.133289843 46.82630
+## 86    8  80321002 rs111527437  T  A 0.9884058 0.133289843 46.82630
+## 87    8  80321694 rs112815920  G  C 0.9884058 0.133289843 46.82630
+## 88    8  80323890  rs11998156  C  A 0.9884058 0.133289843 46.82630
+## 89    8  80323964  rs16907573  G  A 0.9884058 0.133289843 46.82630
+## 90    8  80324156 rs111257240  C  T 0.9884058 0.133289843 46.82630
+## 91    8  80325047 rs113437388  T  C 0.9884058 0.133289843 46.82630
+## 92    8  80325311  rs73261674  G  C 0.9724638 0.288636205 20.82125
+## 93    8  80326033 rs111370206  G  A 0.9884058 0.133289843 46.82630
+## 94    8  80326181  rs73261679  A  C 0.9724638 0.288636205 20.82125
+## 95    8  80326935 rs147955676  A  G 0.9884058 0.133289843 46.82630
+## 96    8  80326985  rs61039050  A  C 0.9724638 0.288636205 20.82125
+## 97    8  80327347   rs7840954  C  T 0.9724638 0.288636205 20.82125
+## 98    8  80327348   rs7822886  A  G 0.9724638 0.288636205 20.82125
+## 99    8  80327442   rs7841095  C  T 0.9884058 0.133289843 46.82630
+## 100   8  80327549   rs7822828  C  A 0.9884058 0.133289843 46.82630
+## 101   8  80327674   rs7841418  C  T 0.9724638 0.288636205 20.82125
+## 102   8  80327732   rs7823481  C  G 0.9884058 0.133289843 46.82630
+## 103   8  80328450  rs11990649  A  G 0.9884058 0.133289843 46.82630
+## 104   8  80329801  rs56960849  A  G 0.9884058 0.133289843 46.82630
+## 105   8  80330197  rs11995624  C  T 0.9884058 0.133289843 46.82630
+## 106   8  80330467   rs7837761  A  G 0.9869565 0.154786090 36.21982
+## 107   8  80332180 rs113042618  T  C 0.9884058 0.133289843 46.82630
+## 108   8  80332423   rs7001142  G  T 0.9884058 0.133289843 46.82630
+## 109   8  80332520   rs6980915  G  A 0.9884058 0.133289843 46.82630
+## 110   8  80332901   rs6473220  T  C 0.9884058 0.133289843 46.82630
+## 111   8  80332907   rs6473221  A  G 0.9884058 0.133289843 46.82630
+## 112   8  80333316   rs7835862  C  T 0.9884058 0.133289843 46.82630
+## 113   8  80333340   rs7817696  A  G 0.9884058 0.133289843 46.82630
+## 114   8  80333506   rs7817634  T  C 0.9884058 0.133289843 46.82630
+## 115   8  80333599  rs57419267  C  T 0.9884058 0.133289843 46.82630
+## 116   8  80333823  rs59130219  C  T 0.9884058 0.133289843 46.82630
+## 117   8  80334098  rs73691385  T  A 0.9884058 0.133289843 46.82630
+## 118   8  80334328   rs7840559  C  T 0.9884058 0.133289843 46.82630
+## 119   8  80334334   rs7822177  G  A 0.9884058 0.133289843 46.82630
+## 120   8  80334582 rs111631456  A  G 0.9884058 0.133289843 46.82630
+## 121   8  80334982  rs58109903  T  C 0.9884058 0.133289843 46.82630
+## 122   8  80335583  rs73691388  G  A 0.9884058 0.133289843 46.82630
+## 123   8  80336124   rs7837108  T  C 0.9884058 0.133289843 46.82630
+## 124   8  80336300   rs7840857  T  G 0.9884058 0.133289843 46.82630
+## 125   8  80336310   rs7840861  T  G 0.9884058 0.133289843 46.82630
+## 126   8  80337292 rs111888115  T  C 0.9884058 0.133289843 46.82630
+## 127   8  80337308  rs56871558  T  C 0.9884058 0.133289843 46.82630
+## 128   8  80337408  rs56116331  A  G 0.9884058 0.133289843 46.82630
+## 129   8  80337443  rs58592997  T  C 0.9884058 0.133289843 46.82630
+## 130   8  80337629  rs76783901  A  G 0.9884058 0.133289843 46.82630
+## 131   8  80337634  rs74468856  G  A 0.9884058 0.133289843 46.82630
+## 132   8  80337985  rs73691394  C  A 0.9884058 0.133289843 46.82630
+## 133   8  80338076  rs73691395  T  C 0.9884058 0.133289843 46.82630
+## 134   8  80338219  rs73691397  C  G 0.9884058 0.133289843 46.82630
+## 135   8  80338255  rs73691398  G  A 0.9884058 0.133289843 46.82630
+## 136   8  80338835  rs58958046  A  G 0.9884058 0.133289843 46.82630
+## 137   8  80338910  rs58786240  C  T 0.9884058 0.133289843 46.82630
+## 138   8  80338955  rs76867788  C  T 0.9884058 0.133289843 46.82630
+## 139   8  80339017  rs73691399  T  C 0.9884058 0.133289843 46.82630
+## 140   8  80339217  rs73691400  C  G 0.9884058 0.133289843 46.82630
+## 141   8  80339959  rs61233095  C  A 0.9884058 0.133289843 46.82630
+## 142   8  80340238  rs56408864  A  T 0.9884058 0.133289843 46.82630
+## 143   8  80340749   rs7826667  A  G 0.9884058 0.133289843 46.82630
+## 144   8  80341236   rs7000592  G  C 0.9884058 0.133289843 46.82630
+## 145  12   5987972 rs142100550  T  G 0.9884058 0.005360959 38.16451
+## 146  14  77833818 rs146124823  G  A 0.9898551 0.166384925 29.95453
+## 147  18  48847895  rs11665050  A  G 0.9782609 0.103675022 19.65233
+## 148  18  48849360 rs141608868  C  G 0.9782609 0.103675022 19.65233
+## 149  18  48850433  rs78852912  C  G 0.9782609 0.103675022 19.65233
+## 150  18  48853167 rs151115377  A  G 0.9840580 0.033825553 28.68549
+## 151  18  48855955 rs143153469  A  G 0.9782609 0.103675022 19.65233
+## 152  18  48858545 rs117947063  G  A 0.9782609 0.103675022 19.65233
+## 153  20   2977131 rs145336914  G  C 0.9753623 0.181907176 30.97578
+## 154  20   2979974 rs141744903  G  A 0.9681159 0.254200455 19.82805
+## 155  20   2985515   rs6138975  C  T 0.9681159 0.254200455 19.82805
+## 156  20   2987464  rs74893620  A  G 0.9681159 0.254200455 19.82805
+## 157  20   2994423  rs60040561  T  G 0.9681159 0.254200455 19.82805
+## 158  20   2998407  rs78221943  G  A 0.9681159 0.254200455 19.82805
+## 159  20   3004167  rs58156936  C  A 0.9681159 0.254200455 19.82805
+## 160  20   3004208 rs146526220  A  G 0.9681159 0.254200455 19.82805
+## 161  20   3004309   rs6132999  T  C 0.9681159 0.254200455 19.82805
+## 162  20   3004313   rs6133000  T  C 0.9681159 0.254200455 19.82805
+## 163  20   3004887   rs3746692  A  C 0.9681159 0.254200455 19.82805
+## 164  20   3006691   rs6138976  T  G 0.9681159 0.254200455 19.82805
+## 165  20   3009458  rs75990124  T  G 0.9681159 0.254200455 19.82805
+## 166  20   3009687   rs6138979  A  G 0.9681159 0.254200455 19.82805
+## 167  20   3011439  rs16988201  T  C 0.9681159 0.254200455 19.82805
+## 168  20   3013926   rs6133003  G  A 0.9681159 0.254200455 19.82805
+## 169  22  44078144  rs11705487  T  C 0.9753623 0.150776423 26.95579
+## 170  22  44088452 rs147207731  A  G 0.9797101 0.082632633 35.44711
+##                p
+## 1   2.911523e-09
+## 2   2.911523e-09
+## 3   6.791206e-11
+## 4   2.911523e-09
+## 5   2.911523e-09
+## 6   2.911523e-09
+## 7   2.911523e-09
+## 8   2.911523e-09
+## 9   2.911523e-09
+## 10  2.911523e-09
+## 11  2.911523e-09
+## 12  6.791206e-11
+## 13  6.791206e-11
+## 14  1.558732e-10
+## 15  1.558732e-10
+## 16  1.558732e-10
+## 17  1.558732e-10
+## 18  1.487281e-09
+## 19  1.487281e-09
+## 20  8.248511e-08
+## 21  1.487281e-09
+## 22  1.487281e-09
+## 23  1.487281e-09
+## 24  1.487281e-09
+## 25  1.487281e-09
+## 26  7.025159e-09
+## 27  2.250933e-08
+## 28  2.397550e-11
+## 29  2.397550e-11
+## 30  6.369519e-13
+## 31  2.397550e-11
+## 32  2.397550e-11
+## 33  2.397550e-11
+## 34  2.397550e-11
+## 35  2.397550e-11
+## 36  2.397550e-11
+## 37  2.397550e-11
+## 38  6.369519e-13
+## 39  2.949701e-08
+## 40  2.397550e-11
+## 41  2.397550e-11
+## 42  2.397550e-11
+## 43  3.037304e-09
+## 44  3.037304e-09
+## 45  3.037304e-09
+## 46  3.640046e-08
+## 47  7.756561e-12
+## 48  7.756561e-12
+## 49  5.042030e-06
+## 50  7.756561e-12
+## 51  1.762689e-09
+## 52  7.756561e-12
+## 53  7.756561e-12
+## 54  7.756561e-12
+## 55  7.756561e-12
+## 56  5.042030e-06
+## 57  7.756561e-12
+## 58  7.756561e-12
+## 59  7.756561e-12
+## 60  7.756561e-12
+## 61  7.756561e-12
+## 62  7.756561e-12
+## 63  7.756561e-12
+## 64  7.756561e-12
+## 65  7.756561e-12
+## 66  5.042030e-06
+## 67  7.756561e-12
+## 68  7.756561e-12
+## 69  7.756561e-12
+## 70  7.756561e-12
+## 71  5.042030e-06
+## 72  7.756561e-12
+## 73  7.756561e-12
+## 74  7.756561e-12
+## 75  7.756561e-12
+## 76  5.042030e-06
+## 77  7.756561e-12
+## 78  7.756561e-12
+## 79  7.756561e-12
+## 80  7.756561e-12
+## 81  7.756561e-12
+## 82  7.756561e-12
+## 83  7.756561e-12
+## 84  5.042030e-06
+## 85  7.756561e-12
+## 86  7.756561e-12
+## 87  7.756561e-12
+## 88  7.756561e-12
+## 89  7.756561e-12
+## 90  7.756561e-12
+## 91  7.756561e-12
+## 92  5.042030e-06
+## 93  7.756561e-12
+## 94  5.042030e-06
+## 95  7.756561e-12
+## 96  5.042030e-06
+## 97  5.042030e-06
+## 98  5.042030e-06
+## 99  7.756561e-12
+## 100 7.756561e-12
+## 101 5.042030e-06
+## 102 7.756561e-12
+## 103 7.756561e-12
+## 104 7.756561e-12
+## 105 7.756561e-12
+## 106 1.762689e-09
+## 107 7.756561e-12
+## 108 7.756561e-12
+## 109 7.756561e-12
+## 110 7.756561e-12
+## 111 7.756561e-12
+## 112 7.756561e-12
+## 113 7.756561e-12
+## 114 7.756561e-12
+## 115 7.756561e-12
+## 116 7.756561e-12
+## 117 7.756561e-12
+## 118 7.756561e-12
+## 119 7.756561e-12
+## 120 7.756561e-12
+## 121 7.756561e-12
+## 122 7.756561e-12
+## 123 7.756561e-12
+## 124 7.756561e-12
+## 125 7.756561e-12
+## 126 7.756561e-12
+## 127 7.756561e-12
+## 128 7.756561e-12
+## 129 7.756561e-12
+## 130 7.756561e-12
+## 131 7.756561e-12
+## 132 7.756561e-12
+## 133 7.756561e-12
+## 134 7.756561e-12
+## 135 7.756561e-12
+## 136 7.756561e-12
+## 137 7.756561e-12
+## 138 7.756561e-12
+## 139 7.756561e-12
+## 140 7.756561e-12
+## 141 7.756561e-12
+## 142 7.756561e-12
+## 143 7.756561e-12
+## 144 7.756561e-12
+## 145 6.502437e-10
+## 146 4.422975e-08
+## 147 9.289015e-06
+## 148 9.289015e-06
+## 149 9.289015e-06
+## 150 8.513918e-08
+## 151 9.289015e-06
+## 152 9.289015e-06
+## 153 2.612691e-08
+## 154 8.473026e-06
+## 155 8.473026e-06
+## 156 8.473026e-06
+## 157 8.473026e-06
+## 158 8.473026e-06
+## 159 8.473026e-06
+## 160 8.473026e-06
+## 161 8.473026e-06
+## 162 8.473026e-06
+## 163 8.473026e-06
+## 164 8.473026e-06
+## 165 8.473026e-06
+## 166 8.473026e-06
+## 167 8.473026e-06
+## 168 8.473026e-06
+## 169 2.081630e-07
+## 170 2.620714e-09</code></pre>
+<pre class="r"><code>manhattan(x = pc3_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,12), genomewideline = -log10(1.84e-7), main = &quot;Component 3&quot;, annotatePval = 1.84e-7)</code></pre>
+<p><img src="/posts/2018-09-25-filtering-gwas-w-covariates-results_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+</div>
+<div id="component-4" class="section level4">
+<h4>14. Component 4</h4>
+<pre class="r"><code>pc4_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno240918$coord.Dim.4, X = nies_covar, method=&quot;lmm&quot;, test = &quot;lrt&quot;, response = &quot;quantitative&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+pc4_gwas &lt;- na.omit(pc4_gwas)
+pc4_filtered &lt;- pc4_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+pc4_meff &lt;- pc4_filtered %&gt;% filter(p &lt; 1.84e-7)
+pc4_sig &lt;- do.call(rbind, lapply(split(pc4_meff,pc4_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+pc4_res &lt;- NULL
+for (i in pc4_sig$id) {
+  snpID &lt;- i
+  snpCHR &lt;- pc4_filtered[pc4_filtered$id == snpID,]$chr
+  snpPOS &lt;- pc4_filtered[pc4_filtered$id ==snpID,]$pos
+  
+  sig.peak &lt;- pc4_filtered %&gt;%
+    filter(chr == snpCHR) %&gt;%
+    filter(pos &gt; snpPOS - 50000) %&gt;%
+    filter(pos &lt; snpPOS + 50000) %&gt;%
+    filter(p &lt; 1e-5)
+  
+  pc4_res &lt;- rbind(pc4_res, sig.peak)
+}
+
+write.csv(pc4_res, &#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/pc4_res.csv&#39;)
+pc4_res</code></pre>
+<pre><code>##   chr       pos         id A1 A2    freqA2        h2      LRT            p
+## 1   3 187929196 rs10937327  T  A 0.6898551 0.4657147 25.38934 4.685004e-07
+## 2   3 187931111 rs16862725  G  A 0.6898551 0.4657147 25.38934 4.685004e-07
+## 3   3 187931631  rs6773854  C  T 0.6898551 0.4657147 25.38934 4.685004e-07
+## 4   3 187932117 rs11718110  C  T 0.6898551 0.4657147 25.38934 4.685004e-07
+## 5   3 187937514 rs36188296  G  T 0.6753623 0.4784631 28.18476 1.102692e-07
+## 6   3 187945323 rs73889243  G  A 0.6855072 0.4657770 25.37970 4.708460e-07</code></pre>
+<pre class="r"><code>manhattan(x = pc4_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,12), genomewideline = -log10(1.84e-7), main = &quot;Component 4&quot;, annotatePval = 1.84e-7)</code></pre>
+<p><img src="/posts/2018-09-25-filtering-gwas-w-covariates-results_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+</div>
+<div id="component-8" class="section level4">
+<h4>15. Component 8</h4>
+<pre class="r"><code>pc8_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno240918$coord.Dim.8, X = nies_covar, method=&quot;lmm&quot;, test = &quot;lrt&quot;, response = &quot;quantitative&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)</code></pre>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<pre class="r"><code>pc8_gwas &lt;- na.omit(pc8_gwas)
+pc8_filtered &lt;- pc8_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+pc8_meff &lt;- pc8_filtered %&gt;% filter(p &lt; 1.84e-7)
+pc8_sig &lt;- do.call(rbind, lapply(split(pc8_meff,pc8_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+pc8_res &lt;- NULL
+for (i in pc8_sig$id) {
+  snpID &lt;- i
+  snpCHR &lt;- pc8_filtered[pc8_filtered$id == snpID,]$chr
+  snpPOS &lt;- pc8_filtered[pc8_filtered$id ==snpID,]$pos
+  
+  sig.peak &lt;- pc8_filtered %&gt;%
+    filter(chr == snpCHR) %&gt;%
+    filter(pos &gt; snpPOS - 50000) %&gt;%
+    filter(pos &lt; snpPOS + 50000) %&gt;%
+    filter(p &lt; 1e-5)
+  
+  pc8_res &lt;- rbind(pc8_res, sig.peak)
+}
+
+write.csv(pc8_res, &#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/pc8_res.csv&#39;)
+pc8_res</code></pre>
+<pre><code>##    chr       pos         id A1 A2    freqA2         h2      LRT
+## 1    2 147529465  rs1438873  T  C 0.5231884 0.05628563 24.99400
+## 2    2 147529616  rs6710858  T  A 0.5231884 0.05628563 24.99400
+## 3    2 147530296  rs6753791  C  G 0.5231884 0.05628563 24.99400
+## 4    2 147530428 rs12469553  C  T 0.5927536 0.10982706 20.32671
+## 5    2 147531132  rs4145334  T  C 0.5927536 0.10982706 20.32671
+## 6    2 147531215  rs1347827  C  G 0.5231884 0.05628563 24.99400
+## 7    2 147532048  rs4662523  A  T 0.5231884 0.05628563 24.99400
+## 8    2 147532877  rs1438875  T  C 0.5231884 0.05628563 24.99400
+## 9    2 147534397 rs12691757  G  A 0.5231884 0.05628563 24.99400
+## 10   2 147534556 rs12691758  T  G 0.5231884 0.05628563 24.99400
+## 11   2 147539904 rs11680551  C  T 0.5985507 0.10655070 21.07651
+## 12   2 147541431  rs4508547  A  T 0.5985507 0.10655070 21.07651
+## 13   2 147545563  rs1550320  C  A 0.5985507 0.10655070 21.07651
+## 14   2 147545749  rs1550319  T  C 0.5985507 0.10655070 21.07651
+## 15   2 147546686 rs13390421  A  G 0.5985507 0.10655070 21.07651
+## 16   2 147547000 rs13390757  A  G 0.5985507 0.10655070 21.07651
+## 17   2 147548196 rs17724539  C  T 0.5985507 0.10655070 21.07651
+## 18   2 147548936  rs6430197  C  T 0.5985507 0.10655070 21.07651
+## 19   2 147549509  rs7588634  G  A 0.5985507 0.10655070 21.07651
+## 20   2 147550185 rs17724612  G  A 0.5985507 0.10655070 21.07651
+## 21   2 147550211 rs17673675  C  T 0.5985507 0.10655070 21.07651
+## 22   2 147550250 rs17673688  G  A 0.5985507 0.10655070 21.07651
+## 23   2 147550602 rs10208724  G  A 0.5985507 0.10655070 21.07651
+## 24   2 147550839 rs10208983  G  A 0.5985507 0.10655070 21.07651
+## 25   2 147551751 rs11691040  C  T 0.5985507 0.10655070 21.07651
+## 26   2 147551802 rs11674017  G  A 0.5985507 0.10655070 21.07651
+## 27   2 147552307 rs10201767  A  T 0.5985507 0.10655070 21.07651
+## 28   2 147552592  rs7590223  C  T 0.5985507 0.10655070 21.07651
+## 29   2 147571339 rs13413754  C  A 0.5840580 0.10888136 22.95492
+## 30   2 147571830 rs13404881  C  T 0.5840580 0.10888136 22.95492
+## 31   2 147572239 rs12691759  G  A 0.5565217 0.09976462 27.51019
+## 32   2 147573800  rs4361065  A  G 0.5855072 0.10899861 22.91986
+## 33   2 147579262  rs1550316  C  T 0.5927536 0.10763420 24.92120
+## 34   2 147579526 rs11681804  A  C 0.5927536 0.10763420 24.92120
+## 35   2 147579844 rs12477396  G  A 0.5927536 0.10763420 24.92120
+## 36   2 147579987 rs12473660  C  T 0.5927536 0.10763420 24.92120
+## 37   2 147580536  rs2033825  A  G 0.5927536 0.10763420 24.92120
+## 38   9 108296877 rs10979308  A  T 0.8072464 0.10149070 23.32826
+## 39   9 108299426  rs1885973  T  A 0.7768116 0.07077503 28.83857
+## 40   9 108300235 rs10816656  G  A 0.7826087 0.07913373 25.92305
+## 41   9 108302318  rs1407849  T  A 0.8057971 0.10175965 23.56368
+## 42   9 108305442 rs16912866  G  A 0.7768116 0.07077503 28.83857
+## 43   9 108305644 rs16912868  G  A 0.7768116 0.07077503 28.83857
+## 44   9 108306203  rs1323384  A  C 0.8086957 0.09845463 22.82954
+## 45   9 108307394  rs7030371  G  A 0.7768116 0.07077503 28.83857
+##               p
+## 1  5.750902e-07
+## 2  5.750902e-07
+## 3  5.750902e-07
+## 4  6.528273e-06
+## 5  6.528273e-06
+## 6  5.750902e-07
+## 7  5.750902e-07
+## 8  5.750902e-07
+## 9  5.750902e-07
+## 10 5.750902e-07
+## 11 4.413054e-06
+## 12 4.413054e-06
+## 13 4.413054e-06
+## 14 4.413054e-06
+## 15 4.413054e-06
+## 16 4.413054e-06
+## 17 4.413054e-06
+## 18 4.413054e-06
+## 19 4.413054e-06
+## 20 4.413054e-06
+## 21 4.413054e-06
+## 22 4.413054e-06
+## 23 4.413054e-06
+## 24 4.413054e-06
+## 25 4.413054e-06
+## 26 4.413054e-06
+## 27 4.413054e-06
+## 28 4.413054e-06
+## 29 1.658453e-06
+## 30 1.658453e-06
+## 31 1.562689e-07
+## 32 1.688979e-06
+## 33 5.972204e-07
+## 34 5.972204e-07
+## 35 5.972204e-07
+## 36 5.972204e-07
+## 37 5.972204e-07
+## 38 1.365783e-06
+## 39 7.866881e-08
+## 40 3.553010e-07
+## 41 1.208469e-06
+## 42 7.866881e-08
+## 43 7.866881e-08
+## 44 1.770240e-06
+## 45 7.866881e-08</code></pre>
+<pre class="r"><code>manhattan(x = pc8_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, ylim = c(0,12), genomewideline = -log10(1.84e-7), main = &quot;Component 8&quot;, annotatePval = 1.84e-7)</code></pre>
+<p><img src="/posts/2018-09-25-filtering-gwas-w-covariates-results_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+</div>
+</div>

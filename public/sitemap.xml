@@ -3,6 +3,26 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>/posts/generating-beta-values-for-significant-snps/</loc>
+    <lastmod>2018-09-26T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/filtering-gwas-w-covariates-results/</loc>
+    <lastmod>2018-09-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/adding-age-and-sex-as-covariates/</loc>
+    <lastmod>2018-09-21T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/snp-heritability/</loc>
+    <lastmod>2018-09-19T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/posts/annotating-signficant-gwas-hits/</loc>
     <lastmod>2018-09-11T00:00:00+00:00</lastmod>
   </url>
@@ -215,7 +235,7 @@
   
   <url>
     <loc>/categories/coding/</loc>
-    <lastmod>2018-09-11T00:00:00+00:00</lastmod>
+    <lastmod>2018-09-26T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -227,49 +247,49 @@
   
   <url>
     <loc>/</loc>
-    <lastmod>2018-09-11T00:00:00+00:00</lastmod>
+    <lastmod>2018-09-26T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/categories/experiments/</loc>
-    <lastmod>2018-09-11T00:00:00+00:00</lastmod>
+    <lastmod>2018-09-25T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/tags/gaston/</loc>
-    <lastmod>2018-09-07T00:00:00+00:00</lastmod>
+    <lastmod>2018-09-26T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/tags/gcta/</loc>
-    <lastmod>2018-09-07T00:00:00+00:00</lastmod>
+    <lastmod>2018-09-21T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/tags/genomic-data/</loc>
-    <lastmod>2018-09-11T00:00:00+00:00</lastmod>
+    <lastmod>2018-09-26T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/tags/greml/</loc>
-    <lastmod>2018-09-06T00:00:00+00:00</lastmod>
+    <lastmod>2018-09-21T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/tags/gwas/</loc>
-    <lastmod>2018-09-11T00:00:00+00:00</lastmod>
+    <lastmod>2018-09-26T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/tags/heritability/</loc>
-    <lastmod>2018-09-07T00:00:00+00:00</lastmod>
+    <lastmod>2018-09-26T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -287,7 +307,7 @@
   
   <url>
     <loc>/tags/mlma/</loc>
-    <lastmod>2018-09-06T00:00:00+00:00</lastmod>
+    <lastmod>2018-09-19T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -311,7 +331,7 @@
   
   <url>
     <loc>/posts/</loc>
-    <lastmod>2018-09-11T00:00:00+00:00</lastmod>
+    <lastmod>2018-09-26T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   

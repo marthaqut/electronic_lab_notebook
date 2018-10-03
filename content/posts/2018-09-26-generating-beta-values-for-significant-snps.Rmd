@@ -1,0 +1,265 @@
+---
+title: Generating beta-values for significant SNPs
+author: Martha Aquino
+date: '2018-09-26'
+slug: generating-beta-values-for-significant-snps
+categories:
+  - Coding
+tags:
+  - Gaston
+  - Genomic Data
+  - GWAS
+  - Heritability
+---
+
+#Introduction
+The heritability values obtained from the previous GWAS using lmm and lrt appear to be artificially inflated. Therefore, beta values may be a better indication of SNP effect, which can be obtained by using the wald test, instead of lrt. 
+
+#Methods and Results 
+
+####Load packages
+```{r, message=FALSE}
+require(magicfor)
+require(magrittr)
+require(dplyr)
+require(gaston)
+require(qqman)
+```
+
+####Load data
+```{r}
+nies_heritable_pheno240918 <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_heritable_pheno240918.csv', header = TRUE)
+
+nies_covar <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_covar.csv', header = T)
+head(nies_covar)
+
+merged_nies_210818 <- read.bed.matrix("C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.bed")
+
+merged_nies_GRM <- GRM(merged_nies_210818)
+merged_nies_eiK <- eigen(merged_nies_GRM)
+merged_nies_eiK$values[ merged_nies_eiK$values < 0] <- 0
+merged_nies_PC <- sweep(merged_nies_eiK$vectors, 2, sqrt(merged_nies_eiK$values), "*")
+```
+
+
+
+####1. L K-value H 
+```{r}
+lKvalH_wald_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918$L.K.value.H, X = nies_covar, method="lm", test = "wald", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+lKvalH_wald_gwas <- na.omit(lKvalH_wald_gwas)
+l_kvalH_wfiltered <- lKvalH_wald_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+l_kvalH_wmeff <- l_kvalH_wfiltered %>% filter(p < 1.84e-7)
+l_kvalH_wsig <- do.call(rbind, lapply(split(l_kvalH_wmeff,l_kvalH_wmeff$chr), function(x) {return(x[which.min(x$p),])}))
+
+l_kvalH_wres <- NULL
+for (i in l_kvalH_wsig$id) {
+  snpID <- i
+  snpCHR <- l_kvalH_wfiltered[l_kvalH_wfiltered$id == snpID,]$chr
+  snpPOS <- l_kvalH_wfiltered[l_kvalH_wfiltered$id ==snpID,]$pos
+  
+  sig.peak <- l_kvalH_wfiltered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  l_kvalH_wres <- rbind(l_kvalH_wres, sig.peak)
+}
+
+write.csv(l_kvalH_wres, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/l_kvalH_wald_res.csv')
+l_kvalH_wres
+
+```
+
+####2. R Cyl Pre-dilate
+```{r}
+rcyl_wald_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918$R.Cyl..pre.dilate, X = nies_covar, method="lm", test = "wald", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+rcyl_wald_gwas <- na.omit(rcyl_wald_gwas)
+r_cyl_wfiltered <- rcyl_wald_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+r_cyl_wmeff <- r_cyl_wfiltered %>% filter(p < 1.84e-7)
+r_cyl_wsig <- do.call(rbind, lapply(split(r_cyl_wmeff,r_cyl_wmeff$chr), function(x) {return(x[which.min(x$p),])}))
+
+r_cyl_wres <- NULL
+for (i in r_cyl_wsig$id) {
+  snpID <- i
+  snpCHR <- r_cyl_wfiltered[r_cyl_wfiltered$id == snpID,]$chr
+  snpPOS <- r_cyl_wfiltered[r_cyl_wfiltered$id ==snpID,]$pos
+  
+  sig.peak <- r_cyl_wfiltered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  r_cyl_wres <- rbind(r_cyl_wres, sig.peak)
+}
+
+write.csv(r_cyl_wres, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/r_cyl_wald_res.csv')
+r_cyl_wres
+```
+
+####3. R K-value V
+```{r}
+rkvalV_wald_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918$R.K.value.V, X = nies_covar, method="lm", test = "wald", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+rkvalV_wald_gwas <- na.omit(rkvalV_wald_gwas)
+r_kvalV_wfiltered <- rkvalV_wald_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+r_kvalV_wmeff <- r_kvalV_wfiltered %>% filter(p < 1.84e-7)
+r_kvalV_wsig <- do.call(rbind, lapply(split(r_kvalV_wmeff,r_kvalV_wmeff$chr), function(x) {return(x[which.min(x$p),])}))
+
+r_kvalV_wres <- NULL
+for (i in r_kvalV_wsig$id) {
+  snpID <- i
+  snpCHR <- r_kvalV_wfiltered[r_kvalV_wfiltered$id == snpID,]$chr
+  snpPOS <- r_kvalV_wfiltered[r_kvalV_wfiltered$id ==snpID,]$pos
+  
+  sig.peak <- r_kvalV_wfiltered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  r_kvalV_wres <- rbind(r_kvalV_wres, sig.peak)
+}
+
+write.csv(r_kvalV_wres, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/r_kvalV_wald_res.csv')
+r_kvalV_wres
+```
+
+####4. UVAF
+```{r}
+uvaf_wald_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918$totaluvafmm, X = nies_covar, method="lm", test = "wald", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+uvaf_wald_gwas <- na.omit(uvaf_wald_gwas)
+uvaf_wfiltered <- uvaf_wald_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+uvaf_wmeff <- uvaf_wfiltered %>% filter(p < 1.84e-7)
+uvaf_wsig <- do.call(rbind, lapply(split(uvaf_wmeff,uvaf_wmeff$chr), function(x) {return(x[which.min(x$p),])}))
+
+uvaf_wres <- NULL
+for (i in uvaf_wsig$id) {
+  snpID <- i
+  snpCHR <- uvaf_wfiltered[uvaf_wfiltered$id == snpID,]$chr
+  snpPOS <- uvaf_wfiltered[uvaf_wfiltered$id ==snpID,]$pos
+  
+  sig.peak <- uvaf_wfiltered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  uvaf_wres <- rbind(uvaf_wres, sig.peak)
+}
+
+write.csv(uvaf_wres, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/uvaf_wald_res.csv')
+uvaf_wres
+```
+
+####5. PC1
+```{r}
+pc1_wald_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918$coord.Dim.1, X = nies_covar, method="lm", test = "wald", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+pc1_wald_gwas <- na.omit(pc1_wald_gwas)
+pc1_wfiltered <- pc1_wald_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+pc1_wmeff <- pc1_wfiltered %>% filter(p < 1.84e-7)
+pc1_wsig <- do.call(rbind, lapply(split(pc1_wmeff,pc1_wmeff$chr), function(x) {return(x[which.min(x$p),])}))
+
+pc1_wres <- NULL
+for (i in pc1_wsig$id) {
+  snpID <- i
+  snpCHR <- pc1_wfiltered[pc1_wfiltered$id == snpID,]$chr
+  snpPOS <- pc1_wfiltered[pc1_wfiltered$id ==snpID,]$pos
+  
+  sig.peak <- pc1_wfiltered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  pc1_wres <- rbind(pc1_wres, sig.peak)
+}
+
+write.csv(pc1_wres, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/pc1_wald_res.csv')
+pc1_wres
+
+```
+
+####6. PC3
+```{r}
+pc3_wald_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918$coord.Dim.3, X = nies_covar, method="lm", test = "wald", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+pc3_wald_gwas <- na.omit(pc3_wald_gwas)
+pc3_wfiltered <- pc3_wald_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+pc3_wmeff <- pc3_wfiltered %>% filter(p < 1.84e-7)
+pc3_wsig <- do.call(rbind, lapply(split(pc3_wmeff,pc3_wmeff$chr), function(x) {return(x[which.min(x$p),])}))
+
+pc3_wres <- NULL
+for (i in pc3_wsig$id) {
+  snpID <- i
+  snpCHR <- pc3_wfiltered[pc3_wfiltered$id == snpID,]$chr
+  snpPOS <- pc3_wfiltered[pc3_wfiltered$id ==snpID,]$pos
+  
+  sig.peak <- pc3_wfiltered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  pc3_wres <- rbind(pc3_wres, sig.peak)
+}
+
+write.csv(pc3_wres, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/pc3_wald_res.csv')
+pc3_wres
+```
+
+####7. PC4
+```{r}
+pc4_wald_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918$coord.Dim.4, X = nies_covar, method="lm", test = "wald", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+pc4_wald_gwas <- na.omit(pc4_wald_gwas)
+pc4_wfiltered <- pc4_wald_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+pc4_wmeff <- pc4_wfiltered %>% filter(p < 1.84e-7)
+pc4_wsig <- do.call(rbind, lapply(split(pc4_wmeff,pc4_wmeff$chr), function(x) {return(x[which.min(x$p),])}))
+
+pc4_wres <- NULL
+for (i in pc4_wsig$id) {
+  snpID <- i
+  snpCHR <- pc4_wfiltered[pc4_wfiltered$id == snpID,]$chr
+  snpPOS <- pc4_wfiltered[pc4_wfiltered$id ==snpID,]$pos
+  
+  sig.peak <- pc4_wfiltered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  pc4_wres <- rbind(pc4_wres, sig.peak)
+}
+
+write.csv(pc4_wfiltered, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/pc4_wald_filter.csv')
+pc4_wres
+
+manhattan(x = pc4_wfiltered, chr = "chr", bp = "pos", p = "p", snp = "id", ylim = c(0,12), genomewideline = -log10(1.84e-7), main = "Component 4")
+```
+
+####8. PC8
+```{r}
+pc8_wald_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918$coord.Dim.8, X = nies_covar, method="lm", test = "wald", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+pc8_wald_gwas <- na.omit(pc8_wald_gwas)
+pc8_wfiltered <- pc8_wald_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+pc8_wmeff <- pc8_wfiltered %>% filter(p < 1.84e-7)
+pc8_wsig <- do.call(rbind, lapply(split(pc8_wmeff,pc8_wmeff$chr), function(x) {return(x[which.min(x$p),])}))
+
+pc8_wres <- NULL
+for (i in pc8_wsig$id) {
+  snpID <- i
+  snpCHR <- pc8_wfiltered[pc8_wfiltered$id == snpID,]$chr
+  snpPOS <- pc8_wfiltered[pc8_wfiltered$id ==snpID,]$pos
+  
+  sig.peak <- pc8_wfiltered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  pc8_wres <- rbind(pc8_wres, sig.peak)
+}
+
+write.csv(pc8_wres, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/pc8_wald_res.csv')
+pc8_wres
+```
+

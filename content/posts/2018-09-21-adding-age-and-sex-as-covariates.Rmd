@@ -34,17 +34,17 @@ NIES_master <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.proje
 covar_col <- c("UUID", "Gender", "Age.excel")
 nies_master_covar <- NIES_master[covar_col]
 
+nies_heritable_pheno <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_heritable_pheno.csv', header = T)
+
+nies_heritable_pheno220918 <-read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_heritable_pheno220918.csv', header = TRUE)
+
+nies_pheno_020918 <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_pheno_020918.csv', header = T)
+
 nies_final_uuid <- nies_heritable_pheno$UUID
 
 nies_covar <- nies_master_covar[nies_master_covar$UUID %in% nies_final_uuid,]
 nies_covar <- as.matrix(nies_covar)
-write.csv(nies_covar, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_covar.csv')
 
-nies_pheno_020918 <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_pheno_020918.csv', header = T)
-
-nies_heritable_pheno <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_heritable_pheno.csv', header = T)
-
-nies_heritable_pheno220918 <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_heritable_pheno220918.csv', header = TRUE)
 
 merged_nies_210818 <- read.bed.matrix("C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.bed")
 

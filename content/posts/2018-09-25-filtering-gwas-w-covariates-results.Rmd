@@ -1,0 +1,480 @@
+---
+title: 'Filtering GWAS (w/ covariates) results '
+author: Martha Aquino
+date: '2018-09-25'
+slug: filtering-gwas-w-covariates-results
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Gaston
+  - Genomic Data
+  - GWAS
+  - Heritability
+---
+
+##Introduction
+The addition of covariates to the heritability and GWAS models significantly changed my results. As such, I need to filter for robust peaks in my new GWAS results and obtaining beta-values for the signiicant peaks. 
+
+#Methods and Results 
+
+####Load packages
+```{r}
+require(magicfor)
+require(magrittr)
+require(dplyr)
+require(gaston)
+require(qqman)
+```
+
+
+####Load data
+```{r}
+nies_heritable_pheno240918 <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_heritable_pheno240918.csv', header = TRUE)
+
+nies_covar <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_covar.csv', header = T)
+head(nies_covar)
+
+merged_nies_210818 <- read.bed.matrix("C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.bed")
+
+merged_nies_GRM <- GRM(merged_nies_210818)
+merged_nies_eiK <- eigen(merged_nies_GRM)
+merged_nies_eiK$values[ merged_nies_eiK$values < 0] <- 0
+merged_nies_PC <- sweep(merged_nies_eiK$vectors, 2, sqrt(merged_nies_eiK$values), "*")
+```
+
+####1. Filter L K-value H
+```{r}
+l_KvalH_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918$L.K.value.H, X = nies_covar, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+l_KvalH_gwas <- na.omit(l_KvalH_gwas)
+l_kvalH_filtered <- l_KvalH_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+l_kvalH_meff <- l_kvalH_filtered %>% filter(p < 1.84e-7)
+l_kvalH_sig <- do.call(rbind, lapply(split(l_kvalH_meff,l_kvalH_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+l_kvalH_res <- NULL
+for (i in l_kvalH_sig$id) {
+  snpID <- i
+  snpCHR <- l_kvalH_filtered[l_kvalH_filtered$id == snpID,]$chr
+  snpPOS <- l_kvalH_filtered[l_kvalH_filtered$id ==snpID,]$pos
+  
+  sig.peak <- l_kvalH_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  l_kvalH_res <- rbind(l_kvalH_res, sig.peak)
+}
+
+write.csv(l_kvalH_res, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/l_kvalH_res.csv')
+l_kvalH_res
+
+manhattan(x = l_kvalH_filtered, chr = "chr", bp = "pos", p = "p", snp = "id", ylim = c(0,10), genomewideline = -log10(1.84e-7), main = "L K-value H", annotatePval = 1.84e-7)
+```
+
+####2. Filter L ACD
+```{r}
+l_acd_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918$L.AC.Depth, X = nies_covar, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+l_acd_gwas <- na.omit(l_acd_gwas)
+l_acd_filtered <- l_acd_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+l_acd_meff <- l_acd_filtered %>% filter(p < 1.84e-7)
+l_acd_sig <- do.call(rbind, lapply(split(l_acd_meff,l_acd_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+l_acd_res <- NULL
+for (i in l_acd_sig$id) {
+  snpID <- i
+  snpCHR <- l_acd_filtered[l_acd_filtered$id == snpID,]$chr
+  snpPOS <- l_acd_filtered[l_acd_filtered$id ==snpID,]$pos
+  
+  sig.peak <- l_acd_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  l_acd_res <- rbind(l_acd_res, sig.peak)
+}
+
+write.csv(l_acd_res, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/l_acd.csv')
+l_acd_res
+
+manhattan(x = l_acd_filtered, chr = "chr", bp = "pos", p = "p", snp = "id", ylim = c(0,10), genomewideline = -log10(1.84e-7), main = "Left Anterior Chamber Depth", annotatePval = 1.84e-7)
+```
+
+####3. L CDR 
+```{r}
+l_cdr_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918$L.CDR, X = nies_covar, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+l_cdr_gwas <- na.omit(l_cdr_gwas)
+l_cdr_filtered <- l_cdr_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+l_cdr_meff <- l_cdr_filtered %>% filter(p < 1.84e-7)
+l_cdr_sig <- do.call(rbind, lapply(split(l_cdr_meff,l_cdr_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+l_cdr_res <- NULL
+for (i in l_cdr_sig$id) {
+  snpID <- i
+  snpCHR <- l_cdr_filtered[l_cdr_filtered$id == snpID,]$chr
+  snpPOS <- l_cdr_filtered[l_cdr_filtered$id ==snpID,]$pos
+  
+  sig.peak <- l_cdr_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  l_cdr_res <- rbind(l_cdr_res, sig.peak)
+}
+
+write.csv(l_cdr_res, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/l_cdr_res.csv')
+l_cdr_res
+
+manhattan(x = l_cdr_filtered, chr = "chr", bp = "pos", p = "p", snp = "id", ylim = c(0,10), genomewideline = -log10(1.84e-7), main = "Left Cup-to-Disc Ratio", annotatePval = 1.84e-7)
+```
+
+####4. L IOP
+```{r}
+l_iop_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918$L.IOP.mmHg, X = nies_covar, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+l_iop_gwas <- na.omit(l_iop_gwas)
+l_iop_filtered <- l_iop_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+l_iop_meff <- l_iop_filtered %>% filter(p < 1.84e-7)
+l_iop_sig <- do.call(rbind, lapply(split(l_iop_meff,l_iop_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+l_iop_res <- NULL
+for (i in l_iop_sig$id) {
+  snpID <- i
+  snpCHR <- l_iop_filtered[l_iop_filtered$id == snpID,]$chr
+  snpPOS <- l_iop_filtered[l_iop_filtered$id ==snpID,]$pos
+  
+  sig.peak <- l_iop_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  l_iop_res <- rbind(l_iop_res, sig.peak)
+}
+
+write.csv(l_iop_res, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/l_iop_res.csv')
+l_iop_res
+
+manhattan(x = l_iop_filtered, chr = "chr", bp = "pos", p = "p", snp = "id", ylim = c(0,10), genomewideline = -log10(1.84e-7), main = "Left Intraocular Pressure")
+```
+
+####5. R ACD
+```{r}
+r_acd_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918$R.AC.Depth, X = nies_covar, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+r_acd_gwas <- na.omit(r_acd_gwas)
+r_acd_filtered <- r_acd_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+r_acd_meff <- r_acd_filtered %>% filter(p < 1.84e-7)
+r_acd_sig <- do.call(rbind, lapply(split(r_acd_meff,r_acd_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+r_acd_res <- NULL
+for (i in r_acd_sig$id) {
+  snpID <- i
+  snpCHR <- r_acd_filtered[r_acd_filtered$id == snpID,]$chr
+  snpPOS <- r_acd_filtered[r_acd_filtered$id ==snpID,]$pos
+  
+  sig.peak <- r_acd_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  r_acd_res <- rbind(r_acd_res, sig.peak)
+}
+
+write.csv(r_acd_res, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/r_acd_res.csv')
+r_acd_res
+
+manhattan(x = r_acd_filtered, chr = "chr", bp = "pos", p = "p", snp = "id", ylim = c(0,10), genomewideline = -log10(1.84e-7), main = "Right Anterior Chamber Depth", annotatePval = 1.84e-7)
+```
+
+####6. R Axial length
+```{r}
+r_axL_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918$R.Axial.Length, X = nies_covar, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+r_axL_gwas <- na.omit(r_axL_gwas)
+r_axL_filtered <- r_axL_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+r_axL_meff <- r_axL_filtered %>% filter(p < 1.84e-7)
+r_axL_sig <- do.call(rbind, lapply(split(r_axL_meff,r_axL_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+r_axL_res <- NULL
+for (i in r_axL_sig$id) {
+  snpID <- i
+  snpCHR <- r_axL_filtered[r_axL_filtered$id == snpID,]$chr
+  snpPOS <- r_axL_filtered[r_axL_filtered$id ==snpID,]$pos
+  
+  sig.peak <- r_axL_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  r_axL_res <- rbind(r_axL_res, sig.peak)
+}
+
+write.csv(r_axL_res, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/r_axL_res.csv')
+r_axL_res
+
+manhattan(x = r_axL_filtered, chr = "chr", bp = "pos", p = "p", snp = "id", ylim = c(0,10), genomewideline = -log10(1.84e-7), main = "Right Axial Length", annotatePval = 1.84e-7)
+```
+
+####7. R CDR
+```{r}
+r_cdr_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918$R.CDR, X = nies_covar, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+r_cdr_gwas <- na.omit(r_cdr_gwas)
+r_cdr_filtered <- r_cdr_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+r_cdr_meff <- r_cdr_filtered %>% filter(p < 1.84e-7)
+r_cdr_sig <- do.call(rbind, lapply(split(r_cdr_meff,r_cdr_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+r_cdr_res <- NULL
+for (i in r_cdr_sig$id) {
+  snpID <- i
+  snpCHR <- r_cdr_filtered[r_cdr_filtered$id == snpID,]$chr
+  snpPOS <- r_cdr_filtered[r_cdr_filtered$id ==snpID,]$pos
+  
+  sig.peak <- r_cdr_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  r_cdr_res <- rbind(r_cdr_res, sig.peak)
+}
+
+write.csv(r_cdr_res, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/r_cdr_res.csv')
+r_cdr_res
+
+manhattan(x = r_cdr_filtered, chr = "chr", bp = "pos", p = "p", snp = "id", ylim = c(0,10), genomewideline = -log10(1.84e-7), main = "Right Cup-to-Disc Ratio")
+```
+
+####8.R cyl
+```{r}
+r_cyl_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918$R.Cyl..pre.dilate, X = nies_covar, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+r_cyl_gwas <- na.omit(r_cyl_gwas)
+r_cyl_filtered <- r_cyl_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+r_cyl_meff <- r_cyl_filtered %>% filter(p < 1.84e-7)
+r_cyl_sig <- do.call(rbind, lapply(split(r_cyl_meff,r_cyl_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+r_cyl_res <- NULL
+for (i in r_cyl_sig$id) {
+  snpID <- i
+  snpCHR <- r_cyl_filtered[r_cyl_filtered$id == snpID,]$chr
+  snpPOS <- r_cyl_filtered[r_cyl_filtered$id ==snpID,]$pos
+  
+  sig.peak <- r_cyl_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  r_cyl_res <- rbind(r_cyl_res, sig.peak)
+}
+
+write.csv(r_cyl_res, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/r_cyl_res.csv')
+r_cyl_res
+
+manhattan(x = r_cyl_filtered, chr = "chr", bp = "pos", p = "p", snp = "id", ylim = c(0,12), genomewideline = -log10(1.84e-7), main = "Right Cyl Pre-dilate", annotatePval = 1.84e-7)
+```
+
+####9. R IOP
+```{r}
+r_iop_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918$R.IOP.mmHg, X = nies_covar, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+r_iop_gwas <- na.omit(r_iop_gwas)
+r_iop_filtered <- r_iop_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+r_iop_meff <- r_iop_filtered %>% filter(p < 1.84e-7)
+r_iop_sig <- do.call(rbind, lapply(split(r_iop_meff,r_iop_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+r_iop_res <- NULL
+for (i in r_iop_sig$id) {
+  snpID <- i
+  snpCHR <- r_iop_filtered[r_iop_filtered$id == snpID,]$chr
+  snpPOS <- r_iop_filtered[r_iop_filtered$id ==snpID,]$pos
+  
+  sig.peak <- r_iop_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  r_iop_res <- rbind(r_iop_res, sig.peak)
+}
+
+write.csv(r_iop_res, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/r_iop_res.csv')
+r_iop_res
+
+manhattan(x = r_iop_filtered, chr = "chr", bp = "pos", p = "p", snp = "id", ylim = c(0,12), genomewideline = -log10(1.84e-7), main = "Right Intraocular Pressure")
+```
+
+####10. R Kval V
+```{r}
+r_kvalV_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918$R.K.value.V, X = nies_covar, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+r_kvalV_gwas <- na.omit(r_kvalV_gwas)
+r_kvalV_filtered <- r_kvalV_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+r_kvalV_meff <- r_kvalV_filtered %>% filter(p < 1.84e-7)
+r_kvalV_sig <- do.call(rbind, lapply(split(r_kvalV_meff,r_kvalV_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+r_kvalV_res <- NULL
+for (i in r_kvalV_sig$id) {
+  snpID <- i
+  snpCHR <- r_kvalV_filtered[r_kvalV_filtered$id == snpID,]$chr
+  snpPOS <- r_kvalV_filtered[r_kvalV_filtered$id ==snpID,]$pos
+  
+  sig.peak <- r_kvalV_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  r_kvalV_res <- rbind(r_kvalV_res, sig.peak)
+}
+
+write.csv(r_kvalV_res, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/r_kvalV_res.csv')
+r_kvalV_res
+
+manhattan(x = r_kvalV_filtered, chr = "chr", bp = "pos", p = "p", snp = "id", ylim = c(0,12), genomewideline = -log10(1.84e-7), main = "Right K-value V", annotatePval = 1.84e-7)
+```
+
+####11. UVAF
+```{r}
+uvaf_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918$totaluvafmm, X = nies_covar, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+uvaf_gwas <- na.omit(uvaf_gwas)
+uvaf_filtered <- uvaf_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+uvaf_meff <- uvaf_filtered %>% filter(p < 1.84e-7)
+uvaf_sig <- do.call(rbind, lapply(split(uvaf_meff,uvaf_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+uvaf_res <- NULL
+for (i in uvaf_sig$id) {
+  snpID <- i
+  snpCHR <- uvaf_filtered[uvaf_filtered$id == snpID,]$chr
+  snpPOS <- uvaf_filtered[uvaf_filtered$id ==snpID,]$pos
+  
+  sig.peak <- uvaf_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  uvaf_res <- rbind(uvaf_res, sig.peak)
+}
+
+write.csv(uvaf_res, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/uvaf_res.csv')
+uvaf_res
+
+manhattan(x = uvaf_filtered, chr = "chr", bp = "pos", p = "p", snp = "id", ylim = c(0,12), genomewideline = -log10(1.84e-7), main = "Ultraviolet Autofluorescence", annotatePval = 1.84e-7)
+```
+
+####12. Component 1
+```{r}
+pc1_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918$coord.Dim.1, X = nies_covar, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+pc1_gwas <- na.omit(pc1_gwas)
+pc1_filtered <- pc1_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+pc1_meff <- pc1_filtered %>% filter(p < 1.84e-7)
+pc1_sig <- do.call(rbind, lapply(split(pc1_meff,pc1_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+pc1_res <- NULL
+for (i in pc1_sig$id) {
+  snpID <- i
+  snpCHR <- pc1_filtered[pc1_filtered$id == snpID,]$chr
+  snpPOS <- pc1_filtered[pc1_filtered$id ==snpID,]$pos
+  
+  sig.peak <- pc1_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  pc1_res <- rbind(pc1_res, sig.peak)
+}
+
+write.csv(pc1_res, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/pc1_res.csv')
+pc1_res
+
+manhattan(x = pc1_filtered, chr = "chr", bp = "pos", p = "p", snp = "id", ylim = c(0,12), genomewideline = -log10(1.84e-7), main = "Component 1", annotatePval = 1.84e-7)
+```
+
+####13. Component 3
+```{r}
+pc3_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918$coord.Dim.3, X = nies_covar, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+pc3_gwas <- na.omit(pc3_gwas)
+pc3_filtered <- pc3_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+pc3_meff <- pc3_filtered %>% filter(p < 1.84e-7)
+pc3_sig <- do.call(rbind, lapply(split(pc3_meff,pc3_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+pc3_res <- NULL
+for (i in pc3_sig$id) {
+  snpID <- i
+  snpCHR <- pc3_filtered[pc3_filtered$id == snpID,]$chr
+  snpPOS <- pc3_filtered[pc3_filtered$id ==snpID,]$pos
+  
+  sig.peak <- pc3_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  pc3_res <- rbind(pc3_res, sig.peak)
+}
+
+write.csv(pc3_res, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/pc3_res.csv')
+pc3_res
+
+manhattan(x = pc3_filtered, chr = "chr", bp = "pos", p = "p", snp = "id", ylim = c(0,12), genomewideline = -log10(1.84e-7), main = "Component 3", annotatePval = 1.84e-7)
+```
+
+####14. Component 4
+```{r}
+pc4_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918$coord.Dim.4, X = nies_covar, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+pc4_gwas <- na.omit(pc4_gwas)
+pc4_filtered <- pc4_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+pc4_meff <- pc4_filtered %>% filter(p < 1.84e-7)
+pc4_sig <- do.call(rbind, lapply(split(pc4_meff,pc4_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+pc4_res <- NULL
+for (i in pc4_sig$id) {
+  snpID <- i
+  snpCHR <- pc4_filtered[pc4_filtered$id == snpID,]$chr
+  snpPOS <- pc4_filtered[pc4_filtered$id ==snpID,]$pos
+  
+  sig.peak <- pc4_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  pc4_res <- rbind(pc4_res, sig.peak)
+}
+
+write.csv(pc4_res, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/pc4_res.csv')
+pc4_res
+
+manhattan(x = pc4_filtered, chr = "chr", bp = "pos", p = "p", snp = "id", ylim = c(0,12), genomewideline = -log10(1.84e-7), main = "Component 4", annotatePval = 1.84e-7)
+```
+
+####15. Component 8
+```{r}
+pc8_gwas <- association.test(merged_nies_210818, nies_heritable_pheno240918$coord.Dim.8, X = nies_covar, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+pc8_gwas <- na.omit(pc8_gwas)
+pc8_filtered <- pc8_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+pc8_meff <- pc8_filtered %>% filter(p < 1.84e-7)
+pc8_sig <- do.call(rbind, lapply(split(pc8_meff,pc8_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+pc8_res <- NULL
+for (i in pc8_sig$id) {
+  snpID <- i
+  snpCHR <- pc8_filtered[pc8_filtered$id == snpID,]$chr
+  snpPOS <- pc8_filtered[pc8_filtered$id ==snpID,]$pos
+  
+  sig.peak <- pc8_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  pc8_res <- rbind(pc8_res, sig.peak)
+}
+
+write.csv(pc8_res, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gwas_filter_covar/pc8_res.csv')
+pc8_res
+
+manhattan(x = pc8_filtered, chr = "chr", bp = "pos", p = "p", snp = "id", ylim = c(0,12), genomewideline = -log10(1.84e-7), main = "Component 8", annotatePval = 1.84e-7)
+```
+

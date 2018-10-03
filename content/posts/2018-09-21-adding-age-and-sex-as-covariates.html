@@ -1,0 +1,248 @@
+---
+title: 'Adding age and sex as covariates '
+author: Martha Aquino
+date: '2018-09-21'
+slug: adding-age-and-sex-as-covariates
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Gaston
+  - GCTA
+  - Genomic Data
+  - GREML
+  - Heritability
+---
+
+
+
+<pre class="r"><code>require(magicfor)</code></pre>
+<pre><code>## Loading required package: magicfor</code></pre>
+<pre class="r"><code>require(magrittr)</code></pre>
+<pre><code>## Loading required package: magrittr</code></pre>
+<pre class="r"><code>require(dplyr)</code></pre>
+<pre><code>## Loading required package: dplyr</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>require(gaston)</code></pre>
+<pre><code>## Loading required package: gaston</code></pre>
+<pre><code>## Loading required package: Rcpp</code></pre>
+<pre><code>## Loading required package: RcppParallel</code></pre>
+<pre><code>## 
+## Attaching package: &#39;RcppParallel&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:Rcpp&#39;:
+## 
+##     LdFlags</code></pre>
+<pre><code>## Gaston set number of threads to 2. Use setThreadOptions() to modify this.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;gaston&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     sigma</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     cbind, rbind</code></pre>
+<pre class="r"><code>require(qqman)</code></pre>
+<pre><code>## Loading required package: qqman</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## For example usage please run: vignette(&#39;qqman&#39;)</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## Citation appreciated but not required:</code></pre>
+<pre><code>## Turner, S.D. qqman: an R package for visualizing GWAS results using Q-Q and manhattan plots. biorXiv DOI: 10.1101/005165 (2014).</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## 
+## Attaching package: &#39;qqman&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:gaston&#39;:
+## 
+##     manhattan</code></pre>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>The QQ plots indicate that the GWAS results may be inflated. Typically, this inflation is observed because of population structure, an underpowered study, applying the wrong statistical test, or other hidden factors. I have corrected for population structure by including two principal components, the thresholds applied to the analyses are based on this specific population, and a stringent test is applied to the data set. Therefore, most probable causes for inflation have been accounted for. However, we have not included age and sex as covariates in these analyses because we had concerns about over burdening the model and potentially missing true associations. However, in light of these QQ plots, I will include age and sex as covariates to ensure that the results inflation are not due to these factors.</p>
+</div>
+<div id="methods-and-results" class="section level1">
+<h1>Methods and Results</h1>
+<div id="load-data" class="section level4">
+<h4>Load data</h4>
+<pre class="r"><code>NIES_master &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/NIES_master_database-age.csv&#39;, header = T)
+covar_col &lt;- c(&quot;UUID&quot;, &quot;Gender&quot;, &quot;Age.excel&quot;)
+nies_master_covar &lt;- NIES_master[covar_col]
+
+nies_heritable_pheno &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_heritable_pheno.csv&#39;, header = T)
+
+nies_heritable_pheno220918 &lt;-read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_heritable_pheno220918.csv&#39;, header = TRUE)
+
+nies_pheno_020918 &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_pheno_020918.csv&#39;, header = T)
+
+nies_final_uuid &lt;- nies_heritable_pheno$UUID
+
+nies_covar &lt;- nies_master_covar[nies_master_covar$UUID %in% nies_final_uuid,]
+nies_covar &lt;- as.matrix(nies_covar)
+
+
+merged_nies_210818 &lt;- read.bed.matrix(&quot;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.bed&quot;)</code></pre>
+<pre><code>## Reading C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.fam 
+## Reading C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.bim 
+## Reading C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno_210818.bed 
+## ped stats and snps stats have been set. 
+## &#39;p&#39; has been set. 
+## &#39;mu&#39; and &#39;sigma&#39; have been set.</code></pre>
+<pre class="r"><code>merged_nies_GRM &lt;- GRM(merged_nies_210818)
+merged_nies_eiK &lt;- eigen(merged_nies_GRM)
+merged_nies_eiK$values[ merged_nies_eiK$values &lt; 0] &lt;- 0
+merged_nies_PC &lt;- sweep(merged_nies_eiK$vectors, 2, sqrt(merged_nies_eiK$values), &quot;*&quot;)</code></pre>
+</div>
+<div id="heritability-analyses-in-gcta" class="section level4">
+<h4>1. Heritability analyses in GCTA</h4>
+<pre class="bash"><code>for i in {1..27}
+do ./gcta64 --reml --grm gcta_output/merged_nies_grm --pheno nies_pheno_020918.txt --mpheno $i --reml-pred-rand --covar nies_sex_covar.txt --qcovar nies_pca_age_covar.txt --out gcta_output/$i.covar.est
+head gcta_output/$i.covar.est.hsq &gt;&gt; trait.her.covar.gcta.txt
+done
+
+for i in {1..9}
+do ./gcta64 --reml --grm gcta_output/merged_nies_grm --pheno pheno_pca_coord.txt --mpheno $i --reml-pred-rand --covar nies_sex_covar.txt --qcovar nies_pca_age_covar.txt --out gcta_output/$i.pc.covar.est
+head gcta_output/$i.pc.covar.est.hsq &gt;&gt; pc.her.covar.gcta.txt
+done</code></pre>
+<pre class="r"><code>heritability_covar_gcta &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/heritability_covar_gcta2.csv&#39;, header = TRUE)
+
+heritability_covar_gcta</code></pre>
+<pre><code>##                  Trait       h2     pval  X PC     h2.1   pval.1 X.1
+## 1          R.K.value.V 0.732774 1.68e-07 NA  1 0.584877 1.47e-05  NA
+## 2         L.Pachimetry 0.672052 4.45e-07 NA  4 0.473562 9.97e-05  NA
+## 3         R.Pachimetry 0.622011 2.47e-06 NA  3 0.315501 5.14e-03  NA
+## 4   R.Cyl..pre.dilate. 0.595018 1.55e-06 NA  8 0.193069 2.94e-02  NA
+## 5          totaluvafmm 0.594148 2.06e-05 NA  7 0.239878 3.69e-02  NA
+## 6                R.CDR 0.590256 3.34e-05 NA  2 0.262234 5.35e-02  NA
+## 7          L.K.value.V 0.570662 2.97e-05 NA NA       NA       NA  NA
+## 8          R.K.value.H 0.500294 1.17e-04 NA  6 0.136592 1.32e-01  NA
+## 9                L.CDR 0.496006 7.02e-04 NA  9 0.006853 4.77e-01  NA
+## 10      L.Axial.Length 0.336035 6.72e-03 NA  5 0.000000 5.00e-01  NA
+## 11      R.Axial.Length 0.324886 8.16e-03 NA NA       NA       NA  NA
+## 12         L.K.value.H 0.285803 2.55e-02 NA NA       NA       NA  NA
+## 13          R.AC.Depth 0.267335 1.09e-02 NA NA       NA       NA  NA
+## 14          L.AC.Depth 0.266877 1.08e-02 NA NA       NA       NA  NA
+## 15          R.IOP.mmHg 0.244349 3.13e-02 NA NA       NA       NA  NA
+## 16          L.IOP.mmHg 0.205074 4.58e-02 NA NA       NA       NA  NA
+## 17 L.Axis..pre.dilate. 0.115745 1.96e-01 NA NA       NA       NA  NA
+## 18 R.Axis..pre.dilate. 0.038499 3.92e-01 NA NA       NA       NA  NA
+## 19         R.Logmar.VA 0.000000 5.00e-01 NA NA       NA       NA  NA
+## 20         L.Logmar.VA 0.000000 5.00e-01 NA NA       NA       NA  NA
+## 21  R.Sph..pre.dilate. 0.000000 5.00e-01 NA NA       NA       NA  NA
+## 22  L.Sph..pre.dilate. 0.000000 5.00e-01 NA NA       NA       NA  NA
+## 23  L.Cyl..pre.dilate. 0.000000 5.00e-01 NA NA       NA       NA  NA
+## 24    R.K.Value.H.Axis 0.000000 5.00e-01 NA NA       NA       NA  NA
+## 25    R.K.value.V.Axis 0.000000 5.00e-01 NA NA       NA       NA  NA
+## 26    L.K.value.H.Axis 0.000000 5.00e-01 NA NA       NA       NA  NA
+## 27    L.K.value.V.Axis 0.000000 5.00e-01 NA NA       NA       NA  NA
+##          X.2       X.3
+## 1        cct 0.6470315
+## 2    kvalue  0.5220000
+## 3        cdr 0.5431310
+## 4  ax length 0.3304605
+## 5        acd 0.2671060
+## 6        iop 0.2247115
+## 7       UVAF 0.5900000
+## 8                   NA
+## 9                   NA
+## 10                  NA
+## 11                  NA
+## 12                  NA
+## 13                  NA
+## 14                  NA
+## 15                  NA
+## 16                  NA
+## 17                  NA
+## 18                  NA
+## 19                  NA
+## 20                  NA
+## 21                  NA
+## 22                  NA
+## 23                  NA
+## 24                  NA
+## 25                  NA
+## 26                  NA
+## 27                  NA</code></pre>
+<p>These heritability estimates differ from the previous estimates suggesting that sex and age have a significant influence on the outcome of the analyses. All traits that are statistically significant (p &lt; 0.05) will be prioritised for pedigree-based GWAS. However, I would also like to confirm these values with gaston since it is the tool I will be using for the GWAS.</p>
+</div>
+<div id="perform-gwas-using-lmm-and-lrt" class="section level4">
+<h4>2. Perform GWAS using lmm and LRT</h4>
+<pre class="r"><code>nies_covar &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_covar.csv&#39;, header =T)
+nies_heritable_pheno240918 &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_heritable_pheno240918.csv&#39;, header = TRUE)
+
+for (i in c(2:ncol(nies_heritable_pheno240918))){
+  pheno_colnames &lt;- colnames(nies_heritable_pheno240918[i])
+  her_pheno_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno240918[,i], X = nies_covar, method = &quot;lmm&quot;, test = &quot;lrt&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p =2)
+  her_pheno_gwas &lt;- na.omit(her_pheno_gwas)
+  pheno_gwas_filtered &lt;- her_pheno_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+  qqman::manhattan(x = pheno_gwas_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, genomewideline = -log10(1.84e-7), main = paste(pheno_colnames), ylim = c(0,10))
+}</code></pre>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X
+
+## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-1.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-3.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-4.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-5.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-6.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-7.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-8.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-9.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-10.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-11.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-12.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-13.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-14.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-15.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-16.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-17.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-18.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-19.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-20.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-21.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-5-22.png" width="672" /></p>
+</div>
+<div id="generate-qq-plots-for-gwas-resutls" class="section level4">
+<h4>3. Generate QQ plots for GWAS resutls</h4>
+<pre class="r"><code>for (i in c(2:ncol(nies_heritable_pheno240918))){
+  pheno_colnames &lt;- colnames(nies_heritable_pheno240918[i])
+  her_pheno_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno240918[,i], method = &quot;lmm&quot;, 
+                                     test = &quot;lrt&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p =2)
+  her_pheno_gwas &lt;- na.omit(her_pheno_gwas)
+  pheno_gwas_filtered &lt;- her_pheno_gwas  %&gt;% filter(freqA2 &lt; 0.99)
+  gaston:: qqplot.pvalues(pheno_gwas_filtered$p, main = paste(pheno_colnames))
+}</code></pre>
+<p><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-1.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-2.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-3.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-4.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-5.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-6.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-7.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-8.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-9.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-10.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-11.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-12.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-13.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-14.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-15.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-16.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-17.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-18.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-19.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-20.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-21.png" width="672" /><img src="/posts/2018-09-21-adding-age-and-sex-as-covariates_files/figure-html/unnamed-chunk-6-22.png" width="672" /></p>
+</div>
+</div>
