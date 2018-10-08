@@ -16,7 +16,7 @@ tags:
 ---
 
 #Introduction
-SNP heritability of index SNPs are non-sense. The numbers I am obtaining are either too high or too low. 
+SNP heritability of index SNPs are non-sense. The numbers I am obtaining are either too high or too low. Therefore, I want to compare GWAS results using the lmm/LRT method vs lm/Wald method. The wald test will also generate beta-values which are alternative values that indicate the effect size of SNVs. 
 
 #Methods and Results 
 

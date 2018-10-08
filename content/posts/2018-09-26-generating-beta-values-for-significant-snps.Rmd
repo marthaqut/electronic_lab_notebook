@@ -263,3 +263,4 @@ write.csv(pc8_wres, 'C:/Users/Martha/Documents/Honours/Project/honours.project/D
 pc8_wres
 ```
 
+Although most of these beta values are more sensible, the UVAF values are still significantly inflated. This indicates that there may be other confounders affecting results, other than population structure, age, and sex as these have been accounted for in the model. Some options to determine the cause of this artificial inflation may include, adding more components to the model, removing low frequency variants, or performing these association tests using a different tool. 

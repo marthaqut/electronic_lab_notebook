@@ -478,3 +478,5 @@ pc8_res
 manhattan(x = pc8_filtered, chr = "chr", bp = "pos", p = "p", snp = "id", ylim = c(0,12), genomewideline = -log10(1.84e-7), main = "Component 8", annotatePval = 1.84e-7)
 ```
 
+
+Evidently, performing this filtering has reduced the number of significant peaks identified. This is not to say that the isolated SNVs are not indicative of true associations, but the time constraint for this project is not permitting for further investigations.

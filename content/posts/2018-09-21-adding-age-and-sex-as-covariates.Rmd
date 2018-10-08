@@ -73,7 +73,7 @@ heritability_covar_gcta
 ```
 
 
-These heritability estimates differ from the previous estimates suggesting that sex and age have a significant influence on the outcome of the analyses. All traits that are statistically significant (p < 0.05) will be prioritised for pedigree-based GWAS. However, I would also like to confirm these values with gaston since it is the tool I will be using for the GWAS.
+These heritability estimates differ from the previous estimates suggesting that sex and age have a significant influence on the outcome of the analyses. All traits that are statistically significant (p < 0.05) will be prioritised for pedigree-based GWAS.
 
 ####2. Perform GWAS using lmm and LRT 
 
@@ -103,3 +103,4 @@ for (i in c(2:ncol(nies_heritable_pheno240918))){
 }
 ```
 
+Despite the inclusion of age and sex as covariates, these QQ plots are still indicative of some inflation of the results. 
