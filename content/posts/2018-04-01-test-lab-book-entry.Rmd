@@ -1,0 +1,9 @@
+---
+title: Test lab book entry
+author: Martha
+date: '2018-04-01'
+slug: test-lab-book-entry
+categories: []
+tags: []
+---
+
