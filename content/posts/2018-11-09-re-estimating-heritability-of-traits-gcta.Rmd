@@ -1,0 +1,86 @@
+---
+title: 'Re-estimating heritability of traits - GCTA '
+author: Martha Aquino
+date: '2018-11-09'
+slug: re-estimating-heritability-of-traits-gcta
+categories:
+  - Coding
+  - Experiments
+  - Reading
+tags:
+  - GCTA
+  - Heritability
+---
+
+#Introduction
+To determine whether the low frequency variants were affecting the heritability estimates, heritabiity analysis must be re-performed with the new genomic data set. 
+
+Since 'gaston' is still unable to produce p-values for the heritability estimates, GCTA will be used to perform the analysis. 
+
+#Methods and Results
+
+####1. Generate a GRM 
+```{bash, eval = FALSE}
+./gcta64 --bfile merged_nies/merged_nies_geno071118 --make-grm --out gcta_output/merged_nies_grm091118
+```
+
+####2. Perform PCA for inclusion as covariates
+```{bash, eval = FALSE}
+./gcta64 --grm gcta_output/merged_nies_grm091118 --pca 20 --out gcta_output/merged_nies_pca091118
+```
+
+This step performs a PCA on the genomic data, like in PLINK, however it only generates results for 2 principal components. The results from this step becomes the input as population structure covariate for the heritability analysis. I would like to consider varying the number of principal components included however, GCTA is not as flexible as gaston i.e. I would have to repeat this step and generate multiple sets of results to do so. 
+
+####3. Perform heritability analysis on R K-value V
+I am re-testing the potential effects of adding principal components to the heritability estimates. I will include age and sex as covariates to all tests and subsequently include 0, 1, 2, 3, 5, and 20 components. 
+
+*0 PC
+```{bash, eval = FALSE}
+./gcta64 --reml --grm gcta_output/merged_nies_grm0911178 --pheno nies_pheno_020918.txt --mpheno 11 --reml-pred-rand --covar nies_sex_covar.txt --qcovar nies_age_covar091118.txt --out gcta_output/rkvalv_nopc_her_test
+```
+
+h2 = 0.529352, pval = 8.076e-05
+
+*1 PC
+```{bash, eval = FALSE}
+./gcta64 --reml --grm gcta_output/merged_nies_grm0911178 --pheno nies_pheno_020918.txt --mpheno 11 --reml-pred-rand --covar nies_sex_covar.txt --qcovar nies_1pc_cont_covar091118.txt --out gcta_output/rkvalv_1pc_her_test
+```
+
+h2 = 0.533720, pval = 1.508e-04
+
+*2 PCs 
+```{bash, eval = FALSE}
+./gcta64 --reml --grm gcta_output/merged_nies_grm0911178 --pheno nies_pheno_020918.txt --mpheno 11 --reml-pred-rand --covar nies_sex_covar.txt --qcovar nies_2pc_cont_covar091118.txt --out gcta_output/rkvalv_2pc_her_test
+```
+
+h2 = 0.506478, pval = 1.556e-03
+
+*3 PCs
+```{bash, eval = FALSE}
+./gcta64 --reml --grm gcta_output/merged_nies_grm0911178 --pheno nies_pheno_020918.txt --mpheno 11 --reml-pred-rand --covar nies_sex_covar.txt --qcovar nies_3pc_cont_covar091118.txt --out gcta_output/rkvalv_3pc_her_test
+```
+
+h2 = 0.517451, pval = 1.4176e-03
+
+*5
+```{bash, eval = FALSE}
+./gcta64 --reml --grm gcta_output/merged_nies_grm0911178 --pheno nies_pheno_020918.txt --mpheno 11 --reml-pred-rand --covar nies_sex_covar.txt --qcovar nies_5pc_cont_covar091118.txt --out gcta_output/rkvalv_5pc_her_test
+```
+
+h2 = 0.533488 pval = 1.4065e-03
+
+*20 PCs
+```{bash, eval = FALSE}
+./gcta64 --reml --grm gcta_output/merged_nies_grm0911178 --pheno nies_pheno_020918.txt --mpheno 11 --reml-pred-rand --covar nies_sex_covar.txt --qcovar nies_20pc_cont_covar091118.txt --out gcta_output/rkvalv_20pc_her_test
+```
+
+h2 = 0.686707, pval = 1.7098e-05
+
+####4. Compare results 
+```{r}
+rkvalv_pc_test <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gcta_output/rkvalv_pc_her_test.csv')
+
+rkvalv_pc_test
+```
+
+Interestingly, these results indicate that removing the low frequency variants from the genomic data singificantly reduces the heritability estimate for this particular trait (R Kval V). Also, as per the previous analysis, the addition of 1 to 5 components does not significantly alter the estimates, but the addition of 2PCs produced the lowest estimate. These results also indicate that adding 20 components produces a significantly higher heritability estimate. Why?  
