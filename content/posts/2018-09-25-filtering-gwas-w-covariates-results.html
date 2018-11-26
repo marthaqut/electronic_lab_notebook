@@ -24,50 +24,12 @@ tags:
 <div id="load-packages" class="section level4">
 <h4>Load packages</h4>
 <pre class="r"><code>require(magicfor)</code></pre>
-<pre><code>## Loading required package: magicfor</code></pre>
-<pre class="r"><code>require(magrittr)</code></pre>
-<pre><code>## Loading required package: magrittr</code></pre>
-<pre class="r"><code>require(dplyr)</code></pre>
-<pre><code>## Loading required package: dplyr</code></pre>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>require(gaston)</code></pre>
-<pre><code>## Loading required package: gaston</code></pre>
-<pre><code>## Loading required package: Rcpp</code></pre>
-<pre><code>## Loading required package: RcppParallel</code></pre>
-<pre><code>## 
-## Attaching package: &#39;RcppParallel&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:Rcpp&#39;:
-## 
-##     LdFlags</code></pre>
-<pre><code>## Gaston set number of threads to 2. Use setThreadOptions() to modify this.</code></pre>
-<pre><code>## 
-## Attaching package: &#39;gaston&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:stats&#39;:
-## 
-##     sigma</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     cbind, rbind</code></pre>
-<pre class="r"><code>require(qqman)</code></pre>
-<pre><code>## Loading required package: qqman</code></pre>
-<pre><code>## </code></pre>
-<pre><code>## For example usage please run: vignette(&#39;qqman&#39;)</code></pre>
-<pre><code>## </code></pre>
-<pre><code>## Citation appreciated but not required:</code></pre>
-<pre><code>## Turner, S.D. qqman: an R package for visualizing GWAS results using Q-Q and manhattan plots. biorXiv DOI: 10.1101/005165 (2014).</code></pre>
-<pre><code>## </code></pre>
-<pre><code>## 
-## Attaching package: &#39;qqman&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:gaston&#39;:
-## 
-##     manhattan</code></pre>
+<pre><code>## Warning in library(package, lib.loc = lib.loc, character.only = TRUE,
+## logical.return = TRUE, : there is no package called &#39;magicfor&#39;</code></pre>
+<pre class="r"><code>require(magrittr)
+require(dplyr)
+require(gaston)
+require(qqman)</code></pre>
 </div>
 <div id="load-data" class="section level4">
 <h4>Load data</h4>
@@ -789,6 +751,16 @@ uvaf_res</code></pre>
 <div id="component-1" class="section level4">
 <h4>12. Component 1</h4>
 <pre class="r"><code>pc1_gwas &lt;- association.test(merged_nies_210818, nies_heritable_pheno240918$coord.Dim.1, X = nies_covar, method=&quot;lmm&quot;, test = &quot;lrt&quot;, response = &quot;quantitative&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+head(pc1_gwas)</code></pre>
+<pre><code>##   chr    pos          id A1 A2    freqA2        h2       LRT            p
+## 1   1 590318   rs2808353  G  A 0.9855072 0.6054434  9.920181 0.0016347630
+## 2   1 778897 rs138660747  A  C 0.9956522 0.5790574 13.392422 0.0002526429
+## 3   1 783175  rs10751453  T  C 1.0000000 0.5793392 13.578441 0.0002287982
+## 4   1 804046   rs3131973  A  G 1.0000000 0.5793392 13.578441 0.0002287982
+## 5   1 817186   rs3094315  G  A 0.8333333 0.5978608  1.781937 0.1819116129
+## 6   1 833068  rs12562034  A  G 0.8695652 0.6057170  3.573507 0.0587082129</code></pre>
+<pre class="r"><code>chr7_pc1 &lt;- pc1_gwas[pc1_gwas$chr == 7,]
+write.csv(chr7_pc1, &#39;C:/Users/Martha/Documents/Honours/Project/honours.project/chr7_pc1.csv&#39;)
 pc1_gwas &lt;- na.omit(pc1_gwas)
 pc1_filtered &lt;- pc1_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
 pc1_meff &lt;- pc1_filtered %&gt;% filter(p &lt; 1.84e-7)

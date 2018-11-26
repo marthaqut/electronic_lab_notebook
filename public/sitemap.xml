@@ -3,6 +3,16 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>/posts/re-estimating-heritability-of-traits-gcta/</loc>
+    <lastmod>2018-11-09T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/posts/excluding-low-frequency-variants-and-genomic-pca/</loc>
+    <lastmod>2018-11-07T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/posts/generating-beta-values-for-significant-snps/</loc>
     <lastmod>2018-09-26T00:00:00+00:00</lastmod>
   </url>
@@ -235,25 +245,25 @@
   
   <url>
     <loc>/categories/coding/</loc>
-    <lastmod>2018-09-26T00:00:00+00:00</lastmod>
+    <lastmod>2018-11-09T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/tags/data-cleaning/</loc>
-    <lastmod>2018-08-14T00:00:00+00:00</lastmod>
+    <lastmod>2018-11-07T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/</loc>
-    <lastmod>2018-09-26T00:00:00+00:00</lastmod>
+    <lastmod>2018-11-09T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/categories/experiments/</loc>
-    <lastmod>2018-09-25T00:00:00+00:00</lastmod>
+    <lastmod>2018-11-09T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -265,7 +275,7 @@
   
   <url>
     <loc>/tags/gcta/</loc>
-    <lastmod>2018-09-21T00:00:00+00:00</lastmod>
+    <lastmod>2018-11-09T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -289,7 +299,7 @@
   
   <url>
     <loc>/tags/heritability/</loc>
-    <lastmod>2018-09-26T00:00:00+00:00</lastmod>
+    <lastmod>2018-11-09T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -319,19 +329,19 @@
   
   <url>
     <loc>/tags/pca/</loc>
-    <lastmod>2018-08-14T00:00:00+00:00</lastmod>
+    <lastmod>2018-11-07T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/tags/plink/</loc>
-    <lastmod>2018-08-19T00:00:00+00:00</lastmod>
+    <lastmod>2018-11-07T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/posts/</loc>
-    <lastmod>2018-09-26T00:00:00+00:00</lastmod>
+    <lastmod>2018-11-09T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -342,14 +352,14 @@
   </url>
   
   <url>
-    <loc>/tags/reading/</loc>
-    <lastmod>2018-04-20T00:00:00+00:00</lastmod>
+    <loc>/categories/reading/</loc>
+    <lastmod>2018-11-09T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>/categories/reading/</loc>
-    <lastmod>2018-04-23T00:00:00+00:00</lastmod>
+    <loc>/tags/reading/</loc>
+    <lastmod>2018-04-20T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   

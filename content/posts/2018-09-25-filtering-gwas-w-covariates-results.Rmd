@@ -19,7 +19,7 @@ The addition of covariates to the heritability and GWAS models significantly cha
 #Methods and Results 
 
 ####Load packages
-```{r}
+```{r, message=FALSE}
 require(magicfor)
 require(magrittr)
 require(dplyr)

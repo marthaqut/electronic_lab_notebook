@@ -31,7 +31,7 @@
       <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
       <guid>/posts/filtering-gwas-w-covariates-results/</guid>
       <description>IntroductionThe addition of covariates to the heritability and GWAS models significantly changed my results. As such, I need to filter for robust peaks in my new GWAS results and obtaining beta-values for the signiicant peaks.
-Methods and ResultsLoad packagesrequire(magicfor)## Loading required package: magicforrequire(magrittr)## Loading required package: magrittrrequire(dplyr)## Loading required package: dplyr## ## Attaching package: &amp;#39;dplyr&amp;#39;## The following objects are masked from &amp;#39;package:stats&amp;#39;:## ## filter, lag## The following objects are masked from &amp;#39;package:base&amp;#39;:## ## intersect, setdiff, setequal, unionrequire(gaston)## Loading required package: gaston## Loading required package: Rcpp## Loading required package: RcppParallel## ## Attaching package: &amp;#39;RcppParallel&amp;#39;## The following object is masked from &amp;#39;package:Rcpp&amp;#39;:## ## LdFlags## Gaston set number of threads to 2.</description>
+Methods and ResultsLoad packagesrequire(magicfor)## Warning in library(package, lib.loc = lib.loc, character.only = TRUE,## logical.return = TRUE, : there is no package called &amp;#39;magicfor&amp;#39;require(magrittr)require(dplyr)require(gaston)require(qqman)Load datanies_heritable_pheno240918 &amp;lt;- read.</description>
     </item>
     
     <item>

@@ -9,10 +9,30 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Wed, 26 Sep 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 09 Nov 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/categories/coding/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Re-estimating heritability of traits - GCTA </title>
+      <link>/posts/re-estimating-heritability-of-traits-gcta/</link>
+      <pubDate>Fri, 09 Nov 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/re-estimating-heritability-of-traits-gcta/</guid>
+      <description>IntroductionTo determine whether the low frequency variants were affecting the heritability estimates, heritabiity analysis must be re-performed with the new genomic data set.
+Since ‘gaston’ is still unable to produce p-values for the heritability estimates, GCTA will be used to perform the analysis.
+Methods and Results1. Generate a GRM./gcta64 --bfile merged_nies/merged_nies_geno071118 --make-grm --out gcta_output/merged_nies_grm0911182. Perform PCA for inclusion as covariates./gcta64 --grm gcta_output/merged_nies_grm091118 --pca 20 --out gcta_output/merged_nies_pca091118This step performs a PCA on the genomic data, like in PLINK, however it only generates results for 2 principal components.</description>
+    </item>
+    
+    <item>
+      <title>Excluding low frequency variants and genomic PCA</title>
+      <link>/posts/excluding-low-frequency-variants-and-genomic-pca/</link>
+      <pubDate>Wed, 07 Nov 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/excluding-low-frequency-variants-and-genomic-pca/</guid>
+      <description>IntroductionDespite including age, sex, and population structure as covariates in the heritability and GWAS models, the results still seemed to be inflated. This was indicated by the many variants passing genome-wide significance, particularly for Component 1, 3, and R Cyl. Prior to adding the covariates, the QQ plots also displayed shelving, indicating that there were more variants passing the threshold than expected. Although, this alone could be normal and indicative of many variants in LD, in conjunction with the messy peaks on the manhattan plot, the results seem suspicious.</description>
+    </item>
     
     <item>
       <title>Generating beta-values for significant SNPs</title>
@@ -31,7 +51,7 @@
       <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
       <guid>/posts/filtering-gwas-w-covariates-results/</guid>
       <description>IntroductionThe addition of covariates to the heritability and GWAS models significantly changed my results. As such, I need to filter for robust peaks in my new GWAS results and obtaining beta-values for the signiicant peaks.
-Methods and ResultsLoad packagesrequire(magicfor)## Loading required package: magicforrequire(magrittr)## Loading required package: magrittrrequire(dplyr)## Loading required package: dplyr## ## Attaching package: &amp;#39;dplyr&amp;#39;## The following objects are masked from &amp;#39;package:stats&amp;#39;:## ## filter, lag## The following objects are masked from &amp;#39;package:base&amp;#39;:## ## intersect, setdiff, setequal, unionrequire(gaston)## Loading required package: gaston## Loading required package: Rcpp## Loading required package: RcppParallel## ## Attaching package: &amp;#39;RcppParallel&amp;#39;## The following object is masked from &amp;#39;package:Rcpp&amp;#39;:## ## LdFlags## Gaston set number of threads to 2.</description>
+Methods and ResultsLoad packagesrequire(magicfor)## Warning in library(package, lib.loc = lib.loc, character.only = TRUE,## logical.return = TRUE, : there is no package called &amp;#39;magicfor&amp;#39;require(magrittr)require(dplyr)require(gaston)require(qqman)Load datanies_heritable_pheno240918 &amp;lt;- read.</description>
     </item>
     
     <item>

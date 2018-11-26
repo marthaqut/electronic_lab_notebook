@@ -62,7 +62,7 @@ h2 = 0.506478, pval = 1.556e-03
 
 h2 = 0.517451, pval = 1.4176e-03
 
-*5
+*5 PCs
 ```{bash, eval = FALSE}
 ./gcta64 --reml --grm gcta_output/merged_nies_grm0911178 --pheno nies_pheno_020918.txt --mpheno 11 --reml-pred-rand --covar nies_sex_covar.txt --qcovar nies_5pc_cont_covar091118.txt --out gcta_output/rkvalv_5pc_her_test
 ```
@@ -83,4 +83,50 @@ rkvalv_pc_test <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.pr
 rkvalv_pc_test
 ```
 
-Interestingly, these results indicate that removing the low frequency variants from the genomic data singificantly reduces the heritability estimate for this particular trait (R Kval V). Also, as per the previous analysis, the addition of 1 to 5 components does not significantly alter the estimates, but the addition of 2PCs produced the lowest estimate. These results also indicate that adding 20 components produces a significantly higher heritability estimate. Why?  
+####5. Repeat comparison with Component 1
+*0 PC
+```{bash, eval = FALSE}
+./gcta64 --reml --grm gcta_output/merged_nies_grm0911178 --pheno pheno_pca_coord.txt --mpheno 1 --reml-pred-rand --covar nies_sex_covar.txt --qcovar nies_age_covar091118.txt --out gcta_output/pc1_nopc_her_test
+``` 
+
+And so on, including 1, 2, 3, 4, 5, and 20 PCs. 
+
+```{r}
+pc_her_test <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gcta_output/rkvalv_pc1_pc_hertest.csv')
+
+pc_her_test
+```
+
+
+Interestingly, these results indicate that removing the low frequency variants from the genomic data singificantly reduces the heritability estimate for this particular trait (R Kval V). Also, as per the previous analysis, the addition of 1 to 5 components does not significantly alter the estimates, but the addition of 2PCs produced the lowest estimate. These results also indicate that adding 20 components produces a significantly higher heritability estimate. Why?
+
+####5. Perform heritability analysis on all traits and components 
+
+Traits
+```{bash, eval = FALSE}
+for i in {1..27}
+do ./gcta64 --reml --grm gcta_output/merged_nies_grm0911178 --pheno nies_pheno_020918.txt --mpheno $i --reml-pred-rand --covar nies_sex_covar.txt --qcovar nies_2pc_cont_covar091118.txt --out gcta_output/$i_est
+head $i_est.hsq >> trait.est.head.txt
+done
+```
+
+Components
+```{bash, eval = FALSE}
+for i in {1..9}
+do ./gcta64 --reml --grm gcta_output/merged_nies_grm0911178 --pheno pheno_pca_coord.txt --mpheno $i --reml-pred-rand --covar nies_sex_covar.txt --qcovar nies_2pc_cont_covar091118.txt --out gcta_output/$i_pc_est
+done
+```
+
+```{r}
+new_heritability091118 <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gcta_output/heritability_161118/new_heritability161118.csv')
+
+new_heritability091118
+```
+
+- estimates are lower than the previous estimates 
+
+- results seem more symmetrical (i.e. L/R values are significantly heritable but some L/R values still have ~10% difference)
+
+- Of note, R cyl and component 3 are no longer significantly heritable despite the associated variants identified in the previous GWAS analysis. Some concern that removing the rare variants may be producing less accurate results. 
+
+- Include all variants for PCA and heritability analysis then filter out for GWAS analysis. 
