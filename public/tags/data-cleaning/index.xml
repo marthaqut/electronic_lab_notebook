@@ -9,10 +9,22 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Wed, 07 Nov 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 26 Nov 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/data-cleaning/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Using variants unfiltered for MAF for PCA and heritability analysis</title>
+      <link>/posts/using-variants-unfiltered-for-maf-for-pca-and-heritability-analysis/</link>
+      <pubDate>Mon, 26 Nov 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/using-variants-unfiltered-for-maf-for-pca-and-heritability-analysis/</guid>
+      <description>IntroductionMethods and Results1. Run PCA with 20 PCs on unfiltered MAF data setplink1.9 --bfile merged_nies/merged_nies_geno_210818 --pca 20 var-wts --out plink_output/nies_geno_pca261118Note:
+the merged_nies_geno_210818 contains the data set after HWE and missingness filters (contains 3.9 million variants).
+20 PCs included. From the previous entry, it seemed that including 20PCs produced consistently higher heritability estimates than including 1 - 5 PC.
+2. Generate PCA plotsLoad .</description>
+    </item>
     
     <item>
       <title>Excluding low frequency variants and genomic PCA</title>

@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+  <meta charset="utf-8">
+  <title>GWAS rerun MAF 0.05</title>
+  <meta name="description" content="GWAS rerun MAF 0.05">
+  <meta name="author" content="Martha Aquino">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <noscript>
+    <link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/css/fonts.css">
+  </noscript>
+  
+  
+  <style type="text/css" media="screen">
+    /*!
+Pure v1.0.0
+Copyright 2013 Yahoo!
+Licensed under the BSD License.
+https://github.com/yahoo/pure/blob/master/LICENSE.md
+*/
+/*!
+normalize.css v^3.0 | MIT License | git.io/normalize
+Copyright (c) Nicolas Gallagher and Jonathan Neal
+*/
+/*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */img,legend{border:0}legend,td,th{padding:0}html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{margin:0}article,aside,details,figcaption,figure,footer,header,hgroup,main,menu,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block;vertical-align:baseline}audio:not([controls]){display:none;height:0}[hidden],template{display:none}a{background-color:transparent}a:active,a:hover{outline:0}abbr[title]{border-bottom:1px dotted}b,optgroup,strong{font-weight:700}dfn{font-style:italic}h1{font-size:2em;margin:.67em 0}mark{background:#ff0;color:#000}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sup{top:-.5em}sub{bottom:-.25em}svg:not(:root){overflow:hidden}figure{margin:1em 40px}hr{box-sizing:content-box;height:0}pre,textarea{overflow:auto}code,kbd,pre,samp{font-family:monospace,monospace;font-size:1em}button,input,optgroup,select,textarea{color:inherit;font:inherit;margin:0}button{overflow:visible}button,select{text-transform:none}button,html input[type=button],input[type=reset],input[type=submit]{-webkit-appearance:button;cursor:pointer}button[disabled],html input[disabled]{cursor:default}button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}input{line-height:normal}input[type=checkbox],input[type=radio]{box-sizing:border-box;padding:0}input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{height:auto}input[type=search]{-webkit-appearance:textfield;box-sizing:content-box}input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-search-decoration{-webkit-appearance:none}fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}table{border-collapse:collapse;border-spacing:0}.hidden,[hidden]{display:none!important}.pure-img{max-width:100%;height:auto;display:block}
+  </style>
+  <style type="text/css" media="screen">
+    /*!
+Pure v1.0.0
+Copyright 2013 Yahoo!
+Licensed under the BSD License.
+https://github.com/yahoo/pure/blob/master/LICENSE.md
+*/
+.pure-menu{box-sizing:border-box}.pure-menu-fixed{position:fixed;left:0;top:0;z-index:3}.pure-menu-item,.pure-menu-list{position:relative}.pure-menu-list{list-style:none;margin:0;padding:0}.pure-menu-item{padding:0;margin:0;height:100%}.pure-menu-heading,.pure-menu-link{display:block;text-decoration:none;white-space:nowrap}.pure-menu-horizontal{width:100%;white-space:normal}.pure-menu-horizontal .pure-menu-list{display:inline-block}.pure-menu-horizontal .pure-menu-heading,.pure-menu-horizontal .pure-menu-item,.pure-menu-horizontal .pure-menu-separator{display:inline-block;zoom:1;vertical-align:middle}.pure-menu-item .pure-menu-item{display:block}.pure-menu-children{display:none;position:absolute;left:100%;top:0;margin:0;padding:0;z-index:3}.pure-menu-horizontal .pure-menu-children{left:0;top:auto;width:inherit}.pure-menu-active>.pure-menu-children,.pure-menu-allow-hover:hover>.pure-menu-children{display:block;position:absolute}.pure-menu-has-children>.pure-menu-link:after{padding-left:.5em;content:"\25B8";font-size:small}.pure-menu-horizontal .pure-menu-has-children>.pure-menu-link:after{content:"\25BE"}.pure-menu-scrollable{overflow-y:scroll;overflow-x:hidden}.pure-menu-scrollable .pure-menu-list{display:block}.pure-menu-horizontal.pure-menu-scrollable .pure-menu-list{display:inline-block}.pure-menu-horizontal.pure-menu-scrollable{white-space:nowrap;overflow-y:hidden;overflow-x:auto;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;padding:.5em 0}.pure-menu-horizontal.pure-menu-scrollable::-webkit-scrollbar{display:none}.pure-menu-horizontal .pure-menu-children .pure-menu-separator,.pure-menu-separator{background-color:#ccc;height:1px;margin:.3em 0}.pure-menu-horizontal .pure-menu-separator{width:1px;height:1.3em;margin:0 .3em}.pure-menu-horizontal .pure-menu-children .pure-menu-separator{display:block;width:auto}.pure-menu-heading{text-transform:uppercase;color:#565d64}.pure-menu-link{color:#777}.pure-menu-children{background-color:#fff}.pure-menu-disabled,.pure-menu-heading,.pure-menu-link{padding:.5em 1em}.pure-menu-disabled{opacity:.5}.pure-menu-disabled .pure-menu-link:hover{background-color:transparent}.pure-menu-active>.pure-menu-link,.pure-menu-link:focus,.pure-menu-link:hover{background-color:#eee}.pure-menu-selected .pure-menu-link,.pure-menu-selected .pure-menu-link:visited{color:#000}
+
+  </style>
+  <style type="text/css" media="screen">
+    /*!
+Pure v1.0.0
+Copyright 2013 Yahoo!
+Licensed under the BSD License.
+https://github.com/yahoo/pure/blob/master/LICENSE.md
+*/
+.pure-g{letter-spacing:-.31em;text-rendering:optimizespeed;font-family:FreeSans,Arimo,"Droid Sans",Helvetica,Arial,sans-serif;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-flow:row wrap;-ms-flex-flow:row wrap;flex-flow:row wrap;-webkit-align-content:flex-start;-ms-flex-line-pack:start;align-content:flex-start}@media all and (-ms-high-contrast:none),(-ms-high-contrast:active){table .pure-g{display:block}}.opera-only :-o-prefocus,.pure-g{word-spacing:-.43em}.pure-u,.pure-u-1,.pure-u-1-1,.pure-u-1-12,.pure-u-1-2,.pure-u-1-24,.pure-u-1-3,.pure-u-1-4,.pure-u-1-5,.pure-u-1-6,.pure-u-1-8,.pure-u-10-24,.pure-u-11-12,.pure-u-11-24,.pure-u-12-24,.pure-u-13-24,.pure-u-14-24,.pure-u-15-24,.pure-u-16-24,.pure-u-17-24,.pure-u-18-24,.pure-u-19-24,.pure-u-2-24,.pure-u-2-3,.pure-u-2-5,.pure-u-20-24,.pure-u-21-24,.pure-u-22-24,.pure-u-23-24,.pure-u-24-24,.pure-u-3-24,.pure-u-3-4,.pure-u-3-5,.pure-u-3-8,.pure-u-4-24,.pure-u-4-5,.pure-u-5-12,.pure-u-5-24,.pure-u-5-5,.pure-u-5-6,.pure-u-5-8,.pure-u-6-24,.pure-u-7-12,.pure-u-7-24,.pure-u-7-8,.pure-u-8-24,.pure-u-9-24{display:inline-block;zoom:1;letter-spacing:normal;word-spacing:normal;vertical-align:top;text-rendering:auto}.pure-g [class*=pure-u]{font-family:sans-serif}.pure-u-1-24{width:4.1667%}.pure-u-1-12,.pure-u-2-24{width:8.3333%}.pure-u-1-8,.pure-u-3-24{width:12.5%}.pure-u-1-6,.pure-u-4-24{width:16.6667%}.pure-u-1-5{width:20%}.pure-u-5-24{width:20.8333%}.pure-u-1-4,.pure-u-6-24{width:25%}.pure-u-7-24{width:29.1667%}.pure-u-1-3,.pure-u-8-24{width:33.3333%}.pure-u-3-8,.pure-u-9-24{width:37.5%}.pure-u-2-5{width:40%}.pure-u-10-24,.pure-u-5-12{width:41.6667%}.pure-u-11-24{width:45.8333%}.pure-u-1-2,.pure-u-12-24{width:50%}.pure-u-13-24{width:54.1667%}.pure-u-14-24,.pure-u-7-12{width:58.3333%}.pure-u-3-5{width:60%}.pure-u-15-24,.pure-u-5-8{width:62.5%}.pure-u-16-24,.pure-u-2-3{width:66.6667%}.pure-u-17-24{width:70.8333%}.pure-u-18-24,.pure-u-3-4{width:75%}.pure-u-19-24{width:79.1667%}.pure-u-4-5{width:80%}.pure-u-20-24,.pure-u-5-6{width:83.3333%}.pure-u-21-24,.pure-u-7-8{width:87.5%}.pure-u-11-12,.pure-u-22-24{width:91.6667%}.pure-u-23-24{width:95.8333%}.pure-u-1,.pure-u-1-1,.pure-u-24-24,.pure-u-5-5{width:100%}
+  </style>
+  
+  
+  <style type="text/css" media="screen">
+    /*!
+Pure v1.0.0
+Copyright 2013 Yahoo!
+Licensed under the BSD License.
+https://github.com/yahoo/pure/blob/master/LICENSE.md
+*/
+@media screen and (min-width:35.5em){.pure-u-sm-1,.pure-u-sm-1-1,.pure-u-sm-1-12,.pure-u-sm-1-2,.pure-u-sm-1-24,.pure-u-sm-1-3,.pure-u-sm-1-4,.pure-u-sm-1-5,.pure-u-sm-1-6,.pure-u-sm-1-8,.pure-u-sm-10-24,.pure-u-sm-11-12,.pure-u-sm-11-24,.pure-u-sm-12-24,.pure-u-sm-13-24,.pure-u-sm-14-24,.pure-u-sm-15-24,.pure-u-sm-16-24,.pure-u-sm-17-24,.pure-u-sm-18-24,.pure-u-sm-19-24,.pure-u-sm-2-24,.pure-u-sm-2-3,.pure-u-sm-2-5,.pure-u-sm-20-24,.pure-u-sm-21-24,.pure-u-sm-22-24,.pure-u-sm-23-24,.pure-u-sm-24-24,.pure-u-sm-3-24,.pure-u-sm-3-4,.pure-u-sm-3-5,.pure-u-sm-3-8,.pure-u-sm-4-24,.pure-u-sm-4-5,.pure-u-sm-5-12,.pure-u-sm-5-24,.pure-u-sm-5-5,.pure-u-sm-5-6,.pure-u-sm-5-8,.pure-u-sm-6-24,.pure-u-sm-7-12,.pure-u-sm-7-24,.pure-u-sm-7-8,.pure-u-sm-8-24,.pure-u-sm-9-24{display:inline-block;zoom:1;letter-spacing:normal;word-spacing:normal;vertical-align:top;text-rendering:auto}.pure-u-sm-1-24{width:4.1667%}.pure-u-sm-1-12,.pure-u-sm-2-24{width:8.3333%}.pure-u-sm-1-8,.pure-u-sm-3-24{width:12.5%}.pure-u-sm-1-6,.pure-u-sm-4-24{width:16.6667%}.pure-u-sm-1-5{width:20%}.pure-u-sm-5-24{width:20.8333%}.pure-u-sm-1-4,.pure-u-sm-6-24{width:25%}.pure-u-sm-7-24{width:29.1667%}.pure-u-sm-1-3,.pure-u-sm-8-24{width:33.3333%}.pure-u-sm-3-8,.pure-u-sm-9-24{width:37.5%}.pure-u-sm-2-5{width:40%}.pure-u-sm-10-24,.pure-u-sm-5-12{width:41.6667%}.pure-u-sm-11-24{width:45.8333%}.pure-u-sm-1-2,.pure-u-sm-12-24{width:50%}.pure-u-sm-13-24{width:54.1667%}.pure-u-sm-14-24,.pure-u-sm-7-12{width:58.3333%}.pure-u-sm-3-5{width:60%}.pure-u-sm-15-24,.pure-u-sm-5-8{width:62.5%}.pure-u-sm-16-24,.pure-u-sm-2-3{width:66.6667%}.pure-u-sm-17-24{width:70.8333%}.pure-u-sm-18-24,.pure-u-sm-3-4{width:75%}.pure-u-sm-19-24{width:79.1667%}.pure-u-sm-4-5{width:80%}.pure-u-sm-20-24,.pure-u-sm-5-6{width:83.3333%}.pure-u-sm-21-24,.pure-u-sm-7-8{width:87.5%}.pure-u-sm-11-12,.pure-u-sm-22-24{width:91.6667%}.pure-u-sm-23-24{width:95.8333%}.pure-u-sm-1,.pure-u-sm-1-1,.pure-u-sm-24-24,.pure-u-sm-5-5{width:100%}}@media screen and (min-width:48em){.pure-u-md-1,.pure-u-md-1-1,.pure-u-md-1-12,.pure-u-md-1-2,.pure-u-md-1-24,.pure-u-md-1-3,.pure-u-md-1-4,.pure-u-md-1-5,.pure-u-md-1-6,.pure-u-md-1-8,.pure-u-md-10-24,.pure-u-md-11-12,.pure-u-md-11-24,.pure-u-md-12-24,.pure-u-md-13-24,.pure-u-md-14-24,.pure-u-md-15-24,.pure-u-md-16-24,.pure-u-md-17-24,.pure-u-md-18-24,.pure-u-md-19-24,.pure-u-md-2-24,.pure-u-md-2-3,.pure-u-md-2-5,.pure-u-md-20-24,.pure-u-md-21-24,.pure-u-md-22-24,.pure-u-md-23-24,.pure-u-md-24-24,.pure-u-md-3-24,.pure-u-md-3-4,.pure-u-md-3-5,.pure-u-md-3-8,.pure-u-md-4-24,.pure-u-md-4-5,.pure-u-md-5-12,.pure-u-md-5-24,.pure-u-md-5-5,.pure-u-md-5-6,.pure-u-md-5-8,.pure-u-md-6-24,.pure-u-md-7-12,.pure-u-md-7-24,.pure-u-md-7-8,.pure-u-md-8-24,.pure-u-md-9-24{display:inline-block;zoom:1;letter-spacing:normal;word-spacing:normal;vertical-align:top;text-rendering:auto}.pure-u-md-1-24{width:4.1667%}.pure-u-md-1-12,.pure-u-md-2-24{width:8.3333%}.pure-u-md-1-8,.pure-u-md-3-24{width:12.5%}.pure-u-md-1-6,.pure-u-md-4-24{width:16.6667%}.pure-u-md-1-5{width:20%}.pure-u-md-5-24{width:20.8333%}.pure-u-md-1-4,.pure-u-md-6-24{width:25%}.pure-u-md-7-24{width:29.1667%}.pure-u-md-1-3,.pure-u-md-8-24{width:33.3333%}.pure-u-md-3-8,.pure-u-md-9-24{width:37.5%}.pure-u-md-2-5{width:40%}.pure-u-md-10-24,.pure-u-md-5-12{width:41.6667%}.pure-u-md-11-24{width:45.8333%}.pure-u-md-1-2,.pure-u-md-12-24{width:50%}.pure-u-md-13-24{width:54.1667%}.pure-u-md-14-24,.pure-u-md-7-12{width:58.3333%}.pure-u-md-3-5{width:60%}.pure-u-md-15-24,.pure-u-md-5-8{width:62.5%}.pure-u-md-16-24,.pure-u-md-2-3{width:66.6667%}.pure-u-md-17-24{width:70.8333%}.pure-u-md-18-24,.pure-u-md-3-4{width:75%}.pure-u-md-19-24{width:79.1667%}.pure-u-md-4-5{width:80%}.pure-u-md-20-24,.pure-u-md-5-6{width:83.3333%}.pure-u-md-21-24,.pure-u-md-7-8{width:87.5%}.pure-u-md-11-12,.pure-u-md-22-24{width:91.6667%}.pure-u-md-23-24{width:95.8333%}.pure-u-md-1,.pure-u-md-1-1,.pure-u-md-24-24,.pure-u-md-5-5{width:100%}}@media screen and (min-width:64em){.pure-u-lg-1,.pure-u-lg-1-1,.pure-u-lg-1-12,.pure-u-lg-1-2,.pure-u-lg-1-24,.pure-u-lg-1-3,.pure-u-lg-1-4,.pure-u-lg-1-5,.pure-u-lg-1-6,.pure-u-lg-1-8,.pure-u-lg-10-24,.pure-u-lg-11-12,.pure-u-lg-11-24,.pure-u-lg-12-24,.pure-u-lg-13-24,.pure-u-lg-14-24,.pure-u-lg-15-24,.pure-u-lg-16-24,.pure-u-lg-17-24,.pure-u-lg-18-24,.pure-u-lg-19-24,.pure-u-lg-2-24,.pure-u-lg-2-3,.pure-u-lg-2-5,.pure-u-lg-20-24,.pure-u-lg-21-24,.pure-u-lg-22-24,.pure-u-lg-23-24,.pure-u-lg-24-24,.pure-u-lg-3-24,.pure-u-lg-3-4,.pure-u-lg-3-5,.pure-u-lg-3-8,.pure-u-lg-4-24,.pure-u-lg-4-5,.pure-u-lg-5-12,.pure-u-lg-5-24,.pure-u-lg-5-5,.pure-u-lg-5-6,.pure-u-lg-5-8,.pure-u-lg-6-24,.pure-u-lg-7-12,.pure-u-lg-7-24,.pure-u-lg-7-8,.pure-u-lg-8-24,.pure-u-lg-9-24{display:inline-block;zoom:1;letter-spacing:normal;word-spacing:normal;vertical-align:top;text-rendering:auto}.pure-u-lg-1-24{width:4.1667%}.pure-u-lg-1-12,.pure-u-lg-2-24{width:8.3333%}.pure-u-lg-1-8,.pure-u-lg-3-24{width:12.5%}.pure-u-lg-1-6,.pure-u-lg-4-24{width:16.6667%}.pure-u-lg-1-5{width:20%}.pure-u-lg-5-24{width:20.8333%}.pure-u-lg-1-4,.pure-u-lg-6-24{width:25%}.pure-u-lg-7-24{width:29.1667%}.pure-u-lg-1-3,.pure-u-lg-8-24{width:33.3333%}.pure-u-lg-3-8,.pure-u-lg-9-24{width:37.5%}.pure-u-lg-2-5{width:40%}.pure-u-lg-10-24,.pure-u-lg-5-12{width:41.6667%}.pure-u-lg-11-24{width:45.8333%}.pure-u-lg-1-2,.pure-u-lg-12-24{width:50%}.pure-u-lg-13-24{width:54.1667%}.pure-u-lg-14-24,.pure-u-lg-7-12{width:58.3333%}.pure-u-lg-3-5{width:60%}.pure-u-lg-15-24,.pure-u-lg-5-8{width:62.5%}.pure-u-lg-16-24,.pure-u-lg-2-3{width:66.6667%}.pure-u-lg-17-24{width:70.8333%}.pure-u-lg-18-24,.pure-u-lg-3-4{width:75%}.pure-u-lg-19-24{width:79.1667%}.pure-u-lg-4-5{width:80%}.pure-u-lg-20-24,.pure-u-lg-5-6{width:83.3333%}.pure-u-lg-21-24,.pure-u-lg-7-8{width:87.5%}.pure-u-lg-11-12,.pure-u-lg-22-24{width:91.6667%}.pure-u-lg-23-24{width:95.8333%}.pure-u-lg-1,.pure-u-lg-1-1,.pure-u-lg-24-24,.pure-u-lg-5-5{width:100%}}@media screen and (min-width:80em){.pure-u-xl-1,.pure-u-xl-1-1,.pure-u-xl-1-12,.pure-u-xl-1-2,.pure-u-xl-1-24,.pure-u-xl-1-3,.pure-u-xl-1-4,.pure-u-xl-1-5,.pure-u-xl-1-6,.pure-u-xl-1-8,.pure-u-xl-10-24,.pure-u-xl-11-12,.pure-u-xl-11-24,.pure-u-xl-12-24,.pure-u-xl-13-24,.pure-u-xl-14-24,.pure-u-xl-15-24,.pure-u-xl-16-24,.pure-u-xl-17-24,.pure-u-xl-18-24,.pure-u-xl-19-24,.pure-u-xl-2-24,.pure-u-xl-2-3,.pure-u-xl-2-5,.pure-u-xl-20-24,.pure-u-xl-21-24,.pure-u-xl-22-24,.pure-u-xl-23-24,.pure-u-xl-24-24,.pure-u-xl-3-24,.pure-u-xl-3-4,.pure-u-xl-3-5,.pure-u-xl-3-8,.pure-u-xl-4-24,.pure-u-xl-4-5,.pure-u-xl-5-12,.pure-u-xl-5-24,.pure-u-xl-5-5,.pure-u-xl-5-6,.pure-u-xl-5-8,.pure-u-xl-6-24,.pure-u-xl-7-12,.pure-u-xl-7-24,.pure-u-xl-7-8,.pure-u-xl-8-24,.pure-u-xl-9-24{display:inline-block;zoom:1;letter-spacing:normal;word-spacing:normal;vertical-align:top;text-rendering:auto}.pure-u-xl-1-24{width:4.1667%}.pure-u-xl-1-12,.pure-u-xl-2-24{width:8.3333%}.pure-u-xl-1-8,.pure-u-xl-3-24{width:12.5%}.pure-u-xl-1-6,.pure-u-xl-4-24{width:16.6667%}.pure-u-xl-1-5{width:20%}.pure-u-xl-5-24{width:20.8333%}.pure-u-xl-1-4,.pure-u-xl-6-24{width:25%}.pure-u-xl-7-24{width:29.1667%}.pure-u-xl-1-3,.pure-u-xl-8-24{width:33.3333%}.pure-u-xl-3-8,.pure-u-xl-9-24{width:37.5%}.pure-u-xl-2-5{width:40%}.pure-u-xl-10-24,.pure-u-xl-5-12{width:41.6667%}.pure-u-xl-11-24{width:45.8333%}.pure-u-xl-1-2,.pure-u-xl-12-24{width:50%}.pure-u-xl-13-24{width:54.1667%}.pure-u-xl-14-24,.pure-u-xl-7-12{width:58.3333%}.pure-u-xl-3-5{width:60%}.pure-u-xl-15-24,.pure-u-xl-5-8{width:62.5%}.pure-u-xl-16-24,.pure-u-xl-2-3{width:66.6667%}.pure-u-xl-17-24{width:70.8333%}.pure-u-xl-18-24,.pure-u-xl-3-4{width:75%}.pure-u-xl-19-24{width:79.1667%}.pure-u-xl-4-5{width:80%}.pure-u-xl-20-24,.pure-u-xl-5-6{width:83.3333%}.pure-u-xl-21-24,.pure-u-xl-7-8{width:87.5%}.pure-u-xl-11-12,.pure-u-xl-22-24{width:91.6667%}.pure-u-xl-23-24{width:95.8333%}.pure-u-xl-1,.pure-u-xl-1-1,.pure-u-xl-24-24,.pure-u-xl-5-5{width:100%}}
+  </style>
+  
+
+  
+  <style type="text/css" media="screen">
+    html {
+	min-height:100%;
+	width:100%;
+	position:relative;
+}
+
+body {
+	background-color: rgb(252,252,252);
+	color: #484848;
+}
+
+.nav-menu {
+  margin-top: 5px;
+  padding-bottom: 5px;
+	border-bottom: 1px solid #e3e3e3;
+}
+
+.pure-menu-heading {
+  text-transform: none;
+  font-size: large;
+}
+
+.header {
+	text-align: left;
+	color: #484848;
+	margin-bottom: .5em;
+}
+
+.header ul li {
+		height: auto;
+}
+
+.header ul li a {
+	font-weight: bold;
+	color: #484848;
+	font-family: "Source Sans Pro", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.header {
+	font-weight: bold;
+	color: #484848;
+	font-family: "Source Sans Pro", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.site-title {
+	color: #484848;
+  text-transform: none;
+  font-weight: normal;
+	font-family: "Source Sans Pro", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.pull-right {
+	float: right;
+}
+
+.posts-name {
+	text-transform: capitalize;
+	font-weight: bold;
+	padding-left: 1em;
+	margin-top: 1em;
+	font-family: "Source Sans Pro", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.posts {
+	font-family: verdana,arial,helvetica,sans-serif;
+	list-style-type:none;
+	padding-left: 1em;
+}
+
+.posts li p {
+	margin-top: 0;
+}
+
+.posts li {
+	margin-bottom: 1em;
+}
+
+.posts li a {
+	color:#369;
+	text-decoration:none;
+}
+
+.post-list {
+  font-size: large;
+}
+
+.footnote {
+	font-family: verdana,arial,helvetica,sans-serif;
+	color:#888;
+	font-size:x-small;
+	margin-bottom:0;
+}
+
+.footnote a {
+	color: #888 !important
+}
+
+.footnote a:hover{
+	text-decoration:underline;
+	color:#369;
+}
+
+.footer {
+	position:absolute;
+	z-index:2;
+	height:auto;
+	width:100%;
+	bottom:0;
+}
+
+.footer-content {
+	border-top: 1px solid #e3e3e3;
+	font-size: 80%;
+	color: #bbb;
+}
+
+.footer-content a {
+	color: #bbb;
+}
+
+.footer-content ul {
+	height: auto;
+	margin-top: 0;
+	margin-bottom: 0;
+	display: inline-block;
+	padding-left: 0;
+}
+
+#gototop-btn {
+	display: inline-block;
+}
+
+#foot-name {
+  color: #484848;
+	text-transform: none;
+}
+
+#foot-copyright {
+	padding-left: 1em;
+	padding-bottom: 0.5em;
+	margin: 0;
+}
+
+.post {
+	font-family: proxima-nova,"Helvetica Neue",Helvetica,Roboto,Arial,sans-serif;
+	color:#484848;
+	letter-spacing:normal;
+	padding-left: .5em;
+}
+
+.post h1,h2,h3,h4,h5,h6 {
+	font-weight: bold;
+	letter-spacing:normal;
+}
+
+.post-content {
+	z-index:9;
+	overflow:auto;
+	padding:0;
+	padding-bottom:3em;
+	font-size:16px;
+	line-height:1.4;
+}
+
+.post-content img {
+	max-width: 100%;
+	height: auto;
+}
+
+/* these sections screw up other themes */ 
+/*.post-content code {
+  background-color: #EEE;
+}
+
+.post code {
+  background-color: #EEE;
+} */
+/* to here */
+
+.post a {
+	color:#c05b4d;
+	text-decoration: none;
+}
+
+.post a:hover {
+	color:#a5473a;
+	text-decoration: underline;
+}
+
+.post h1 {
+	font-size:28px;
+}
+
+.post h2 {
+	font-size:25px;
+}
+
+.post h3 {
+	font-size:23px;
+}
+
+.post h4 {
+	font-size:21px;
+}
+
+.post h5 {
+	font-size:19px;
+}
+
+.post h6 {
+	font-size:18px;
+}
+
+.post-title{
+		margin-top: 0;
+		margin-bottom: 2em;
+}
+
+.post-title h1 {
+	font-weight:bold;
+	font-size:39px;
+	line-height: 40px;
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+@media screen and (max-width:767px){
+	.desktop {
+		display: none;
+	}
+	.mobile {
+		display: block;
+	}
+	#toggle-btn {
+		display: inline-block;
+		float: right;
+		padding: .5em 1em;
+		text-decoration: none;
+		color: #484848;
+		font-weight: bold;
+	}
+	#toggle-content li {
+		clear: both;
+		height: auto;
+		background-color: rgb(249,249,249);
+	}
+	#toggle-home {
+		display: inline-block;
+	}
+}
+
+@media screen and (min-width:768px){
+	.mobile {
+		display:none;
+	}
+	.desktop {
+		display: block;
+	}
+}
+
+  </style>
+  
+  <style type="text/css" media="screen"> 
+    
+      /*
+
+Zenburn style from voldmar.ru (c) Vladimir Epifanov <voldmar@voldmar.ru>
+based on dark.css by Ivan Sagalaev
+
+*/
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0.5em;
+  background: #3f3f3f;
+  color: #dcdcdc;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-tag {
+  color: #e3ceab;
+}
+
+.hljs-template-tag {
+  color: #dcdcdc;
+}
+
+.hljs-number {
+  color: #8cd0d3;
+}
+
+.hljs-variable,
+.hljs-template-variable,
+.hljs-attribute {
+  color: #efdcbc;
+}
+
+.hljs-literal {
+  color: #efefaf;
+}
+
+.hljs-subst {
+  color: #8f8f8f;
+}
+
+.hljs-title,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-section,
+.hljs-type {
+  color: #efef8f;
+}
+
+.hljs-symbol,
+.hljs-bullet,
+.hljs-link {
+  color: #dca3a3;
+}
+
+.hljs-deletion,
+.hljs-string,
+.hljs-built_in,
+.hljs-builtin-name {
+  color: #cc9393;
+}
+
+.hljs-addition,
+.hljs-comment,
+.hljs-quote,
+.hljs-meta {
+  color: #7f9f7f;
+}
+
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+ 
+    
+  </style>
+  
+
+  
+  <link rel="shortcut icon" 
+   
+    href="/img/favicon.ico"
+  
+  type="image/x-icon">
+
+  
+  
+
+  <meta name="generator" content="Hugo 0.40.3" />
+
+  
+  
+</head>
+<body>
+
+<div class="header pure-g">
+    <div class="pure-u-1-24 pure-u-md-1-6"></div>
+    <div class="pure-u-11-12 pure-u-md-2-3">
+        <div class="desktop pure-menu pure-menu-horizontal nav-menu">
+            
+            <a href="/" class="site-title pure-menu-heading">Electronic Lab Notebook</a>
+            <ul class="pure-menu-list pull-right">
+				
+                
+                <li class="pure-menu-item">
+                    <a href="/categories/coding" class="pure-menu-link">Coding</a>
+                </li>
+                
+                <li class="pure-menu-item">
+                    <a href="/categories/experiments" class="pure-menu-link">Experiments</a>
+                </li>
+                
+                <li class="pure-menu-item">
+                    <a href="/categories/reading" class="pure-menu-link">Reading</a>
+                </li>
+                
+				
+                <li class="pure-menu-item">
+                    <a href="/about/" class="pure-menu-link">About</a>
+                </li>
+            </ul>
+        </div>
+        <div class="mobile pure-menu nav-menu">
+            <a href="/" class="site-title pure-menu-heading" id="toggle-home">Electronic Lab Notebook</a>
+            <a href="#" id="toggle-btn">&#9776;</a>
+            <ul class="pure-menu-list" id="toggle-content" style="display:none;">
+                
+				
+                
+                <li class="pure-menu-item">
+                    <a href="/categories/coding" class="pure-menu-link">Coding</a>
+                </li>
+                
+                <li class="pure-menu-item">
+                    <a href="/categories/experiments" class="pure-menu-link">Experiments</a>
+                </li>
+                
+                <li class="pure-menu-item">
+                    <a href="/categories/reading" class="pure-menu-link">Reading</a>
+                </li>
+                
+				
+                <li class="pure-menu-item">
+                    <a href="/about" class="pure-menu-link">About</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="pure-u-1-24 pure-u-md-1-6"></div>
+</div>
+
+
+<div class="pure-g">
+  <div class="pure-u-1-24 pure-u-md-1-6"></div>
+  <div class="pure-u-11-12 pure-u-md-2-3">
+    <div class="post">
+
+      <div class="post-title">
+        <p class="footnote">
+        <time class="">12-21-2018</time>
+        
+        
+        |
+        
+        
+        tags: [ <a href="/tags/gaston">Gaston</a> <a href="/tags/gwas">GWAS</a> <a href="/tags/r">R</a> ]
+        
+
+        
+        categories: [<a href="/categories/coding">Coding</a> <a href="/categories/experiments">Experiments</a> ]
+        
+
+        
+        </p>
+        <h1>GWAS rerun MAF 0.05</h1>
+      </div>
+
+      <div class="post-content">
+        <pre class="r"><code>require(magicfor)</code></pre>
+<pre><code>## Loading required package: magicfor</code></pre>
+<pre><code>## Warning in library(package, lib.loc = lib.loc, character.only = TRUE,
+## logical.return = TRUE, : there is no package called &#39;magicfor&#39;</code></pre>
+<pre class="r"><code>require(magrittr)</code></pre>
+<pre><code>## Loading required package: magrittr</code></pre>
+<pre class="r"><code>require(dplyr)</code></pre>
+<pre><code>## Loading required package: dplyr</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>require(gaston)</code></pre>
+<pre><code>## Loading required package: gaston</code></pre>
+<pre><code>## Loading required package: Rcpp</code></pre>
+<pre><code>## Loading required package: RcppParallel</code></pre>
+<pre><code>## 
+## Attaching package: &#39;RcppParallel&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:Rcpp&#39;:
+## 
+##     LdFlags</code></pre>
+<pre><code>## Gaston set number of threads to 2. Use setThreadOptions() to modify this.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;gaston&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     sigma</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     cbind, rbind</code></pre>
+<pre class="r"><code>require(qqman)</code></pre>
+<pre><code>## Loading required package: qqman</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## For example usage please run: vignette(&#39;qqman&#39;)</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## Citation appreciated but not required:</code></pre>
+<pre><code>## Turner, S.D. qqman: an R package for visualizing GWAS results using Q-Q and manhattan plots. biorXiv DOI: 10.1101/005165 (2014).</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## 
+## Attaching package: &#39;qqman&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:gaston&#39;:
+## 
+##     manhattan</code></pre>
+<pre class="r"><code>##load heritable pheno data
+
+her_pheno24918 &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_heritable_pheno240918.csv&#39;)
+head(her_pheno24918)</code></pre>
+<pre><code>##     UUID R.K.value.V L.Pachimetry R.Cyl..pre.dilate. R.Pachimetry
+## 1 219960       43.00          554               0.00          532
+## 2 313180       42.25          612              -0.75          608
+## 3 320511       43.50          512               0.00          499
+## 4 400011       43.25          601              -0.25          602
+## 5 400013       43.00          550              -0.25          552
+## 6 316131       44.00          588              -1.00          583
+##   totaluvafmm L.K.value.V R.CDR R.K.value.H L.CDR L.Axial.Length
+## 1         0.0       43.50   0.9       42.00   0.9          24.10
+## 2        74.4       42.00   0.9       41.25   0.7          25.21
+## 3        27.5       42.50   0.4       42.50   0.4          23.65
+## 4        47.0       43.25   0.6       42.50   0.6          23.34
+## 5        20.1       43.00   0.4       43.00   0.4          22.70
+## 6        12.9       43.50   0.3       42.75   0.3          23.54
+##   R.Axial.Length L.AC.Depth R.AC.Depth L.K.value.H R.IOP.mmHg L.IOP.mmHg
+## 1          24.31       3.03       3.09       42.50         14         14
+## 2          25.02       3.92       3.38       41.50         16         15
+## 3          23.37       3.08       3.29       42.00         17         18
+## 4          23.32       3.83       3.81       42.75         15         17
+## 5          22.93       3.13       3.22       42.75         18         18
+## 6          23.49       3.04       3.24       43.00         12         12
+##   coord.Dim.1 coord.Dim.4 coord.Dim.3 coord.Dim.8 coord.Dim.7 coord.Dim.2
+## 1  -1.3318012   0.8399155  0.75849347  -1.0126837   2.8552892  -1.1948332
+## 2  -3.7993478   2.0776045  0.41111735   0.3400838   2.2543673  -0.2657678
+## 3  -0.4961408  -0.9796890 -0.62633667   0.1104747  -1.1828388  -0.9254222
+## 4  -0.7904275   1.5424175 -1.18429936   1.5903830   2.2077992   0.3391719
+## 5   0.4462229   0.4965415 -0.03864912  -0.2245313  -0.5839491  -1.7106022
+## 6   0.2319576  -0.4216580  0.16696557  -0.8347539   1.1946733  -0.9769405</code></pre>
+<pre class="r"><code>nies_covar &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_covar.csv&#39;)
+head(nies_covar)</code></pre>
+<pre><code>##     UUID Sex Age
+## 1 219960   1  53
+## 2 313180   1  55
+## 3 320511   2  60
+## 4 400011   1  23
+## 5 400013   1  50
+## 6 316131   2  77</code></pre>
+<pre class="r"><code>##load genomic data
+merged_nies_071118 &lt;- read.bed.matrix(&quot;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno071118.bed&quot;)</code></pre>
+<pre><code>## Reading C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno071118.fam 
+## Reading C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno071118.bim 
+## Reading C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno071118.bed 
+## ped stats and snps stats have been set. 
+## &#39;p&#39; has been set. 
+## &#39;mu&#39; and &#39;sigma&#39; have been set.</code></pre>
+<pre class="r"><code>##set GRM etc.
+merged_nies_GRM &lt;- GRM(merged_nies_071118)
+merged_nies_eiK &lt;- eigen(merged_nies_GRM)
+merged_nies_eiK$values[ merged_nies_eiK$values &lt; 0] &lt;- 0
+merged_nies_PC &lt;- sweep(merged_nies_eiK$vectors, 2, sqrt(merged_nies_eiK$values), &quot;*&quot;) #PCs = 2</code></pre>
+<pre class="r"><code>#run GWAS with covariates
+for (i in c(2:ncol(her_pheno24918))){
+  pheno_colnames &lt;- colnames(her_pheno24918[i])
+  her_pheno_gwas &lt;- association.test(merged_nies_071118, her_pheno24918[,i], X = nies_covar, method = &quot;lmm&quot;, test = &quot;lrt&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p =2)
+  her_pheno_gwas &lt;- na.omit(her_pheno_gwas)
+  pheno_gwas_filtered &lt;- her_pheno_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+  qqman::manhattan(x = pheno_gwas_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, genomewideline = -log10(1.84e-7), main = paste(pheno_colnames), ylim = c(0,10))
+}</code></pre>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X
+
+## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-1.png" width="672" /><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-3.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-4.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-5.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-6.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-7.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-8.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-9.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-10.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-11.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-12.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-13.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-14.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-15.png" width="672" /><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-16.png" width="672" /><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-17.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-18.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-19.png" width="672" /><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-20.png" width="672" /><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-21.png" width="672" /><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-22.png" width="672" /></p>
+<p>As expected, removing the rare and low frequency variants significantly reduced the number of significantly associated variants.</p>
+<p>Interestingly, PCs 1,3, 4, and 8 still show associated variants as well as R Cyl, L ACD, and R ACD. Although these results are yet to be filtered to see whether they are well-supported peaks. In addition, the associated variants previously seen in R KVal V and UVAF were not identified in this round of analysis.</p>
+
+      </div>
+      
+      <div class="post-content">
+        <div id="disqus_thread"></div>
+<script>
+(function() {
+var d = document, s = d.createElement('script');
+s.src = 'https://http-martha-labbook-netlify-com.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+      </div>
+      
+    </div>
+  </div>
+  <div class="pure-u-1-24 pure-u-md-1-6"></div>
+</div>
+
+
+<div class="footer pure-g">
+  <div class="pure-u-1-24 pure-u-md-1-6"></div>
+  <div class="pure-u-11-12 pure-u-md-2-3">
+    <div class="footer-content">
+      <div class="pure-menu pure-menu-horizontal">
+        <ul>
+          
+          <li class="pure-menu-item" id="foot-name">© Martha Aquino</li>
+          
+
+          
+          <li class="pure-menu-item">
+            <a href="mailto:eunise.aquino@connect.qut.edu.au" class="pure-menu-link">Email</a>
+          </li>
+          
+
+          
+          <li class="pure-menu-item">
+            <a href="https://github.com/https://github.com/marthaqut/electronic_lab_notebook" class="pure-menu-link">GitHub</a>
+          </li>
+          
+
+          
+
+          
+
+        </ul>
+        <a href="#" class="pure-menu-link pull-right" id="gototop-btn">↑↑</a>
+        
+      </div>
+      
+      <p id="foot-copyright">(c) 2018 -- All rights reserved.</p>
+      
+    </div>
+  </div>
+  <div class="pure-u-1-24 pure-u-md-1-6"></div>
+</div>
+
+
+
+  <script src="/highlight/highlight.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/go.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/vim.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/shell.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/bash.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/markdown.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+  
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/python.min.js"></script>
+   
+  <script>hljs.initHighlighting();</script>
+
+
+<script type="text/javascript">
+  go();
+  window.addEventListener('resize', go);
+  function go(){
+    var d=document.querySelector(".desktop")
+    if(document.documentElement.clientWidth > 768) {
+      d.style.display="";
+    } else {
+      d.style.display="none";
+    }
+  }
+</script>
+<script type="text/javascript">
+  var a=document.querySelector("#toggle-btn"),b=document.querySelector("#toggle-content");a.addEventListener("click",function(){""==b.style.display?(b.style.display="none",a.innerHTML="☰"):(b.style.display="",a.innerHTML="X")});</script>
+
+
+</body>
+</html>
+
+
+

@@ -9,10 +9,19 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Wed, 26 Sep 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 21 Dec 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/gaston/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>GWAS rerun MAF 0.05</title>
+      <link>/posts/gwas-rerun-maf-0-05/</link>
+      <pubDate>Fri, 21 Dec 2018 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/gwas-rerun-maf-0-05/</guid>
+      <description>require(magicfor)## Loading required package: magicfor## Warning in library(package, lib.loc = lib.loc, character.only = TRUE,## logical.return = TRUE, : there is no package called &amp;#39;magicfor&amp;#39;require(magrittr)## Loading required package: magrittrrequire(dplyr)## Loading required package: dplyr## ## Attaching package: &amp;#39;dplyr&amp;#39;## The following objects are masked from &amp;#39;package:stats&amp;#39;:## ## filter, lag## The following objects are masked from &amp;#39;package:base&amp;#39;:## ## intersect, setdiff, setequal, unionrequire(gaston)## Loading required package: gaston## Loading required package: Rcpp## Loading required package: RcppParallel## ## Attaching package: &amp;#39;RcppParallel&amp;#39;## The following object is masked from &amp;#39;package:Rcpp&amp;#39;:## ## LdFlags## Gaston set number of threads to 2.</description>
+    </item>
     
     <item>
       <title>Generating beta-values for significant SNPs</title>

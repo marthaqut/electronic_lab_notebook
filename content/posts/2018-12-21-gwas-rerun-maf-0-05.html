@@ -1,0 +1,178 @@
+---
+title: GWAS rerun MAF 0.05
+author: Martha Aquino
+date: '2018-12-21'
+slug: gwas-rerun-maf-0-05
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Gaston
+  - GWAS
+  - R
+---
+
+
+
+<pre class="r"><code>require(magicfor)</code></pre>
+<pre><code>## Loading required package: magicfor</code></pre>
+<pre><code>## Warning in library(package, lib.loc = lib.loc, character.only = TRUE,
+## logical.return = TRUE, : there is no package called &#39;magicfor&#39;</code></pre>
+<pre class="r"><code>require(magrittr)</code></pre>
+<pre><code>## Loading required package: magrittr</code></pre>
+<pre class="r"><code>require(dplyr)</code></pre>
+<pre><code>## Loading required package: dplyr</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>require(gaston)</code></pre>
+<pre><code>## Loading required package: gaston</code></pre>
+<pre><code>## Loading required package: Rcpp</code></pre>
+<pre><code>## Loading required package: RcppParallel</code></pre>
+<pre><code>## 
+## Attaching package: &#39;RcppParallel&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:Rcpp&#39;:
+## 
+##     LdFlags</code></pre>
+<pre><code>## Gaston set number of threads to 2. Use setThreadOptions() to modify this.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;gaston&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     sigma</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     cbind, rbind</code></pre>
+<pre class="r"><code>require(qqman)</code></pre>
+<pre><code>## Loading required package: qqman</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## For example usage please run: vignette(&#39;qqman&#39;)</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## Citation appreciated but not required:</code></pre>
+<pre><code>## Turner, S.D. qqman: an R package for visualizing GWAS results using Q-Q and manhattan plots. biorXiv DOI: 10.1101/005165 (2014).</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## 
+## Attaching package: &#39;qqman&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:gaston&#39;:
+## 
+##     manhattan</code></pre>
+<pre class="r"><code>##load heritable pheno data
+
+her_pheno24918 &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_heritable_pheno240918.csv&#39;)
+head(her_pheno24918)</code></pre>
+<pre><code>##     UUID R.K.value.V L.Pachimetry R.Cyl..pre.dilate. R.Pachimetry
+## 1 219960       43.00          554               0.00          532
+## 2 313180       42.25          612              -0.75          608
+## 3 320511       43.50          512               0.00          499
+## 4 400011       43.25          601              -0.25          602
+## 5 400013       43.00          550              -0.25          552
+## 6 316131       44.00          588              -1.00          583
+##   totaluvafmm L.K.value.V R.CDR R.K.value.H L.CDR L.Axial.Length
+## 1         0.0       43.50   0.9       42.00   0.9          24.10
+## 2        74.4       42.00   0.9       41.25   0.7          25.21
+## 3        27.5       42.50   0.4       42.50   0.4          23.65
+## 4        47.0       43.25   0.6       42.50   0.6          23.34
+## 5        20.1       43.00   0.4       43.00   0.4          22.70
+## 6        12.9       43.50   0.3       42.75   0.3          23.54
+##   R.Axial.Length L.AC.Depth R.AC.Depth L.K.value.H R.IOP.mmHg L.IOP.mmHg
+## 1          24.31       3.03       3.09       42.50         14         14
+## 2          25.02       3.92       3.38       41.50         16         15
+## 3          23.37       3.08       3.29       42.00         17         18
+## 4          23.32       3.83       3.81       42.75         15         17
+## 5          22.93       3.13       3.22       42.75         18         18
+## 6          23.49       3.04       3.24       43.00         12         12
+##   coord.Dim.1 coord.Dim.4 coord.Dim.3 coord.Dim.8 coord.Dim.7 coord.Dim.2
+## 1  -1.3318012   0.8399155  0.75849347  -1.0126837   2.8552892  -1.1948332
+## 2  -3.7993478   2.0776045  0.41111735   0.3400838   2.2543673  -0.2657678
+## 3  -0.4961408  -0.9796890 -0.62633667   0.1104747  -1.1828388  -0.9254222
+## 4  -0.7904275   1.5424175 -1.18429936   1.5903830   2.2077992   0.3391719
+## 5   0.4462229   0.4965415 -0.03864912  -0.2245313  -0.5839491  -1.7106022
+## 6   0.2319576  -0.4216580  0.16696557  -0.8347539   1.1946733  -0.9769405</code></pre>
+<pre class="r"><code>nies_covar &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_covar.csv&#39;)
+head(nies_covar)</code></pre>
+<pre><code>##     UUID Sex Age
+## 1 219960   1  53
+## 2 313180   1  55
+## 3 320511   2  60
+## 4 400011   1  23
+## 5 400013   1  50
+## 6 316131   2  77</code></pre>
+<pre class="r"><code>##load genomic data
+merged_nies_071118 &lt;- read.bed.matrix(&quot;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno071118.bed&quot;)</code></pre>
+<pre><code>## Reading C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno071118.fam 
+## Reading C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno071118.bim 
+## Reading C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno071118.bed 
+## ped stats and snps stats have been set. 
+## &#39;p&#39; has been set. 
+## &#39;mu&#39; and &#39;sigma&#39; have been set.</code></pre>
+<pre class="r"><code>##set GRM etc.
+merged_nies_GRM &lt;- GRM(merged_nies_071118)
+merged_nies_eiK &lt;- eigen(merged_nies_GRM)
+merged_nies_eiK$values[ merged_nies_eiK$values &lt; 0] &lt;- 0
+merged_nies_PC &lt;- sweep(merged_nies_eiK$vectors, 2, sqrt(merged_nies_eiK$values), &quot;*&quot;) #PCs = 2</code></pre>
+<pre class="r"><code>#run GWAS with covariates
+for (i in c(2:ncol(her_pheno24918))){
+  pheno_colnames &lt;- colnames(her_pheno24918[i])
+  her_pheno_gwas &lt;- association.test(merged_nies_071118, her_pheno24918[,i], X = nies_covar, method = &quot;lmm&quot;, test = &quot;lrt&quot;, K = merged_nies_GRM, eigenK = merged_nies_eiK, p =2)
+  her_pheno_gwas &lt;- na.omit(her_pheno_gwas)
+  pheno_gwas_filtered &lt;- her_pheno_gwas %&gt;% filter(-log10(p)&gt;1) %&gt;% filter(freqA2 &lt; 0.99)
+  qqman::manhattan(x = pheno_gwas_filtered, chr = &quot;chr&quot;, bp = &quot;pos&quot;, p = &quot;p&quot;, snp = &quot;id&quot;, genomewideline = -log10(1.84e-7), main = paste(pheno_colnames), ylim = c(0,10))
+}</code></pre>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X
+
+## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-1.png" width="672" /><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-3.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-4.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-5.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-6.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-7.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-8.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-9.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-10.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-11.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-12.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-13.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-14.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-15.png" width="672" /><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-16.png" width="672" /><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-17.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-18.png" width="672" /></p>
+<pre><code>## Warning in trans.X(X, eigenK$vectors[, seq_len(p)], mean(Y)): An intercept
+## column was added to the covariate matrix X</code></pre>
+<p><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-19.png" width="672" /><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-20.png" width="672" /><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-21.png" width="672" /><img src="/posts/2018-12-21-gwas-rerun-maf-0-05_files/figure-html/unnamed-chunk-5-22.png" width="672" /></p>
+<p>As expected, removing the rare and low frequency variants significantly reduced the number of significantly associated variants.</p>
+<p>Interestingly, PCs 1,3, 4, and 8 still show associated variants as well as R Cyl, L ACD, and R ACD. Although these results are yet to be filtered to see whether they are well-supported peaks. In addition, the associated variants previously seen in R KVal V and UVAF were not identified in this round of analysis.</p>

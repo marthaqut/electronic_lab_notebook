@@ -1,0 +1,86 @@
+---
+title: Using variants unfiltered for MAF for PCA and heritability analysis
+author: Martha Aquino
+date: '2018-11-26'
+slug: using-variants-unfiltered-for-maf-for-pca-and-heritability-analysis
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Data Cleaning
+  - Genomic Data
+  - Heritability
+  - PCA
+---
+
+#Introduction 
+
+
+#Methods and Results 
+
+####1. Run PCA with 20 PCs on unfiltered MAF data set
+```{bash, eval = FALSE}
+plink1.9 --bfile merged_nies/merged_nies_geno_210818 --pca 20 var-wts --out plink_output/nies_geno_pca261118
+```
+
+Note:
+
+- the merged_nies_geno_210818 contains the data set after HWE and missingness filters (contains 3.9 million variants).
+
+- 20 PCs included. From the previous entry, it seemed that including 20PCs produced consistently higher heritability estimates than including 1 - 5 PC. 
+
+####2. Generate PCA plots 
+
+Load .eigenvec file 
+```{r}
+nies_geno_eigenvec261118 <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/nies_geno_pca261118.eigenvec', header = F)
+
+```
+
+Plot PC1 Vs PC2
+```{r}
+plot(nies_geno_eigenvec261118$V3, nies_geno_eigenvec261118$V4, xlab = "PC1", ylab = "PC2", main = "PC1 vs PC2 eigenvectors") 
+```
+
+####3. Make GRM 
+```{bash, eval = FALSE}
+./gcta64 --bfile merged_nies/merged_nies_geno_210818 --make-grm --out gcta_output/merged_nies_grm31218
+```
+
+####4. Perform PCA with 20 PCs
+```{bash, eval = FALSE}
+./gcta64 --bfile merged_nies/merged_nies_geno_210818 --pca 20 --out gcta_output/merged_nies_pca31218
+```
+
+```{r}
+merged_nies_eigenvec31218 <- read.table('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gcta_output/merged_nies_pca31218.eigenvec', header = F)
+
+write.csv(merged_nies_eigenvec31218, 'C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gcta_output/merged_nies_eigenvec31218.csv')
+```
+
+
+####5. Estimate heritability of individual traits 
+```{bash, eval = FALSE}
+for i in {1..27}
+do ./gcta64 --reml --grm gcta_output/merged_nies_grm31218 --pheno nies_pheno_020918.txt --mpheno $i --reml-pred-rand --covar nies_sex_covar.txt --qcovar nies_cont_covar31218.txt --out gcta_output/heritability_031218/$i.est
+done
+```
+
+####6. Estimate heritability of principal components
+```{bash, eval = FALSE}
+for i in {1..9}
+do ./gcta64 --reml --grm gcta_output/merged_nies_grm31218 --pheno pheno_pca_coord.txt --mpheno $i --reml-pred-rand --covar nies_sex_covar.txt --qcovar nies_cont_covar31218.txt --out gcta_output/heritability_031218/$i.pc.est
+done
+```
+
+####7. View heritability estimates 
+```{r}
+heritability_031218 <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gcta_output/heritability_031218/new_heritability31218.csv', header = F)
+
+heritability_031218
+```
+
+These heritability estimates are again different from the previous results. The differences are most likely due to the inclusion and exclusion of rare and low frequency variants. 
+
+American Journal of Human Genetics - for publishing paper
+PLOS Genetics 

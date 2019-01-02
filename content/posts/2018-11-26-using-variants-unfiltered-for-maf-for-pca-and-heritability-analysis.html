@@ -1,0 +1,100 @@
+---
+title: Using variants unfiltered for MAF for PCA and heritability analysis
+author: Martha Aquino
+date: '2018-11-26'
+slug: using-variants-unfiltered-for-maf-for-pca-and-heritability-analysis
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Data Cleaning
+  - Genomic Data
+  - Heritability
+  - PCA
+---
+
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+</div>
+<div id="methods-and-results" class="section level1">
+<h1>Methods and Results</h1>
+<div id="run-pca-with-20-pcs-on-unfiltered-maf-data-set" class="section level4">
+<h4>1. Run PCA with 20 PCs on unfiltered MAF data set</h4>
+<pre class="bash"><code>plink1.9 --bfile merged_nies/merged_nies_geno_210818 --pca 20 var-wts --out plink_output/nies_geno_pca261118</code></pre>
+<p>Note:</p>
+<ul>
+<li><p>the merged_nies_geno_210818 contains the data set after HWE and missingness filters (contains 3.9 million variants).</p></li>
+<li><p>20 PCs included. From the previous entry, it seemed that including 20PCs produced consistently higher heritability estimates than including 1 - 5 PC.</p></li>
+</ul>
+</div>
+<div id="generate-pca-plots" class="section level4">
+<h4>2. Generate PCA plots</h4>
+<p>Load .eigenvec file</p>
+<pre class="r"><code>nies_geno_eigenvec261118 &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/plink_output/nies_geno_pca261118.eigenvec&#39;, header = F)</code></pre>
+<p>Plot PC1 Vs PC2</p>
+<pre class="r"><code>plot(nies_geno_eigenvec261118$V3, nies_geno_eigenvec261118$V4, xlab = &quot;PC1&quot;, ylab = &quot;PC2&quot;, main = &quot;PC1 vs PC2 eigenvectors&quot;) </code></pre>
+<p><img src="/posts/2018-11-26-using-variants-unfiltered-for-maf-for-pca-and-heritability-analysis_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="make-grm" class="section level4">
+<h4>3. Make GRM</h4>
+<pre class="bash"><code>./gcta64 --bfile merged_nies/merged_nies_geno_210818 --make-grm --out gcta_output/merged_nies_grm31218</code></pre>
+</div>
+<div id="perform-pca-with-20-pcs" class="section level4">
+<h4>4. Perform PCA with 20 PCs</h4>
+<pre class="bash"><code>./gcta64 --bfile merged_nies/merged_nies_geno_210818 --pca 20 --out gcta_output/merged_nies_pca31218</code></pre>
+<pre class="r"><code>merged_nies_eigenvec31218 &lt;- read.table(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gcta_output/merged_nies_pca31218.eigenvec&#39;, header = F)
+
+write.csv(merged_nies_eigenvec31218, &#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gcta_output/merged_nies_eigenvec31218.csv&#39;)</code></pre>
+</div>
+<div id="estimate-heritability-of-individual-traits" class="section level4">
+<h4>5. Estimate heritability of individual traits</h4>
+<pre class="bash"><code>for i in {1..27}
+do ./gcta64 --reml --grm gcta_output/merged_nies_grm31218 --pheno nies_pheno_020918.txt --mpheno $i --reml-pred-rand --covar nies_sex_covar.txt --qcovar nies_cont_covar31218.txt --out gcta_output/heritability_031218/$i.est
+done</code></pre>
+</div>
+<div id="estimate-heritability-of-principal-components" class="section level4">
+<h4>6. Estimate heritability of principal components</h4>
+<pre class="bash"><code>for i in {1..9}
+do ./gcta64 --reml --grm gcta_output/merged_nies_grm31218 --pheno pheno_pca_coord.txt --mpheno $i --reml-pred-rand --covar nies_sex_covar.txt --qcovar nies_cont_covar31218.txt --out gcta_output/heritability_031218/$i.pc.est
+done</code></pre>
+</div>
+<div id="view-heritability-estimates" class="section level4">
+<h4>7. View heritability estimates</h4>
+<pre class="r"><code>heritability_031218 &lt;- read.csv(&#39;C:/Users/Martha/Documents/Honours/Project/honours.project/Data/gcta_output/heritability_031218/new_heritability31218.csv&#39;, header = F)
+
+heritability_031218</code></pre>
+<pre><code>##                     V1    V2       V3 V4 V5    V6       V7
+## 1                Trait    h2     pval NA PC    h2     pval
+## 2          R.K.value.V 0.798 2.80E-09 NA  1 0.663 8.64E-07
+## 3          totaluvafmm 0.687 1.47E-06 NA  4  0.49 8.80E-04
+## 4                R.CDR 0.686 1.71E-06 NA  2 0.383 1.73E-02
+## 5         L.Pachimetry 0.685 1.54E-05 NA  7  0.31 1.80E-02
+## 6   R.Cyl..pre.dilate. 0.659 7.76E-08 NA  6 0.116 2.36E-01
+## 7          L.K.value.V 0.657 4.03E-06 NA  8 0.084 2.72E-01
+## 8         R.Pachimetry 0.639 3.79E-05 NA  3     0 5.00E-01
+## 9                L.CDR 0.606 1.12E-04 NA  5     0 5.00E-01
+## 10         R.K.value.H 0.581 1.99E-05 NA  9     0 5.00E-01
+## 11         L.K.value.H 0.435 1.16E-03 NA                  
+## 12      L.Axial.Length 0.409 4.05E-03 NA                  
+## 13      R.Axial.Length 0.375 9.49E-03 NA                  
+## 14          R.IOP.mmHg 0.302 3.38E-02 NA                  
+## 15          L.AC.Depth  0.17 1.46E-01 NA                  
+## 16 L.Axis..pre.dilate. 0.157 1.84E-01 NA                  
+## 17          L.IOP.mmHg 0.157 1.76E-01 NA                  
+## 18          R.AC.Depth 0.122 2.39E-01 NA                  
+## 19 R.Axis..pre.dilate. 0.092 3.05E-01 NA                  
+## 20    R.K.Value.H.Axis 0.083 3.37E-01 NA                  
+## 21  R.Sph..pre.dilate. 0.025 4.47E-01 NA                  
+## 22         R.Logmar.VA     0 5.00E-01 NA                  
+## 23         L.Logmar.VA     0 5.00E-01 NA                  
+## 24  L.Sph..pre.dilate.     0 5.00E-01 NA                  
+## 25  L.Cyl..pre.dilate.     0 5.00E-01 NA                  
+## 26    R.K.value.V.Axis     0 5.00E-01 NA                  
+## 27    L.K.value.H.Axis     0 5.00E-01 NA                  
+## 28    L.K.value.V.Axis     0 5.00E-01 NA</code></pre>
+<p>These heritability estimates are again different from the previous results. The differences are most likely due to the inclusion and exclusion of rare and low frequency variants.</p>
+<p>American Journal of Human Genetics - for publishing paper PLOS Genetics</p>
+</div>
+</div>

@@ -1,0 +1,63 @@
+---
+title: GWAS rerun MAF 0.05
+author: Martha Aquino
+date: '2018-12-21'
+slug: gwas-rerun-maf-0-05
+categories:
+  - Coding
+  - Experiments
+tags:
+  - Gaston
+  - GWAS
+  - R
+---
+
+```{r}
+require(magicfor)
+require(magrittr)
+require(dplyr)
+require(gaston)
+require(qqman)
+```
+
+
+```{r}
+##load heritable pheno data
+
+her_pheno24918 <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_heritable_pheno240918.csv')
+head(her_pheno24918)
+
+nies_covar <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_covar.csv')
+head(nies_covar)
+```
+
+
+```{r}
+##load genomic data
+merged_nies_071118 <- read.bed.matrix("C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno071118.bed")
+
+```
+
+
+```{r}
+##set GRM etc.
+merged_nies_GRM <- GRM(merged_nies_071118)
+merged_nies_eiK <- eigen(merged_nies_GRM)
+merged_nies_eiK$values[ merged_nies_eiK$values < 0] <- 0
+merged_nies_PC <- sweep(merged_nies_eiK$vectors, 2, sqrt(merged_nies_eiK$values), "*") #PCs = 2
+```
+
+```{r}
+#run GWAS with covariates
+for (i in c(2:ncol(her_pheno24918))){
+  pheno_colnames <- colnames(her_pheno24918[i])
+  her_pheno_gwas <- association.test(merged_nies_071118, her_pheno24918[,i], X = nies_covar, method = "lmm", test = "lrt", K = merged_nies_GRM, eigenK = merged_nies_eiK, p =2)
+  her_pheno_gwas <- na.omit(her_pheno_gwas)
+  pheno_gwas_filtered <- her_pheno_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+  qqman::manhattan(x = pheno_gwas_filtered, chr = "chr", bp = "pos", p = "p", snp = "id", genomewideline = -log10(1.84e-7), main = paste(pheno_colnames), ylim = c(0,10))
+}
+```
+
+As expected, removing the rare and low frequency variants significantly reduced the number of significantly associated variants. 
+
+Interestingly, PCs 1,3, 4, and 8 still show associated variants as well as R Cyl, L ACD, and R ACD. Although these results are yet to be filtered to see whether they are well-supported peaks. In addition, the associated variants previously seen in R KVal V and UVAF were not identified in this round of analysis. 
