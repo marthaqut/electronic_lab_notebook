@@ -1,0 +1,231 @@
+---
+title: 'Filtering GWAS 0.05 results '
+author: Martha Aquino
+date: '2019-01-08'
+slug: filtering-gwas-0-05-results
+categories:
+  - Coding
+tags:
+  - Data Cleaning
+  - GWAS
+  - R
+---
+
+#Introduction
+The most recent GWAS results used genomic data filtered for MAF > 0.05. By doing so, the number of associated variants were reduced. Per the previous set of analyses, the GWAS results were filtered to identify the significantly associated variants with supporting SNPs. The same is needed to be done for this new set of results. 
+
+#Methods and Results 
+
+```{r, message = FALSE}
+require(magrittr)
+require(dplyr)
+require(gaston)
+require(qqman)
+```
+
+####1. Load data 
+
+```{r}
+her_pheno24918 <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_heritable_pheno240918.csv') #phenotypic data
+
+nies_covar <- read.csv('C:/Users/Martha/Documents/Honours/Project/honours.project/Data/nies_covar.csv') #covariates
+
+merged_nies_071118 <- read.bed.matrix("C:/Users/Martha/Documents/Honours/Project/honours.project/Data/merged_nies/merged_nies_geno071118.bed") #genomic data
+```
+
+```{r}
+merged_nies_GRM <- GRM(merged_nies_071118)
+merged_nies_eiK <- eigen(merged_nies_GRM)
+merged_nies_eiK$values[ merged_nies_eiK$values < 0] <- 0
+merged_nies_PC <- sweep(merged_nies_eiK$vectors, 2, sqrt(merged_nies_eiK$values), "*") #PCs = 2
+```
+
+####2. Filter R Cyl Pre-dilate
+```{r}
+r_cyl_gwas <- association.test(merged_nies_071118, her_pheno24918$R.Cyl..pre.dilate., X = nies_covar, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+
+r_cyl_gwas <- na.omit(r_cyl_gwas)
+r_cyl_filtered <- r_cyl_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+r_cyl_meff <- r_cyl_filtered %>% filter(p < 1.84e-7)
+r_cyl_sig <- do.call(rbind, lapply(split(r_cyl_meff,r_cyl_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+r_cyl_res <- NULL
+for (i in r_cyl_sig$id) {
+  snpID <- i
+  snpCHR <- r_cyl_filtered[r_cyl_filtered$id == snpID,]$chr
+  snpPOS <- r_cyl_filtered[r_cyl_filtered$id ==snpID,]$pos
+  
+  sig.peak <- r_cyl_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  r_cyl_res <- rbind(r_cyl_res, sig.peak)
+}
+
+r_cyl_res
+```
+
+####3. Filter L ACD 
+```{r}
+l_acd_gwas <- association.test(merged_nies_071118, her_pheno24918$L.AC.Depth, X = nies_covar, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+
+l_acd_gwas <- na.omit(l_acd_gwas)
+l_acd_filtered <- l_acd_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+l_acd_meff <- l_acd_filtered %>% filter(p < 1.84e-7)
+l_acd_sig <- do.call(rbind, lapply(split(l_acd_meff,l_acd_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+l_acd_res <- NULL
+for (i in l_acd_sig$id) {
+  snpID <- i
+  snpCHR <- l_acd_filtered[l_acd_filtered$id == snpID,]$chr
+  snpPOS <- l_acd_filtered[l_acd_filtered$id ==snpID,]$pos
+  
+  sig.peak <- l_acd_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  l_acd_res <- rbind(l_acd_res, sig.peak)
+}
+
+l_acd_res
+```
+
+####3. Filter R ACD
+```{r}
+r_acd_gwas <- association.test(merged_nies_071118, her_pheno24918$R.AC.Depth, X = nies_covar, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+
+r_acd_gwas <- na.omit(r_acd_gwas)
+r_acd_filtered <- r_acd_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+r_acd_meff <- r_acd_filtered %>% filter(p < 1.84e-7)
+r_acd_sig <- do.call(rbind, lapply(split(r_acd_meff,r_acd_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+r_acd_res <- NULL
+for (i in r_acd_sig$id) {
+  snpID <- i
+  snpCHR <- r_acd_filtered[r_acd_filtered$id == snpID,]$chr
+  snpPOS <- r_acd_filtered[r_acd_filtered$id ==snpID,]$pos
+  
+  sig.peak <- r_acd_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  r_acd_res <- rbind(r_acd_res, sig.peak)
+}
+
+r_acd_res
+```
+
+
+####4. Filter PC1
+```{r}
+pc1_gwas <- association.test(merged_nies_071118, her_pheno24918$coord.Dim.1, X = nies_covar, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+
+pc1_gwas <- na.omit(pc1_gwas)
+pc1_filtered <- pc1_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+pc1_meff <- pc1_filtered %>% filter(p < 1.84e-7)
+pc1_sig <- do.call(rbind, lapply(split(pc1_meff,pc1_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+pc1_res <- NULL
+for (i in pc1_sig$id) {
+  snpID <- i
+  snpCHR <- pc1_filtered[pc1_filtered$id == snpID,]$chr
+  snpPOS <- pc1_filtered[pc1_filtered$id ==snpID,]$pos
+  
+  sig.peak <- pc1_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  pc1_res <- rbind(pc1_res, sig.peak)
+}
+
+pc1_res
+```
+
+####5. Filter PC3
+```{r}
+pc3_gwas <- association.test(merged_nies_071118, her_pheno24918$coord.Dim.3, X = nies_covar, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+
+pc3_gwas <- na.omit(pc3_gwas)
+pc3_filtered <- pc3_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+pc3_meff <- pc3_filtered %>% filter(p < 1.84e-7)
+pc3_sig <- do.call(rbind, lapply(split(pc3_meff,pc3_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+pc3_res <- NULL
+for (i in pc3_sig$id) {
+  snpID <- i
+  snpCHR <- pc3_filtered[pc3_filtered$id == snpID,]$chr
+  snpPOS <- pc3_filtered[pc3_filtered$id ==snpID,]$pos
+  
+  sig.peak <- pc3_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  pc3_res <- rbind(pc3_res, sig.peak)
+}
+
+pc3_res
+```
+
+####6. Filter PC4
+```{r}
+pc4_gwas <- association.test(merged_nies_071118, her_pheno24918$coord.Dim.4, X = nies_covar, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+pc4_gwas <- na.omit(pc4_gwas)
+pc4_filtered <- pc4_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+pc4_meff <- pc4_filtered %>% filter(p < 1.84e-7)
+pc4_sig <- do.call(rbind, lapply(split(pc4_meff,pc4_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+pc4_res <- NULL
+for (i in pc4_sig$id) {
+  snpID <- i
+  snpCHR <- pc4_filtered[pc4_filtered$id == snpID,]$chr
+  snpPOS <- pc4_filtered[pc4_filtered$id ==snpID,]$pos
+  
+  sig.peak <- pc4_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  pc4_res <- rbind(pc4_res, sig.peak)
+}
+
+pc4_res
+```
+
+####7. Filter PC8
+```{r}
+pc8_gwas <- association.test(merged_nies_071118, her_pheno24918$coord.Dim.8, X = nies_covar, method="lmm", test = "lrt", response = "quantitative", K = merged_nies_GRM, eigenK = merged_nies_eiK, p = 2)
+
+pc8_gwas <- na.omit(pc8_gwas)
+pc8_filtered <- pc8_gwas %>% filter(-log10(p)>1) %>% filter(freqA2 < 0.99)
+pc8_meff <- pc8_filtered %>% filter(p < 1.84e-7)
+pc8_sig <- do.call(rbind, lapply(split(pc8_meff,pc8_meff$chr), function(x) {return(x[which.min(x$p),])}))
+
+pc8_res <- NULL
+for (i in pc8_sig$id) {
+  snpID <- i
+  snpCHR <- pc8_filtered[pc8_filtered$id == snpID,]$chr
+  snpPOS <- pc8_filtered[pc8_filtered$id ==snpID,]$pos
+  
+  sig.peak <- pc8_filtered %>%
+    filter(chr == snpCHR) %>%
+    filter(pos > snpPOS - 50000) %>%
+    filter(pos < snpPOS + 50000) %>%
+    filter(p < 1e-5)
+  
+  pc8_res <- rbind(pc8_res, sig.peak)
+}
+
+pc8_res
+```
+

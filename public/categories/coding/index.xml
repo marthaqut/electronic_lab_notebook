@@ -9,10 +9,20 @@
     <managingEditor>eunise.aquino@connect.qut.edu.au (Martha Aquino)</managingEditor>
     <webMaster>eunise.aquino@connect.qut.edu.au (Martha Aquino)</webMaster>
     <copyright>(c) 2018 -- All rights reserved.</copyright>
-    <lastBuildDate>Fri, 21 Dec 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 08 Jan 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/categories/coding/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Filtering GWAS 0.05 results </title>
+      <link>/posts/filtering-gwas-0-05-results/</link>
+      <pubDate>Tue, 08 Jan 2019 00:00:00 +0000</pubDate>
+      <author>eunise.aquino@connect.qut.edu.au (Martha Aquino)</author>
+      <guid>/posts/filtering-gwas-0-05-results/</guid>
+      <description>IntroductionThe most recent GWAS results used genomic data filtered for MAF &amp;gt; 0.05. By doing so, the number of associated variants were reduced. Per the previous set of analyses, the GWAS results were filtered to identify the significantly associated variants with supporting SNPs. The same is needed to be done for this new set of results.
+Methods and Resultsrequire(magrittr)require(dplyr)require(gaston)require(qqman)1. Load dataher_pheno24918 &amp;lt;- read.</description>
+    </item>
     
     <item>
       <title>GWAS rerun MAF 0.05</title>
